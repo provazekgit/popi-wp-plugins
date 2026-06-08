@@ -1,0 +1,38 @@
+name: Release plugin ZIP
+
+on:
+  push:
+    tags:
+      - 'popi-clanky-v*'
+      - 'popi-landing-v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Zjisti název pluginu z tagu
+        id: plugin
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [[ "$TAG" == popi-clanky-* ]]; then
+            echo "dir=popi-clanky-blog" >> $GITHUB_OUTPUT
+            echo "name=popi-clanky-blog" >> $GITHUB_OUTPUT
+          else
+            echo "dir=popi-landing-page" >> $GITHUB_OUTPUT
+            echo "name=popi-landing-page" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Vytvoř ZIP
+        run: |
+          cd ${{ steps.plugin.outputs.dir }}
+          zip -r ../${{ steps.plugin.outputs.name }}.zip .
+
+      - name: Vytvoř GitHub Release se ZIPem
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.plugin.outputs.name }}.zip

@@ -1,0 +1,37 @@
+# popi-wp-plugins
+
+WordPress pluginy pro weby Popiweb. Distribuovány přes update server na `api.popisite.cz`.
+
+## Pluginy
+
+### popi-clanky-blog
+CPT Články se SEO poli, CTA tlačítkem, UTM trackingem a automatickým Table of Contents.
+
+### popi-landing-page
+CPT Landing Pages pro Sklik/Google Ads kampaně. SEO, SEA, UTM parametry, Bricks Builder podpora.
+
+---
+
+## Vydání nové verze
+
+```bash
+# 1. Uprav kód a bump verze v PHP hlavičce pluginu
+# 2. Commit změn
+git add . && git commit -m "popi-clanky-blog: bump na 1.1.0"
+
+# 3. Tag ve formátu popi-clanky-v* nebo popi-landing-v*
+git tag popi-clanky-v1.1.0
+git push origin main --tags
+```
+
+GitHub Actions automaticky vytvoří ZIP a přiloží ho k Release.
+
+## Po releasu — update server
+
+Uprav `REGISTRY` v `popi_site/apps/api/src/routes/wp-plugins.ts`:
+- `version` → nová verze
+- `download_url` → URL nového GitHub Release ZIPu
+- `last_updated` → dnešní datum
+- `changelog` → co se změnilo
+
+Push do popi_site → Vercel auto-deploy → WP weby uvidí dostupnou aktualizaci.
