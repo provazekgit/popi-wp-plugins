@@ -50,7 +50,8 @@ class Popi_Landing_Docs {
 				'Princip'    => 'Funkce <code>popi_lp_cta_url()</code> přečte pole <strong>CTA — URL</strong> a automaticky za ně přidá UTM parametry vyplněné v sekci SEA — Kampaň. Není potřeba UTM parametry psát ručně do URL.',
 				'Workflow'   => '<strong>1.</strong> Vyplň pole <em>CTA — URL</em> (základní URL bez UTM). <strong>2.</strong> Vyplň UTM source, medium, campaign. <strong>3.</strong> V Bricks šabloně použij funkci níže — ta vše složí dohromady.',
 				'Příklad výstupu' => 'Pole CTA URL: <code>https://papilonia.cz/cs/online?papilonia=teplice</code><br>UTM source: <code>sklik</code> / medium: <code>cpc</code> / campaign: <code>deti-teplice</code><br>→ Výsledek: <code>https://papilonia.cz/cs/online?papilonia=teplice&amp;utm_source=sklik&amp;utm_medium=cpc&amp;utm_campaign=deti-teplice</code>',
-				'Použití v Bricks' => 'Na tlačítko CTA nastav URL přes <strong>Code element</strong> nebo do URL pole tlačítka vlož:<br><code>&lt;?php echo popi_lp_cta_url( get_the_ID() ); ?&gt;</code>',
+				'Použití v Bricks — doporučeno' => '<strong>Tlačítko → Odkaz → Typ odkazu: Dynamická data → ikona {} → skupina Popi → LP CTA URL s UTM (popi-landing-page).</strong> Tag se jmenuje <code>{popi_lp_cta_url_utm}</code>.',
+				'Použití v Bricks — alternativa' => 'Code element nebo PHP v URL poli: <code>&lt;?php echo popi_lp_cta_url( get_the_ID() ); ?&gt;</code>',
 				'Bez UTM'    => 'Pokud jsou UTM pole prázdná, funkce vrátí čistou CTA URL bez parametrů.',
 				'Více platforem na jedné LP' => 'Pokud chceš stejnou LP pro Sklik i Google Ads, vytvoř kopii pomocí Duplicate Post. Na kopii změníš slug a UTM source — obsah zůstane stejný.',
 			) ); ?>
@@ -65,7 +66,7 @@ class Popi_Landing_Docs {
 				'Hlavní nadpis'    => '<code>{popi_lp_hlavni_nadpis}</code> — dynamický tag v Bricks (nadpisový element)',
 				'Perex'            => '<code>{popi_lp_hlavni_popis}</code> — dynamický tag v Bricks (textový element)',
 				'CTA text'         => '<code>{popi_lp_cta_text}</code> — dynamický tag pro text tlačítka',
-				'CTA URL s UTM'    => '<code>&lt;?php echo popi_lp_cta_url( get_the_ID() ); ?&gt;</code> — PHP funkce pro URL tlačítka (automaticky přidá UTM). Nikdy nepoužívej přímo <code>{popi_lp_cta_url}</code> — to vrátí URL bez UTM.',
+				'CTA URL s UTM'    => '<strong>Tlačítko → Odkaz → Dynamická data → skupina Popi → LP CTA URL s UTM (popi-landing-page)</strong>. Tag: <code>{popi_lp_cta_url_utm}</code>. Nikdy nepoužívej přímo <code>{popi_lp_cta_url}</code> — to vrátí URL bez UTM.',
 				'Meta title'       => '<code>{popi_lp_meta_title}</code> — pro SEO plugin nebo &lt;head&gt;',
 				'Meta description' => '<code>{popi_lp_meta_desc}</code> — pro SEO plugin nebo &lt;head&gt;',
 				'OG obrázek'       => '<code>{popi_lp_og_image}</code>',

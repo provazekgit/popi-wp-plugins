@@ -44,7 +44,8 @@ class Popi_Clanky_Docs {
 				'Princip'    => 'Funkce <code>popi_clanky_cta_url()</code> přečte pole <strong>CTA — URL</strong> a automaticky za ně přidá UTM parametry. Není potřeba UTM parametry psát ručně do URL.',
 				'Workflow'   => '<strong>1.</strong> Vyplň pole <em>CTA — URL</em> (základní URL bez UTM). <strong>2.</strong> Vyplň UTM source, medium, campaign. <strong>3.</strong> V Bricks šabloně použij funkci níže — ta vše složí dohromady.',
 				'Příklad výstupu' => 'Pole CTA URL: <code>https://papilonia.cz/cs/online</code><br>UTM source: <code>vyletustecko</code> / medium: <code>clanek</code> / campaign: <code>letni-vylet</code><br>→ Výsledek: <code>https://papilonia.cz/cs/online?utm_source=vyletustecko&amp;utm_medium=clanek&amp;utm_campaign=letni-vylet</code>',
-				'Použití v Bricks' => 'Na tlačítko CTA nastav URL přes <strong>Code element</strong> nebo do URL pole tlačítka vlož:<br><code>&lt;?php echo popi_clanky_cta_url( get_the_ID() ); ?&gt;</code>',
+				'Použití v Bricks — doporučeno' => '<strong>Tlačítko → Odkaz → Typ odkazu: Dynamická data → ikona {} → skupina Popi → Článek CTA URL s UTM (popi-clanky-blog).</strong> Tag se jmenuje <code>{popi_clanek_cta_url_utm}</code>.',
+				'Použití v Bricks — alternativa' => 'Code element nebo PHP v URL poli: <code>&lt;?php echo popi_clanky_cta_url( get_the_ID() ); ?&gt;</code>',
 				'Bez UTM'    => 'Pokud jsou UTM pole prázdná, funkce vrátí čistou CTA URL bez parametrů.',
 			) ); ?>
 
@@ -66,7 +67,7 @@ class Popi_Clanky_Docs {
 				'Meta description' => '<code>{popi_clanek_meta_desc}</code> — pro SEO plugin nebo &lt;head&gt;',
 				'OG obrázek'       => '<code>{popi_clanek_og_image}</code>',
 				'CTA text'         => '<code>{popi_clanek_cta_text}</code> — dynamický tag pro text tlačítka',
-				'CTA URL s UTM'    => '<code>&lt;?php echo popi_clanky_cta_url( get_the_ID() ); ?&gt;</code> — PHP funkce pro URL tlačítka (automaticky přidá UTM). Nikdy nepoužívej přímo <code>{popi_clanek_cta_url}</code> — to vrátí URL bez UTM.',
+				'CTA URL s UTM'    => '<strong>Tlačítko → Odkaz → Dynamická data → skupina Popi → Článek CTA URL s UTM (popi-clanky-blog)</strong>. Tag: <code>{popi_clanek_cta_url_utm}</code>. Nikdy nepoužívej přímo <code>{popi_clanek_cta_url}</code> — to vrátí URL bez UTM.',
 				'Table of Contents' => '<code>&lt;?php echo popi_clanky_toc( get_the_ID() ); ?&gt;</code> — automatická navigace z nadpisů H2/H3',
 				'Šablona'          => 'Vytvoř šablonu v <strong>Bricks → Templates → Add New</strong>. Typ: <code>Content</code>. Podmínka: <code>Post Type = Články blog</code>.',
 			) ); ?>
