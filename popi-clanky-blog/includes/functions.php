@@ -12,14 +12,14 @@ function popi_clanky_cta_url( int $post_id = 0 ): string {
 		$post_id = get_the_ID();
 	}
 
-	$base_url = get_field( 'popi_cta_url', $post_id );
+	$base_url = get_field( 'popi_clanek_cta_url', $post_id );
 	if ( ! $base_url ) {
 		return '';
 	}
 
-	$utm_source   = get_field( 'popi_utm_source', $post_id );
-	$utm_medium   = get_field( 'popi_utm_medium', $post_id );
-	$utm_campaign = get_field( 'popi_utm_kampan', $post_id );
+	$utm_source   = get_field( 'popi_clanek_utm_source', $post_id );
+	$utm_medium   = get_field( 'popi_clanek_utm_medium', $post_id );
+	$utm_campaign = get_field( 'popi_clanek_utm_kampan', $post_id );
 
 	$params = array_filter( array(
 		'utm_source'   => $utm_source,
