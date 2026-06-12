@@ -26,28 +26,32 @@ class Popi_Landing_Docs {
 		<div class="wrap" style="max-width:860px;">
 			<h1>Landing Pages — Nápověda</h1>
 
-			<?php self::section( 'Landing Page — Základ', array(
+			<?php self::section( 'LP — Základ (popi-landing-page)', array(
 				'Hlavní nadpis (H1)'   => 'Největší nadpis stránky — první věc kterou návštěvník přečte. <strong>Musí odpovídat textu v reklamě</strong> (tzv. message match). Pokud reklama říká „Motýlí dům pro děti", H1 musí říkat totéž — jinak návštěvník stránku opustí.',
 				'Hlavní popis (perex)' => 'Jeden nebo dva věty pod H1. Upřesní nabídku a motivuje ke čtení nebo akci.',
 				'CTA — text tlačítka' => 'Popis výzvy k akci. Příklady: „Koupit vstupenku", „Rezervovat termín", „Zjistit více". Krátké, konkrétní, akční.',
-				'CTA — URL'           => 'Cílová adresa tlačítka. Funkce <code>popi_cta_url()</code> automaticky přidá UTM parametry — viz sekce UTM níže.',
+				'CTA — URL'           => '<strong>Základní URL tlačítka bez UTM parametrů.</strong> UTM parametry se přidají automaticky funkcí <code>popi_cta_url()</code> — viz sekce UTM níže. Příklad: <code>https://papilonia.cz/cs/online?papilonia=teplice</code>',
 			) ); ?>
 
-			<?php self::section( 'SEO & Sdílení', array(
+			<?php self::section( 'LP — SEO & Sdílení (popi-landing-page)', array(
 				'Meta title'             => 'Název záložky v prohlížeči a nadpis ve výsledcích vyhledávání. Doporučeno 50–60 znaků. Může se lišit od H1 — v Google Ads ovlivňuje <strong>Quality Score</strong>.',
 				'Meta description'       => 'Popis zobrazovaný pod nadpisem ve vyhledávači. Doporučeno 140–160 znaků. Nemá přímý vliv na ranking, ale ovlivňuje míru prokliků.',
 				'OG obrázek (soc. sítě)' => 'Náhledový obrázek při sdílení landing page na Facebook, LinkedIn apod. Doporučená velikost <strong>1200 × 630 px</strong>. Dedikované pole zaručuje správné načtení — Featured Image sítě někdy ignorují.',
 			) ); ?>
 
-			<?php self::section( 'SEA — Kampaň', array(
+			<?php self::section( 'LP — SEA & Kampaň (popi-landing-page)', array(
 				'Klíčové slovo kampaně' => 'Interní poznámka — na jaký vyhledávací dotaz tato landing page cílí. Na frontendu se nezobrazí. Slouží pro přehled při správě více LP (např. „kam s dětmi Teplice", „tip na výlet Ústecký kraj").',
-			) ); ?>
-
-			<?php self::section( 'UTM parametry', array(
-				'UTM source'   => 'Zdroj návštěvnosti pro Google Analytics. Nastaví se per landing page. Příklady: <code>sklik</code>, <code>google-ads</code>, <code>facebook</code>. Výchozí hodnota z nastavení pluginu.',
+				'UTM source'   => 'Zdroj návštěvnosti. Příklady: <code>sklik</code>, <code>google-ads</code>, <code>facebook</code>. Výchozí hodnota se nastavuje v <strong>Landing Pages → Výchozí hodnoty</strong>.',
 				'UTM medium'   => 'Typ reklamního kanálu. Příklady: <code>cpc</code>, <code>paid-social</code>, <code>email</code>. Výchozí hodnota z nastavení pluginu.',
 				'UTM campaign' => 'Název konkrétní kampaně pro tuto LP. Příklad: <code>deti-teplice-2026</code>.',
-				'Jak UTM fungují' => 'Funkce <code>popi_cta_url()</code> přečte CTA URL a UTM pole z aktuální LP a složí finální URL automaticky. Příklad výstupu: <code>https://papilonia.cz/vstupenky?utm_source=sklik&utm_medium=cpc&utm_campaign=deti-teplice</code>. Použití v Bricks Code elementu: <code>&lt;?php echo popi_cta_url( get_the_ID() ); ?&gt;</code>',
+			) ); ?>
+
+			<?php self::section( 'CTA tlačítko s UTM — jak to funguje', array(
+				'Princip'    => 'Funkce <code>popi_cta_url()</code> přečte pole <strong>CTA — URL</strong> a automaticky za ně přidá UTM parametry vyplněné v sekci SEA — Kampaň. Není potřeba UTM parametry psát ručně do URL.',
+				'Workflow'   => '<strong>1.</strong> Vyplň pole <em>CTA — URL</em> (základní URL bez UTM). <strong>2.</strong> Vyplň UTM source, medium, campaign. <strong>3.</strong> V Bricks šabloně použij funkci níže — ta vše složí dohromady.',
+				'Příklad výstupu' => 'Pole CTA URL: <code>https://papilonia.cz/cs/online?papilonia=teplice</code><br>UTM source: <code>sklik</code> / medium: <code>cpc</code> / campaign: <code>deti-teplice</code><br>→ Výsledek: <code>https://papilonia.cz/cs/online?papilonia=teplice&amp;utm_source=sklik&amp;utm_medium=cpc&amp;utm_campaign=deti-teplice</code>',
+				'Použití v Bricks' => 'Na tlačítko CTA nastav URL přes <strong>Code element</strong> nebo do URL pole tlačítka vlož:<br><code>&lt;?php echo popi_cta_url( get_the_ID() ); ?&gt;</code>',
+				'Bez UTM'    => 'Pokud jsou UTM pole prázdná, funkce vrátí čistou CTA URL bez parametrů.',
 				'Více platforem na jedné LP' => 'Pokud chceš stejnou LP pro Sklik i Google Ads, vytvoř kopii pomocí Duplicate Post. Na kopii změníš slug a UTM source — obsah zůstane stejný.',
 			) ); ?>
 
@@ -57,12 +61,16 @@ class Popi_Landing_Docs {
 				'OG obrázek'       => 'Výchozí OG obrázek se použije pokud konkrétní LP nemá vlastní OG obrázek.',
 			) ); ?>
 
-			<?php self::section( 'Bricks šablona', array(
-				'Povolení CPT'      => 'Aby Bricks LP renderoval, musí být CPT povolen: <strong>Bricks → Settings → Post Types → zaškrtni Landing Pages</strong>.',
-				'Šablona'           => 'Vytvoř šablonu v <strong>Bricks → Templates → Add New</strong>. Typ: <code>Content</code>. Podmínka: <code>Post Type = Landing Pages</code>.',
-				'Dynamická data'    => 'V Bricks editoru vyber textový element → ikona <code>{}</code> → ACF → vyber pole (např. <code>popi_hlavni_nadpis</code>).',
-				'CTA URL s UTM'     => 'Na tlačítku CTA místo přímého ACF pole použij Code element: <code>&lt;?php echo popi_cta_url( get_the_ID() ); ?&gt;</code>',
-				'Featured Image'    => 'Hero sekce — mapuj na <code>{featured_image}</code>, ne na ACF pole. OG obrázek je dedikované ACF pole výhradně pro soc. sítě.',
+			<?php self::section( 'Bricks šablona — přehled ACF polí', array(
+				'Hlavní nadpis'    => '<code>{popi_lp_hlavni_nadpis}</code> — dynamický tag v Bricks (nadpisový element)',
+				'Perex'            => '<code>{popi_lp_hlavni_popis}</code> — dynamický tag v Bricks (textový element)',
+				'CTA text'         => '<code>{popi_lp_cta_text}</code> — dynamický tag pro text tlačítka',
+				'CTA URL s UTM'    => '<code>&lt;?php echo popi_cta_url( get_the_ID() ); ?&gt;</code> — PHP funkce pro URL tlačítka (automaticky přidá UTM). Nikdy nepoužívej přímo <code>{popi_lp_cta_url}</code> — to vrátí URL bez UTM.',
+				'Meta title'       => '<code>{popi_lp_meta_title}</code> — pro SEO plugin nebo &lt;head&gt;',
+				'Meta description' => '<code>{popi_lp_meta_desc}</code> — pro SEO plugin nebo &lt;head&gt;',
+				'OG obrázek'       => '<code>{popi_lp_og_image}</code>',
+				'Povolení CPT'     => 'Aby Bricks LP renderoval, musí být CPT povolen: <strong>Bricks → Settings → Post Types → zaškrtni Landing Pages</strong>.',
+				'Šablona'          => 'Vytvoř šablonu v <strong>Bricks → Templates → Add New</strong>. Typ: <code>Content</code>. Podmínka: <code>Post Type = Landing Pages</code>.',
 			) ); ?>
 
 		</div>
@@ -85,7 +93,7 @@ class Popi_Landing_Docs {
 			printf(
 				'<tr><th>%s</th><td>%s</td></tr>',
 				esc_html( $label ),
-				wp_kses( $desc, array( 'strong' => array(), 'code' => array(), 'em' => array() ) )
+				wp_kses( $desc, array( 'strong' => array(), 'code' => array(), 'em' => array(), 'br' => array() ) )
 			);
 		}
 		echo '</table></div>';
