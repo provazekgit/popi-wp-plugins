@@ -25,8 +25,10 @@ add_filter( 'bricks/dynamic_tags_list', function ( $tags ) {
 } );
 
 add_filter( 'bricks/dynamic_data/render_tag', function ( $tag, $post, $context ) {
-	if ( $tag === 'popi_lp_cta_url_utm' ) {
-		return popi_lp_cta_url( $post->ID ?? get_the_ID() );
+	$clean = trim( str_replace( array( '{', '}' ), '', $tag ) );
+	if ( $clean === 'popi_lp_cta_url_utm' ) {
+		$post_id = is_object( $post ) && ! empty( $post->ID ) ? (int) $post->ID : get_the_ID();
+		return popi_lp_cta_url( $post_id );
 	}
 	return $tag;
 }, 10, 3 );
