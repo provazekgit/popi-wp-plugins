@@ -8,12 +8,32 @@ defined( 'ABSPATH' ) || exit;
  * UTM campaign se čte z ACF pole `popi_lp_utm_kampan` na konkrétní LP.
  *
  * Použití v šabloně Bricks (PHP snippet nebo Custom Code element):
- *   echo popi_cta_url();
+ *   echo popi_lp_cta_url();
  *
  * Nebo jako Dynamic Data tag přes Bricks Code element:
- *   <?php echo popi_cta_url( get_the_ID() ); ?>
+ *   <?php echo popi_lp_cta_url( get_the_ID() ); ?>
  */
-function popi_cta_url( int $post_id = 0 ): string {
+// ── BRICKS DYNAMIC TAG ────────────────────────────────────────────────────────
+
+add_filter( 'bricks/dynamic_tags_list', function ( $tags ) {
+	$tags[] = array(
+		'name'  => '{popi_lp_cta_url_utm}',
+		'label' => 'LP CTA URL s UTM (popi-landing-page)',
+		'group' => 'Popi',
+	);
+	return $tags;
+} );
+
+add_filter( 'bricks/dynamic_data/render_tag', function ( $tag, $post, $context ) {
+	if ( $tag === 'popi_lp_cta_url_utm' ) {
+		return popi_lp_cta_url( $post->ID ?? get_the_ID() );
+	}
+	return $tag;
+}, 10, 3 );
+
+// ── CTA URL ────────────────────────────────────────────────────────────────────
+
+function popi_lp_cta_url( int $post_id = 0 ): string {
 	if ( ! $post_id ) {
 		$post_id = get_the_ID();
 	}

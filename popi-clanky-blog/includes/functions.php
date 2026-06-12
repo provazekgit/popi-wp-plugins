@@ -35,6 +35,24 @@ function popi_clanky_cta_url( int $post_id = 0 ): string {
 	return $base_url . $separator . http_build_query( $params );
 }
 
+// ── BRICKS DYNAMIC TAG ────────────────────────────────────────────────────────
+
+add_filter( 'bricks/dynamic_tags_list', function ( $tags ) {
+	$tags[] = array(
+		'name'  => '{popi_clanek_cta_url_utm}',
+		'label' => 'Článek CTA URL s UTM (popi-clanky-blog)',
+		'group' => 'Popi',
+	);
+	return $tags;
+} );
+
+add_filter( 'bricks/dynamic_data/render_tag', function ( $tag, $post, $context ) {
+	if ( $tag === 'popi_clanek_cta_url_utm' ) {
+		return popi_clanky_cta_url( $post->ID ?? get_the_ID() );
+	}
+	return $tag;
+}, 10, 3 );
+
 // ── TABLE OF CONTENTS ──────────────────────────────────────────────────────────
 
 /**
