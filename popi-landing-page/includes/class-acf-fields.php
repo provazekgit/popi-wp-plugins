@@ -112,6 +112,12 @@ class Popi_Landing_ACF {
 					'default_value' => Popi_Landing_Settings::get_int( 'og_image' ),
 					'instructions'  => 'Doporučeno 1200 × 630 px.',
 				) ),
+				array_merge( self::d_image(), array(
+					'key'          => 'field_lp_nahledovy_obrazek_mobil',
+					'label'        => 'Náhledový obrázek — mobil',
+					'name'         => 'popi_lp_nahledovy_obrazek_mobil',
+					'instructions' => 'Náhledový obrázek pro mobilní zařízení. Pokud nevyplníš, použije se standardní náhledový obrázek (WP Featured Image).',
+				) ),
 			),
 			'location'        => array( array( array( 'param' => 'post_type', 'operator' => '==', 'value' => 'popi_landing' ) ) ),
 			'position'        => 'side',
