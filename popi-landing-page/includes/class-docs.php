@@ -34,9 +34,10 @@ class Popi_Landing_Docs {
 			) ); ?>
 
 			<?php self::section( 'LP — SEO & Sdílení (popi-landing-page)', array(
-				'Meta title'             => 'Název záložky v prohlížeči a nadpis ve výsledcích vyhledávání. Doporučeno 50–60 znaků. Může se lišit od H1 — v Google Ads ovlivňuje <strong>Quality Score</strong>.',
-				'Meta description'       => 'Popis zobrazovaný pod nadpisem ve vyhledávači. Doporučeno 140–160 znaků. Nemá přímý vliv na ranking, ale ovlivňuje míru prokliků.',
-				'OG obrázek (soc. sítě)' => 'Náhledový obrázek při sdílení landing page na Facebook, LinkedIn apod. Doporučená velikost <strong>1200 × 630 px</strong>. Dedikované pole zaručuje správné načtení — Featured Image sítě někdy ignorují.',
+				'Meta title'                => 'Název záložky v prohlížeči a nadpis ve výsledcích vyhledávání. Doporučeno 50–60 znaků. Může se lišit od H1 — v Google Ads ovlivňuje <strong>Quality Score</strong>.',
+				'Meta description'          => 'Popis zobrazovaný pod nadpisem ve vyhledávači. Doporučeno 140–160 znaků. Nemá přímý vliv na ranking, ale ovlivňuje míru prokliků.',
+				'OG obrázek (soc. sítě)'    => 'Náhledový obrázek při sdílení landing page na Facebook, LinkedIn apod. Doporučená velikost <strong>1200 × 630 px</strong>. Dedikované pole zaručuje správné načtení — Featured Image sítě někdy ignorují.',
+				'Náhledový obrázek — mobil' => 'Alternativní obrázek pro mobilní zařízení místo standardního náhledového obrázku. Slug: <code>popi_lp_nahledovy_obrazek_mobil</code>.<br><strong>Použití v Bricks:</strong> přidej druhý Image element vedle featured image, nastav zdroj na toto ACF pole a skryj ho na desktop/tablet (Bricks → Viditelnost → skrýt na desktop a tablet). Pokud nevyplníš, zobrazí se standardní náhledový obrázek.',
 			) ); ?>
 
 			<?php self::section( 'LP — SEA & Kampaň (popi-landing-page)', array(

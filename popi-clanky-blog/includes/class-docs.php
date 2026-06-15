@@ -27,9 +27,10 @@ class Popi_Clanky_Docs {
 			<h1>Články blog — Nápověda</h1>
 
 			<?php self::section( 'Článek — SEO & Sdílení (popi-clanky-blog)', array(
-				'Meta title'             => 'Název záložky v prohlížeči a výsledku ve vyhledávači. Doporučeno 50–60 znaků. Pokud nevyplníš, použije se název článku.',
-				'Meta description'       => 'Popis zobrazovaný pod nadpisem ve vyhledávači. Doporučeno 140–160 znaků.',
-				'OG obrázek (soc. sítě)' => 'Náhledový obrázek při sdílení na Facebook, LinkedIn apod. Doporučená velikost 1200 × 630 px. Pokud nevyplníš, sítě použijí libovolný obrázek z článku.',
+				'Meta title'                => 'Název záložky v prohlížeči a výsledku ve vyhledávači. Doporučeno 50–60 znaků. Pokud nevyplníš, použije se název článku.',
+				'Meta description'          => 'Popis zobrazovaný pod nadpisem ve vyhledávači. Doporučeno 140–160 znaků.',
+				'OG obrázek (soc. sítě)'    => 'Náhledový obrázek při sdílení na Facebook, LinkedIn apod. Doporučená velikost 1200 × 630 px. Pokud nevyplníš, sítě použijí libovolný obrázek z článku.',
+				'Náhledový obrázek — mobil' => 'Alternativní obrázek pro mobilní zařízení místo standardního náhledového obrázku. Slug: <code>popi_clanek_nahledovy_obrazek_mobil</code>.<br><strong>Použití v Bricks:</strong> přidej druhý Image element vedle featured image, nastav zdroj na toto ACF pole a skryj ho na desktop/tablet (Bricks → Viditelnost → skrýt na desktop a tablet). Pokud nevyplníš, zobrazí se standardní náhledový obrázek.',
 			) ); ?>
 
 			<?php self::section( 'Článek — CTA & Tracking (popi-clanky-blog)', array(
