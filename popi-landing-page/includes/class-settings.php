@@ -67,6 +67,16 @@ class Popi_Landing_Settings {
 
 		self::add_field( 'utm_source', 'UTM source', 'text', 'popi_section_utm', 'sklik' );
 		self::add_field( 'utm_medium', 'UTM medium', 'text', 'popi_section_utm', 'cpc' );
+
+		// ── Sekce: Schema.org ────────────────────────────────────────────────────
+		add_settings_section(
+			'popi_section_schema',
+			'Schema.org — strukturovaná data (Product)',
+			function() { echo '<p>Měna se použije ve výpisu cen ([popi_lp_pricing]) i ve Schema.org datech, pokud je vyplněný alespoň jeden ceník na LP.</p>'; },
+			'popi-landing-settings'
+		);
+
+		self::add_field( 'currency', 'Měna (ISO 4217)', 'text', 'popi_section_schema', 'CZK' );
 	}
 
 	private static function add_field( string $field, string $label, string $type, string $section, string $placeholder ): void {
@@ -143,6 +153,7 @@ class Popi_Landing_Settings {
 			'kw_kampan'         => sanitize_text_field( $input['kw_kampan'] ?? '' ),
 			'utm_source'        => sanitize_text_field( $input['utm_source'] ?? '' ),
 			'utm_medium'        => sanitize_text_field( $input['utm_medium'] ?? '' ),
+			'currency'          => sanitize_text_field( $input['currency'] ?? '' ),
 		);
 	}
 

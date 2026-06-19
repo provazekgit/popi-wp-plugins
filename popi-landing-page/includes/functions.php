@@ -62,3 +62,61 @@ function popi_lp_cta_url( int $post_id = 0 ): string {
 	$separator = str_contains( $base_url, '?' ) ? '&' : '?';
 	return $base_url . $separator . http_build_query( $params );
 }
+
+// ── CENÍK ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Vrati vyplnene ceny LP jako asociativni pole label => cena.
+ * Prazdne kategorie (nevyplnene na teto LP) se vynechaji.
+ */
+function popi_lp_pricing( int $post_id = 0 ): array {
+	if ( ! $post_id ) {
+		$post_id = get_the_ID();
+	}
+
+	$categories = array(
+		'popi_lp_price_individual' => 'Jednotlivec',
+		'popi_lp_price_child'      => 'Dítě',
+		'popi_lp_price_family'     => 'Rodina',
+		'popi_lp_price_group'      => 'Skupina',
+	);
+
+	$pricing = array();
+	foreach ( $categories as $field => $label ) {
+		$value = get_field( $field, $post_id );
+		if ( $value ) {
+			$pricing[ $label ] = $value;
+		}
+	}
+
+	return $pricing;
+}
+
+/**
+ * [popi_lp_pricing] — jednoducha HTML tabulka vyplnenych cen. Bez stylovani,
+ * jen struktura (.popi-pricing-table) — vzhled si dodelej v Bricks/CSS.
+ */
+add_shortcode( 'popi_lp_pricing', function ( $atts ) {
+	$atts    = shortcode_atts( array( 'id' => 0 ), $atts );
+	$post_id = (int) $atts['id'] ?: get_the_ID();
+	$pricing = popi_lp_pricing( $post_id );
+
+	if ( ! $pricing ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<table class="popi-pricing-table">
+		<tbody>
+			<?php foreach ( $pricing as $label => $price ) : ?>
+				<tr>
+					<th><?php echo esc_html( $label ); ?></th>
+					<td><?php echo esc_html( $price ); ?></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+	<?php
+	return (string) ob_get_clean();
+} );

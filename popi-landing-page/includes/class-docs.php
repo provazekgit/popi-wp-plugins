@@ -65,10 +65,24 @@ class Popi_Landing_Docs {
 					'Použití' => 'Klikni na <strong>Kopírovat</strong> u příslušného kanálu a vlož odkaz do Google Ads / Sklik / Meta Ads / e-mailu apod.',
 				) ); ?>
 
+				<?php self::section( 'Ceník (popi-landing-page)', array(
+					'Pole'           => '4 pevné kategorie: <strong>Cena — jednotlivec, dítě, rodina, skupina</strong>. Volný text (umožňuje „od 250 Kč"). Nepoužitou kategorii nech prázdnou — do tabulky ani do Schema.org se pak nezahrne.',
+					'Zobrazení'      => 'Shortcode <code>[popi_lp_pricing]</code> vypíše jednoduchou HTML tabulku všech vyplněných cen (bez stylu — vzhled dodej v Bricks/CSS přes třídu <code>.popi-pricing-table</code>).',
+					'Schema.org'     => 'Stejné ceny se použijí i ve strukturovaných datech (sekce níže) — nemusí se zadávat dvakrát.',
+				) ); ?>
+
+				<?php self::section( 'Schema.org — strukturovaná data (Product)', array(
+					'Kdy se vypisuje' => 'Jen pokud je na LP vyplněná alespoň jedna cena z ceníku. Bez ceny by Product schema bylo neúplné, takže se v tom případě nevypíše vůbec — lepší nic, než neplatná structured data.',
+					'Formát'          => 'Typ <code>Product</code> s polem <code>offers</code> obsahujícím jednu nabídku za každou vyplněnou kategorii ceníku (jednotlivec/dítě/rodina/skupina) — Google rich results umí zobrazit víc cenových variant najednou.',
+					'Cena'            => 'Z textu ceny se vytáhne první číslo (např. „250 Kč" → 250). Měna se nastavuje globálně v podmenu Výchozí hodnoty.',
+					'Ověření'         => 'Po nasazení zkontroluj výstup v <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener">Google Rich Results Test</a>.',
+				) ); ?>
+
 				<?php self::section( 'Výchozí hodnoty', array(
 				'K čemu slouží'    => 'Stránka <strong>Výchozí hodnoty</strong> (v tomto menu) umožňuje předvyplnit všechna pole při vytváření nové landing page. Usnadní práci pokud jsou hodnoty u většiny LP stejné — např. stejné CTA tlačítko nebo UTM source.',
 				'Přepsání hodnoty' => 'Výchozí hodnota je jen předvyplnění — na konkrétní LP ji lze libovolně přepsat.',
 				'OG obrázek'       => 'Výchozí OG obrázek se použije pokud konkrétní LP nemá vlastní OG obrázek.',
+				'Měna'             => 'Použije se ve Schema.org datech ceníku (výchozí CZK).',
 			) ); ?>
 
 			<?php self::section( 'Bricks šablona — přehled ACF polí', array(
@@ -79,6 +93,7 @@ class Popi_Landing_Docs {
 				'Meta title'       => '<code>{popi_lp_meta_title}</code> — pro SEO plugin nebo &lt;head&gt;',
 				'Meta description' => '<code>{popi_lp_meta_desc}</code> — pro SEO plugin nebo &lt;head&gt;',
 				'OG obrázek'       => '<code>{popi_lp_og_image}</code>',
+				'Ceník'            => 'Shortcode <code>[popi_lp_pricing]</code> v Code elementu — vypíše tabulku vyplněných cen.',
 				'Povolení CPT'     => 'Aby Bricks LP renderoval, musí být CPT povolen: <strong>Bricks → Settings → Post Types → zaškrtni Landing Pages</strong>.',
 				'Šablona'          => 'Vytvoř šablonu v <strong>Bricks → Templates → Add New</strong>. Typ: <code>Content</code>. Podmínka: <code>Post Type = Landing Pages</code>.',
 			) ); ?>

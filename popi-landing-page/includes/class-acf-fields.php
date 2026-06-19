@@ -34,6 +34,7 @@ class Popi_Landing_ACF {
 		self::group_zaklad();
 		self::group_seo();
 		self::group_sea();
+		self::group_cenik();
 	}
 
 	// ── 1. ZÁKLAD ──────────────────────────────────────────────────────────────
@@ -169,6 +170,46 @@ class Popi_Landing_ACF {
 			'position'        => 'side',
 			'label_placement' => 'top',
 			'menu_order'      => 20,
+		) );
+	}
+
+	// ── 4. CENÍK ───────────────────────────────────────────────────────────────
+
+	private static function group_cenik(): void {
+		acf_add_local_field_group( array(
+			'key'             => 'group_popi_cenik',
+			'title'           => 'LP — Ceník (popi-landing-page)',
+			'fields'          => array(
+				array_merge( self::d_text(), array(
+					'key'         => 'field_popi_price_individual',
+					'label'       => 'Cena — jednotlivec',
+					'name'        => 'popi_lp_price_individual',
+					'placeholder' => '250 Kč',
+				) ),
+				array_merge( self::d_text(), array(
+					'key'         => 'field_popi_price_child',
+					'label'       => 'Cena — dítě',
+					'name'        => 'popi_lp_price_child',
+					'placeholder' => '150 Kč',
+				) ),
+				array_merge( self::d_text(), array(
+					'key'         => 'field_popi_price_family',
+					'label'       => 'Cena — rodina',
+					'name'        => 'popi_lp_price_family',
+					'placeholder' => '690 Kč',
+				) ),
+				array_merge( self::d_text(), array(
+					'key'          => 'field_popi_price_group',
+					'label'        => 'Cena — skupina',
+					'name'         => 'popi_lp_price_group',
+					'placeholder'  => '200 Kč/osoba',
+					'instructions' => 'Nepovinné — ponech prázdné, pokud daná kategorie pro tuto LP nedává smysl. Použije se v ceníkové tabulce ([popi_lp_pricing]) i ve Schema.org datech (Google rich results).',
+				) ),
+			),
+			'location'        => array( array( array( 'param' => 'post_type', 'operator' => '==', 'value' => 'popi_landing' ) ) ),
+			'position'        => 'normal',
+			'label_placement' => 'top',
+			'menu_order'      => 5,
 		) );
 	}
 }

@@ -3,7 +3,7 @@
  * Plugin Name: Popi Landing Page
  * Plugin URI:  https://popisite.cz/plugins/popi-landing-page/
  * Description: CPT a ACF pole pro Sklik/Google Ads landing pages Papilonia Teplice.
- * Version:     1.8.0
+ * Version:     1.9.0
  * Author:      Karel Provázek – Popiweb
  * Author URI:  https://popisite.cz
  * Requires at least: 6.2
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'POPI_LANDING_VERSION',    '1.8.0' );
+define( 'POPI_LANDING_VERSION',    '1.9.0' );
 define( 'POPI_LANDING_DIR',        plugin_dir_path( __FILE__ ) );
 define( 'POPI_LANDING_UPDATE_URL', 'https://api.popisite.cz/api/v1/public/plugins/popi-landing-page' );
 
@@ -23,6 +23,7 @@ require_once POPI_LANDING_DIR . 'includes/class-acf-fields.php';
 require_once POPI_LANDING_DIR . 'includes/class-updater.php';
 require_once POPI_LANDING_DIR . 'includes/class-docs.php';
 require_once POPI_LANDING_DIR . 'includes/class-utm-generator.php';
+require_once POPI_LANDING_DIR . 'includes/class-schema.php';
 require_once POPI_LANDING_DIR . 'includes/functions.php';
 
 // CPT + seed kategorií
@@ -38,6 +39,9 @@ Popi_Landing_ACF::init();
 
 // UTM generátor (odkazy na LP pro jednotlivé kanály)
 Popi_Landing_Utm_Generator::init();
+
+// Schema.org JSON-LD (Product s ceniky)
+Popi_Landing_Schema::init();
 
 // Auto-aktualizace
 add_action( 'plugins_loaded', function () {
