@@ -60,6 +60,17 @@ class Popi_Clanky_Settings {
 
 		self::add_field( 'utm_source', 'UTM source', 'text', 'popi_clanky_section_utm', 'vyletustecko' );
 		self::add_field( 'utm_medium', 'UTM medium', 'text', 'popi_clanky_section_utm', 'clanek' );
+
+		// ── Sekce: Schema.org ────────────────────────────────────────────────────
+		add_settings_section(
+			'popi_clanky_section_schema',
+			'Schema.org — strukturovaná data (Article)',
+			function() { echo '<p>Vydavatel se zobrazuje v Google rich results u každého článku. Bez vyplnění se použije název webu a ikona webu (favicon).</p>'; },
+			'popi-clanky-settings'
+		);
+
+		self::add_field( 'publisher_name', 'Vydavatel — název', 'text',  'popi_clanky_section_schema', get_bloginfo( 'name' ) );
+		self::add_field( 'publisher_logo', 'Vydavatel — logo',  'image', 'popi_clanky_section_schema', '' );
 	}
 
 	private static function add_field( string $field, string $label, string $type, string $section, string $placeholder ): void {
@@ -133,6 +144,8 @@ class Popi_Clanky_Settings {
 			'cta_url'           => esc_url_raw( $input['cta_url'] ?? '' ),
 			'utm_source'        => sanitize_text_field( $input['utm_source'] ?? '' ),
 			'utm_medium'        => sanitize_text_field( $input['utm_medium'] ?? '' ),
+			'publisher_name'    => sanitize_text_field( $input['publisher_name'] ?? '' ),
+			'publisher_logo'    => absint( $input['publisher_logo'] ?? 0 ),
 		);
 	}
 

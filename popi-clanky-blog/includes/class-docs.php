@@ -65,7 +65,14 @@ class Popi_Clanky_Docs {
 					'Použití' => 'Klikni na <strong>Kopírovat</strong> u příslušného kanálu a vlož odkaz do Google Ads / Sklik / Meta Ads / e-mailu apod.',
 				) ); ?>
 
-				<?php self::section( 'Výchozí hodnoty', array(
+				<?php self::section( 'Schema.org — strukturovaná data (popi-clanky-blog)', array(
+				'Co se vypisuje'   => 'Typ <code>BlogPosting</code> — automaticky na každém článku, nic se nemusí vyplňovat navíc. Google z toho čte rich results (autor, datum publikace, obrázek) přímo ve výsledcích vyhledávání.',
+				'Použitá pole'     => 'Název článku, OG obrázek (nebo náhledový obrázek), meta description, datum publikace/úpravy a autor — vše už existuje z WP nebo z polí výše.',
+				'Vydavatel'        => 'Název a logo webu pro Google rich results. Nastavuje se globálně v podmenu <strong>Výchozí hodnoty</strong> — bez vyplnění se použije název webu a favicon.',
+				'Ověření'          => 'Po nasazení zkontroluj výstup v <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener">Google Rich Results Test</a>.',
+			) ); ?>
+
+			<?php self::section( 'Výchozí hodnoty', array(
 				'K čemu slouží'    => 'Stránka <strong>Výchozí hodnoty</strong> (v tomto menu) umožňuje předvyplnit pole při vytváření nového článku. Usnadňuje práci pokud jsou hodnoty u většiny článků stejné (např. stejné CTA tlačítko).',
 				'Přepsání hodnoty' => 'Výchozí hodnota je jen předvyplnění — na konkrétním článku ji lze libovolně přepsat.',
 				'OG obrázek'       => 'Výchozí OG obrázek se použije pokud konkrétní článek nemá vlastní OG obrázek vyplněný.',
