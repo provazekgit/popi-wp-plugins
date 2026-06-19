@@ -1,0 +1,135 @@
+<?php
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Globalni helper funkce — bez namespace, aby se daly snadno volat
+ * z Bricks Code elementu nebo sablony tematu, stejne jako u sourozeneckych
+ * pluginu (popi_lp_cta_url, popi_clanky_toc...).
+ */
+
+/**
+ * Formatuje datum 'Y-m-d' na cesky tvar "12. 6. 2026".
+ */
+function popi_events_format_date( string $date_start ): string {
+	$timestamp = strtotime( $date_start );
+	if ( ! $timestamp ) {
+		return $date_start;
+	}
+	return date_i18n( 'j. n. Y', $timestamp );
+}
+
+/**
+ * Vrati terminy konkretniho kurzu, serazene podle data od nejblizsiho.
+ *
+ * @return WP_Post[]
+ */
+function popi_events_get_course_events( int $course_id, bool $upcoming_only = false ): array {
+	$meta_query = array(
+		array(
+			'key'   => 'popi_event_course_id',
+			'value' => $course_id,
+		),
+	);
+
+	if ( $upcoming_only ) {
+		$meta_query[] = array(
+			'key'     => 'popi_event_date_start',
+			'value'   => current_time( 'Y-m-d' ),
+			'compare' => '>=',
+			'type'    => 'DATE',
+		);
+	}
+
+	return get_posts( array(
+		'post_type'      => 'event',
+		'post_status'    => 'publish',
+		'posts_per_page' => -1,
+		'meta_key'       => 'popi_event_date_start',
+		'orderby'        => 'meta_value',
+		'order'          => 'ASC',
+		'meta_query'     => $meta_query,
+	) );
+}
+
+/**
+ * Vrati vsechny terminy (libovolneho kurzu) v rozsahu nasledujicich $days dnu.
+ *
+ * @return WP_Post[]
+ */
+function popi_events_get_upcoming_events( int $days = 30 ): array {
+	$today = current_time( 'Y-m-d' );
+	$until = date( 'Y-m-d', strtotime( "+{$days} days", current_time( 'timestamp' ) ) );
+
+	return get_posts( array(
+		'post_type'      => 'event',
+		'post_status'    => 'publish',
+		'posts_per_page' => -1,
+		'meta_key'       => 'popi_event_date_start',
+		'orderby'        => 'meta_value',
+		'order'          => 'ASC',
+		'meta_query'     => array(
+			array(
+				'key'     => 'popi_event_date_start',
+				'value'   => array( $today, $until ),
+				'compare' => 'BETWEEN',
+				'type'    => 'DATE',
+			),
+		),
+	) );
+}
+
+/**
+ * Vrati terminy v danem mesici (pro kalendarni grid).
+ *
+ * @param string $year_month formát "Y-m", napr. "2026-06"
+ * @return WP_Post[]
+ */
+function popi_events_get_month_events( string $year_month ): array {
+	$start = $year_month . '-01';
+	$end   = date( 'Y-m-t', strtotime( $start ) );
+
+	return get_posts( array(
+		'post_type'      => 'event',
+		'post_status'    => 'publish',
+		'posts_per_page' => -1,
+		'meta_key'       => 'popi_event_date_start',
+		'orderby'        => 'meta_value',
+		'order'          => 'ASC',
+		'meta_query'     => array(
+			array(
+				'key'     => 'popi_event_date_start',
+				'value'   => array( $start, $end ),
+				'compare' => 'BETWEEN',
+				'type'    => 'DATE',
+			),
+		),
+	) );
+}
+
+/**
+ * Vrati kurzy (CPT course), volitelne filtrovane podle slugu kategorie.
+ *
+ * @return WP_Post[]
+ */
+function popi_events_get_courses( string $category_slug = '' ): array {
+	$args = array(
+		'post_type'      => 'course',
+		'post_status'    => 'publish',
+		'posts_per_page' => -1,
+		'orderby'        => 'title',
+		'order'          => 'ASC',
+	);
+
+	if ( $category_slug ) {
+		$args['tax_query'] = array(
+			array(
+				'taxonomy' => 'popi_course_category',
+				'field'    => 'slug',
+				'terms'    => $category_slug,
+			),
+		);
+	}
+
+	return get_posts( $args );
+}
