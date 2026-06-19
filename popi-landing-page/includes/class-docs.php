@@ -57,7 +57,15 @@ class Popi_Landing_Docs {
 				'Více platforem na jedné LP' => 'Pokud chceš stejnou LP pro Sklik i Google Ads, vytvoř kopii pomocí Duplicate Post. Na kopii změníš slug a UTM source — obsah zůstane stejný.',
 			) ); ?>
 
-			<?php self::section( 'Výchozí hodnoty', array(
+			<?php self::section( 'UTM odkazy pro kampaně (popi-landing-page)', array(
+					'K čemu slouží' => 'Box „UTM odkazy pro kampaně" na editaci landing page automaticky vygeneruje odkazy <strong>na samotnou LP</strong> pro 7 kanálů — Google Ads, Sklik, Meta Ads, Instagram (organicky), LinkedIn (organicky), LinkedIn Ads, Newsletter. Tyto odkazy se vkládají jako cílová URL do reklamy / příspěvku, nikoliv do CTA tlačítka.',
+					'Rozdíl od CTA URL' => 'CTA URL (sekce Základ) je odkaz <strong>z</strong> LP ven (např. na rezervační systém) a má jednu sadu UTM parametrů z nastavení SEA — Kampaň. UTM odkazy pro kampaně vedou <strong>na</strong> LP a každý kanál má vlastní pevně danou kombinaci utm_source/utm_medium.',
+					'UTM campaign' => 'Přebírá se z pole <strong>UTM campaign</strong> (sekce SEA — Kampaň), pokud je vyplněné. Jinak se použije slug landing page.',
+					'Podmínka' => 'Landing page musí být alespoň jednou uložena (mít vyplněný slug) — jinak box zobrazí výzvu k uložení.',
+					'Použití' => 'Klikni na <strong>Kopírovat</strong> u příslušného kanálu a vlož odkaz do Google Ads / Sklik / Meta Ads / e-mailu apod.',
+				) ); ?>
+
+				<?php self::section( 'Výchozí hodnoty', array(
 				'K čemu slouží'    => 'Stránka <strong>Výchozí hodnoty</strong> (v tomto menu) umožňuje předvyplnit všechna pole při vytváření nové landing page. Usnadní práci pokud jsou hodnoty u většiny LP stejné — např. stejné CTA tlačítko nebo UTM source.',
 				'Přepsání hodnoty' => 'Výchozí hodnota je jen předvyplnění — na konkrétní LP ji lze libovolně přepsat.',
 				'OG obrázek'       => 'Výchozí OG obrázek se použije pokud konkrétní LP nemá vlastní OG obrázek.',
