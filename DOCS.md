@@ -257,10 +257,15 @@ fi
 
 ### Update server
 
-**Soubor:** `popi_site/apps/api/src/routes/wp-plugins.ts`
+**Repo:** `github.com/provazekgit/popisite` (NE `popi_site` — jiný projekt, jiné jméno)
+**Soubor:** `apps/api/src/routes/wp-plugins.ts`
 **Endpoint:** `GET https://api.popisite.cz/api/v1/public/plugins/:slug`
+**Hosting:** Hetzner VPS (`pm2`), NE Vercel. Žádný auto-deploy — nasazuje se ručně přes SSH.
 
-Po vydání nové verze aktualizuj `REGISTRY`:
+Po vydání nové verze pluginu (po kroku ["Vydání nové verze"](#vydání-nové-verze) výše) aktualizuj `REGISTRY` v tomto repu **lokálně** (ne přímo na VPS — terminál na VPS je nespolehlivý na delší/víceřádkové vkládání a diakritiku):
+
+1. Naklonuj/aktualizuj `popisite` repo lokálně, otevři `apps/api/src/routes/wp-plugins.ts` v editoru.
+2. U příslušného pluginu uprav:
 
 ```typescript
 "popi-clanky-blog": {
@@ -278,4 +283,25 @@ Po vydání nové verze aktualizuj `REGISTRY`:
 },
 ```
 
-Po push do popi_site → Vercel auto-deploy (cca 1 minuta) → WP weby uvidí dostupnou aktualizaci.
+3. Ověř build a commitni/pushni (commitní zpráva podle zavedeného vzoru `bump na vX.Y.Z`):
+
+```bash
+cd apps/api && npm run build && cd ../..
+git add apps/api/src/routes/wp-plugins.ts
+git commit -m "bump <plugin> na vX.Y.Z"
+git push origin main
+```
+
+4. Na VPS (Hetzner) spusť běžný deploy příkaz:
+
+```bash
+cd /var/www/popisite && git pull origin main && cd apps/api && npm run build && cd ../.. && pm2 reload api
+```
+
+5. Ověř, že endpoint vrací novou verzi:
+
+```bash
+curl -s https://api.popisite.cz/api/v1/public/plugins/popi-landing-page | head -c 200
+```
+
+Pak WP weby uvidí dostupnou aktualizaci (WP cachuje kontrolu update až 12 hodin — v adminu lze vynutit dřív).
