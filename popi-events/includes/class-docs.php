@@ -44,13 +44,48 @@ class Docs {
 				'Cena'                  => 'Volný text (umožňuje i „od 2 990 Kč" nebo „na dotaz").',
 				'Krátká poznámka'       => 'Krátký text pouze pro termín (např. „poslední volná místa"). Dlouhý popis nepatří sem — způsobil by duplicitní obsah s kurzem.',
 				'Skrýt z vyhledávačů'   => 'Checkbox noindex. Doporučeno zapnuto u většiny termínů — viz sekce SEO níže.',
+				'Forma konání'          => 'Prezenčně / Online / Hybridně — používá se jen pro Schema.org (Google rich results), na frontendu se nikde nezobrazuje automaticky.',
+			) ); ?>
+
+			<?php self::section( 'Kurz / Akce — SEO & Sdílení (ACF)', array(
+				'Meta title'                => 'Název pro vyhledávač, 50–60 znaků.',
+				'Meta description'          => 'Popis pro vyhledávač, 140–160 znaků.',
+				'OG obrázek'                => 'Náhled při sdílení na Facebook/LinkedIn, doporučeno 1200×630 px. Stejný obrázek se použije i ve Schema.org datech (sekce níže).',
+				'Náhledový obrázek — mobil' => 'Volitelná alternativa pro mobilní zařízení. Bez vyplnění se na mobilu zobrazí stejný obrázek jako na PC/tabletu — standardní WP Featured Image (Náhledový obrázek v postranním panelu editoru).',
+			) ); ?>
+
+			<?php self::section( 'Kurz / Akce — CTA & UTM (ACF)', array(
+				'CTA — text tlačítka' => 'Text tlačítka vedoucího z kurzu ven (např. „Přihlásit se na kurz").',
+				'CTA — URL'           => 'Základní URL přihlašovacího/rezervačního formuláře <strong>bez</strong> UTM parametrů — ty se přidají automaticky.',
+				'UTM source / medium' => 'Pro GA4 — odkud návštěvník přišel (google, sklik, facebook...) a jaký typ kanálu (cpc, social...).',
+				'UTM campaign'        => 'Název konkrétní kampaně pro tento kurz. Stejná hodnota se použije i v generátoru UTM odkazů (viz sekce níže).',
+			) ); ?>
+
+			<?php self::section( 'CTA tlačítko s UTM — jak to funguje', array(
+				'Princip'  => 'Funkce <code>popi_events_course_cta_url()</code> přečte pole <strong>CTA — URL</strong> kurzu a přidá UTM parametry. Stejný princip jako u <code>popi-landing-page</code> a <code>popi-clanky-blog</code>.',
+				'Použití v Bricks' => '<strong>Tlačítko → Odkaz → Dynamická data → skupina Popi → Kurz CTA URL s UTM (popi-events)</strong>. Tag: <code>{popi_course_cta_url_utm}</code>.',
+				'Alternativa'      => 'Code element nebo PHP: <code>&lt;?php echo popi_events_course_cta_url( get_the_ID() ); ?&gt;</code>',
+			) ); ?>
+
+			<?php self::section( 'UTM odkazy pro kampaně (generátor)', array(
+				'K čemu slouží' => 'Meta box na editaci kurzu/akce vygeneruje 7 hotových odkazů <strong>na stránku kurzu</strong> (cílová URL pro reklamu) — Sklik, Google Ads, Meta Ads, Instagram, LinkedIn organicky/ads, Newsletter.',
+				'Rozdíl od CTA URL' => 'CTA URL vede z kurzu ven (na přihlášku). UTM odkazy pro kampaně vedou na kurz — vkládají se jako cílová URL reklamy v Google Ads/Sklik/Meta Ads.',
+				'UTM campaign' => 'Přebírá se z pole <strong>UTM campaign</strong>, pokud je vyplněné, jinak ze slugu kurzu. Pole se dá upravit přímo v generátoru — uloží se zpátky do ACF pole.',
+			) ); ?>
+
+			<?php self::section( 'Schema.org — strukturovaná data (Event)', array(
+				'Kde se vypisuje'  => 'Na stránce <strong>kurzu</strong> (ne na termínu) — termíny jsou typicky noindex, takže by na nich Google rich results nezobrazil. Kurz vypíše všechny své nadcházející termíny jako pole Event objektů (<code>@graph</code>).',
+				'Použitá pole'     => 'Název a obrázek z kurzu; datum, čas, místo, cena a forma konání (<strong>Forma konání</strong> — pole na termínu) z jednotlivého termínu.',
+				'Cena'             => 'Z pole Cena se vytáhne první číslo (např. „2 990 Kč" → 2990). Pokud cena neobsahuje číslo (např. „na dotaz"), Schema cenu vůbec nevypíše — neplatná structured data se nezobrazí raději vůbec, než špatně.',
+				'Pořadatel a měna' => 'Nastavují se globálně v podmenu Výchozí hodnoty (sekce Schema.org) — platí pro všechny kurzy, není potřeba vyplňovat u každého zvlášť.',
+				'Ověření'          => 'Po nasazení zkontroluj výstup v <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener">Google Rich Results Test</a>.',
 			) ); ?>
 
 			<?php self::section( 'Shortcody', array(
 				'[popi_course_events id="123"]'    => 'Výpis všech termínů konkrétního kurzu (podle ID kurzu), seřazené od nejbližšího data.',
 				'[popi_upcoming_events days="30"]'  => 'Výpis termínů libovolného kurzu v následujících X dnech (výchozí 30).',
 				'[popi_events_calendar month="current"]' => 'Měsíční kalendářní grid. <code>month</code> může být „current" nebo konkrétní <code>RRRR-MM</code>. Kliknutí na den s termínem vede do archivu filtrovaného na ten den.',
-				'[popi_courses category="it"]'      => 'Výpis kurzů podle slugu kategorie (taxonomie Kategorie kurzu). Bez parametru zobrazí všechny kurzy.',
+				'[popi_courses category="it"]'      => 'Výpis kurzů/akcí podle slugu standardní WP rubriky (category). Bez parametru zobrazí všechny. Typ akce (webinář/kurz/workshop) i téma se zadává stejnou rubrikou jako u ostatních popi pluginů.',
 			) ); ?>
 
 			<?php self::section( 'Archiv a kalendář', array(
@@ -65,10 +100,28 @@ class Docs {
 				'Proč'      => 'The Events Calendar a podobné pluginy generují pro každý termín plnohodnotnou indexovatelnou stránku → duplicitní obsah a tříštění SEO hodnoty mezi termíny. Tady všechna SEO hodnota zůstává na kurzu.',
 			) ); ?>
 
+			<?php self::section( 'Výchozí hodnoty (popi-events-settings)', array(
+				'K čemu slouží'    => 'Stránka <strong>Výchozí hodnoty</strong> (submenu pod Kurzy / Akce) předvyplní pole nového termínu i kurzu — nemusí se opisovat ručně, pokud má většina stejné parametry.',
+				'Termín'           => 'Místo, Cena, Čas od, Čas do, Celkový počet hodin, přepínač „Skrýt z vyhledávačů" (výchozí noindex).',
+				'Kurz — SEO & Sdílení' => 'Meta title, Meta description, OG obrázek.',
+				'Kurz — CTA & UTM' => 'CTA text, CTA URL, UTM source, UTM medium.',
+				'Schema.org'       => 'Pořadatel (název, URL) a měna — platí globálně pro výpočet ceny ve strukturovaných datech.',
+				'Přepsání hodnoty' => 'Výchozí hodnota je jen předvyplnění — na konkrétní položce ji lze libovolně přepsat.',
+			) ); ?>
+
 			<?php self::section( 'Šablony', array(
 				'single-event.php'  => 'Zobrazení jednotlivého termínu. Theme může přepsat vlastním souborem <code>single-event.php</code> ve své složce.',
 				'archive-event.php' => 'Archiv na <code>/terminy/</code> s filtrem. Theme může přepsat vlastním <code>archive-event.php</code>.',
 				'calendar.php'      => 'Šablona stránky „Kalendář termínů (Popi Events)" — volitelná, vybírá se v Atributy stránky.',
+			) ); ?>
+
+			<?php self::section( 'Bricks šablona — přehled ACF polí (kurz)', array(
+				'Meta title'       => '<code>{popi_course_meta_title}</code> — pro SEO plugin nebo &lt;head&gt;',
+				'Meta description' => '<code>{popi_course_meta_desc}</code>',
+				'OG obrázek'       => '<code>{popi_course_og_image}</code>',
+				'CTA text'         => '<code>{popi_course_cta_text}</code>',
+				'CTA URL s UTM'    => '<strong>Tlačítko → Odkaz → Dynamická data → skupina Popi → Kurz CTA URL s UTM (popi-events)</strong>. Tag: <code>{popi_course_cta_url_utm}</code>. Nikdy nepoužívej přímo <code>{popi_course_cta_url}</code> — to vrátí URL bez UTM.',
+				'Povolení CPT'     => 'Aby Bricks Kurzy/Akce a Termíny renderoval, musí být povoleny: <strong>Bricks → Settings → Post Types</strong>.',
 			) ); ?>
 
 			<?php self::section( 'Rozšíření do budoucna', array(

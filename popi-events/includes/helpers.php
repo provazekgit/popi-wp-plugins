@@ -107,6 +107,59 @@ function popi_events_get_month_events( string $year_month ): array {
 	) );
 }
 
+// ── CTA URL (kurz) ───────────────────────────────────────────────────────────
+
+/**
+ * Vrati CTA URL kurzu s automaticky pridanymi UTM parametry (pro GA4).
+ *
+ * UTM source/medium se ctou z poli kurzu (nebo z vychozich hodnot v Nastaveni),
+ * UTM campaign z pole popi_course_utm_kampan.
+ *
+ * Pouziti v Bricks: Dynamicka data -> skupina Popi -> Kurz CTA URL s UTM
+ * (tag {popi_course_cta_url_utm}), nebo primo: echo popi_events_course_cta_url( get_the_ID() );
+ */
+function popi_events_course_cta_url( int $course_id = 0 ): string {
+	if ( ! $course_id ) {
+		$course_id = get_the_ID();
+	}
+
+	$base_url = get_field( 'popi_course_cta_url', $course_id );
+	if ( ! $base_url ) {
+		return '';
+	}
+
+	$params = array_filter( array(
+		'utm_source'   => get_field( 'popi_course_utm_source', $course_id ),
+		'utm_medium'   => get_field( 'popi_course_utm_medium', $course_id ),
+		'utm_campaign' => get_field( 'popi_course_utm_kampan', $course_id ),
+	) );
+
+	if ( empty( $params ) ) {
+		return $base_url;
+	}
+
+	$separator = str_contains( $base_url, '?' ) ? '&' : '?';
+	return $base_url . $separator . http_build_query( $params );
+}
+
+add_filter( 'bricks/dynamic_tags_list', function ( $tags ) {
+	$tags[] = array(
+		'name'  => '{popi_course_cta_url_utm}',
+		'label' => 'Kurz CTA URL s UTM (popi-events)',
+		'group' => 'Popi',
+	);
+	return $tags;
+} );
+
+add_filter( 'bricks/dynamic_data/render_tag', function ( $tag, $post, $context ) {
+	$clean = trim( str_replace( array( '{', '}' ), '', $tag ) );
+	if ( $clean === 'popi_course_cta_url_utm' ) {
+		$post_id = is_object( $post ) && ! empty( $post->ID ) ? (int) $post->ID : get_the_ID();
+		return popi_events_course_cta_url( $post_id );
+	}
+	return $tag;
+}, 10, 3 );
+
 /**
  * Vrati kurzy (CPT course), volitelne filtrovane podle slugu kategorie.
  *
@@ -124,7 +177,7 @@ function popi_events_get_courses( string $category_slug = '' ): array {
 	if ( $category_slug ) {
 		$args['tax_query'] = array(
 			array(
-				'taxonomy' => 'popi_course_category',
+				'taxonomy' => 'category',
 				'field'    => 'slug',
 				'terms'    => $category_slug,
 			),

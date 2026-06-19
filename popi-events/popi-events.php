@@ -3,7 +3,7 @@
  * Plugin Name: Popi Events
  * Plugin URI:  https://popisite.cz/plugins/popi-events/
  * Description: Lehka sprava kurzu a jejich terminu (CPT, ACF, shortcody, archiv, kalendar) — nahrazuje The Events Calendar pro SEO-cisty use-case kurzu s opakovanymi terminy.
- * Version:     1.0.0
+ * Version:     1.3.0
  * Author:      Karel Provázek – Popiweb
  * Author URI:  https://popisite.cz
  * Requires at least: 6.2
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'POPI_EVENTS_VERSION',    '1.0.0' );
+define( 'POPI_EVENTS_VERSION',    '1.3.0' );
 define( 'POPI_EVENTS_DIR',        plugin_dir_path( __FILE__ ) );
 define( 'POPI_EVENTS_URL',        plugin_dir_url( __FILE__ ) );
 define( 'POPI_EVENTS_UPDATE_URL', 'https://api.popisite.cz/api/v1/public/plugins/popi-events' );
@@ -26,6 +26,8 @@ require_once POPI_EVENTS_DIR . 'includes/seo.php';
 require_once POPI_EVENTS_DIR . 'includes/class-settings.php';
 require_once POPI_EVENTS_DIR . 'includes/class-docs.php';
 require_once POPI_EVENTS_DIR . 'includes/class-updater.php';
+require_once POPI_EVENTS_DIR . 'includes/class-utm-generator.php';
+require_once POPI_EVENTS_DIR . 'includes/schema.php';
 require_once POPI_EVENTS_DIR . 'includes/helpers.php';
 require_once POPI_EVENTS_DIR . 'includes/shortcodes.php';
 
@@ -38,6 +40,8 @@ use Popi\Events\Settings;
 use Popi\Events\Docs;
 use Popi\Events\Shortcodes;
 use Popi\Events\Updater;
+use Popi\Events\Utm_Generator;
+use Popi\Events\Schema;
 
 // CPT
 add_action( 'init', array( Cpt_Course::class, 'register' ) );
@@ -55,6 +59,12 @@ Templates::init();
 
 // SEO (canonical na kurz, noindex)
 Seo::init();
+
+// Schema.org JSON-LD (Event, na strance kurzu)
+Schema::init();
+
+// UTM generator (odkazy na kurz pro jednotlive kanaly)
+Utm_Generator::init();
 
 // Nastaveni (vychozi hodnoty) + Napoveda
 Settings::init();
