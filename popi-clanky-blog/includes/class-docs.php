@@ -57,7 +57,15 @@ class Popi_Clanky_Docs {
 				'Styl navigace'    => 'Třída <code>.popi-toc</code> a <code>.toc-h2</code> / <code>.toc-h3</code> — nastyl v Bricks nebo vlastním CSS.',
 			) ); ?>
 
-			<?php self::section( 'Výchozí hodnoty', array(
+			<?php self::section( 'UTM odkazy pro kampaně (popi-clanky-blog)', array(
+					'K čemu slouží' => 'Box „UTM odkazy pro kampaně" na editaci článku automaticky vygeneruje odkazy <strong>na samotný článek</strong> pro 7 kanálů — Sklik, Google Ads, Meta Ads, Instagram (organicky), LinkedIn (organicky), LinkedIn Ads, Newsletter. Tyto odkazy se vkládají jako cílová URL do reklamy / příspěvku, nikoliv do CTA tlačítka.',
+					'Rozdíl od CTA URL' => 'CTA URL (sekce CTA & Tracking) je odkaz <strong>z</strong> článku ven (např. na rezervační systém) a má jednu sadu UTM parametrů z ACF polí UTM source/medium/campaign. UTM odkazy pro kampaně vedou <strong>na</strong> článek a každý kanál má vlastní pevně danou kombinaci utm_source/utm_medium.',
+					'UTM campaign' => 'Přebírá se z pole <strong>UTM campaign</strong> (sekce CTA & Tracking), pokud je vyplněné. Jinak se použije slug článku.',
+					'Podmínka' => 'Článek musí být alespoň jednou uložen (mít vyplněný slug) — jinak box zobrazí výzvu k uložení.',
+					'Použití' => 'Klikni na <strong>Kopírovat</strong> u příslušného kanálu a vlož odkaz do Google Ads / Sklik / Meta Ads / e-mailu apod.',
+				) ); ?>
+
+				<?php self::section( 'Výchozí hodnoty', array(
 				'K čemu slouží'    => 'Stránka <strong>Výchozí hodnoty</strong> (v tomto menu) umožňuje předvyplnit pole při vytváření nového článku. Usnadňuje práci pokud jsou hodnoty u většiny článků stejné (např. stejné CTA tlačítko).',
 				'Přepsání hodnoty' => 'Výchozí hodnota je jen předvyplnění — na konkrétním článku ji lze libovolně přepsat.',
 				'OG obrázek'       => 'Výchozí OG obrázek se použije pokud konkrétní článek nemá vlastní OG obrázek vyplněný.',

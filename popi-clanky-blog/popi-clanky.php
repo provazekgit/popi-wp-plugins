@@ -3,7 +3,7 @@
  * Plugin Name: Popi CPT Články
  * Plugin URI:  https://popisite.cz/plugins/popi-clanky-blog/
  * Description: CPT Články se SEO poli pro weby Popiweb.
- * Version:     1.7.0
+ * Version:     1.8.0
  * Author:      Karel Provázek – Popiweb
  * Author URI:  https://popisite.cz
  * Requires at least: 6.2
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'POPI_CLANKY_VERSION',    '1.7.0' );
+define( 'POPI_CLANKY_VERSION',    '1.8.0' );
 define( 'POPI_CLANKY_DIR',        plugin_dir_path( __FILE__ ) );
 define( 'POPI_CLANKY_UPDATE_URL', 'https://api.popisite.cz/api/v1/public/plugins/popi-clanky-blog' );
 
@@ -22,6 +22,7 @@ require_once POPI_CLANKY_DIR . 'includes/class-settings.php';
 require_once POPI_CLANKY_DIR . 'includes/class-acf-fields.php';
 require_once POPI_CLANKY_DIR . 'includes/class-updater.php';
 require_once POPI_CLANKY_DIR . 'includes/class-docs.php';
+require_once POPI_CLANKY_DIR . 'includes/class-utm-generator.php';
 require_once POPI_CLANKY_DIR . 'includes/functions.php';
 
 // CPT
@@ -33,6 +34,9 @@ Popi_Clanky_Docs::init();
 
 // ACF pole
 Popi_Clanky_ACF::init();
+
+// UTM generátor (odkazy na článek pro jednotlivé kanály)
+Popi_Clanky_Utm_Generator::init();
 
 // Auto-aktualizace
 add_action( 'plugins_loaded', function () {
