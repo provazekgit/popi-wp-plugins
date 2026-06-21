@@ -27,7 +27,20 @@ class Docs {
 		}
 		?>
 		<div class="wrap" style="max-width:860px;">
-			<h1>Termíny kurzů — Nápověda</h1>
+			<h1>Kurzy / Akce — Nápověda</h1>
+
+			<?php self::section( 'Slovníček pojmů', array(
+				'Meta title'   => 'Titulek stránky — zobrazuje se v záložce prohlížeče a jako klikatelný nadpis ve výsledcích Google. Liší se od H1 (nadpisu na stránce) — meta title je pro vyhledávač, H1 pro návštěvníka.',
+				'Meta description' => 'Krátký popis stránky pod nadpisem ve výsledcích Google. Nemá přímý vliv na pořadí ve vyhledávání, ale ovlivňuje, jestli na výsledek lidé kliknou.',
+				'OG (Open Graph)' => 'Standard, který určuje, jak stránka vypadá při sdílení na Facebooku, LinkedInu apod. — náhledový obrázek, titulek, popis. „OG obrázek" = obrázek pro tento náhled.',
+				'CTA (Call To Action)' => 'Výzva k akci — text a odkaz tlačítka, které má návštěvníka přimět k dalšímu kroku (přihlásit se, zaplatit...).',
+				'UTM' => 'Sada parametrů v URL (<code>utm_source</code>, <code>utm_medium</code>, <code>utm_campaign</code>), díky kterým Google Analytics (GA4) pozná, odkud návštěvník přišel — z jaké reklamy, kanálu nebo kampaně.',
+				'GA4 (Google Analytics 4)' => 'Aktuální verze Google Analytics — nástroj pro sledování návštěvnosti a chování uživatelů na webu.',
+				'Schema.org / JSON-LD' => 'Strukturovaná data — kód neviditelný pro návštěvníka, který říká Google, co stránka znamená (datum akce, místo, cena...). Díky němu se ve vyhledávání může zobrazit rozšířený výsledek (rich result) s těmito údaji přímo.',
+				'Canonical' => 'Značka, která Google řekne, která URL je ta „hlavní" verze obsahu — používá se, když existuje víc podobných/souvisejících stránek (zde: termín → kurz), aby si nekonkurovaly ve vyhledávání.',
+				'Noindex' => 'Instrukce vyhledávačům, aby danou stránku nezahrnuly do výsledků vyhledávání.',
+				'Rubrika (kategorie)' => 'Standardní WordPress způsob, jak obsah zařadit do tématu/typu — stejná rubrika se může používat napříč kurzy, články i dalším obsahem webu.',
+			) ); ?>
 
 			<?php self::section( 'Datový model', array(
 				'Kurz (course)'  => 'Hlavní stránka kurzu. Pevná URL <code>/kurzy/nazev-kurzu/</code> — sbírá SEO autoritu. Dlouhý popis, sylabus, reference patří sem (do editoru kurzu), ne na termín.',

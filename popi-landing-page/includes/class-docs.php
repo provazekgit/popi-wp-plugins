@@ -26,6 +26,18 @@ class Popi_Landing_Docs {
 		<div class="wrap" style="max-width:860px;">
 			<h1>Landing Pages — Nápověda</h1>
 
+			<?php self::section( 'Slovníček pojmů', array(
+				'LP (landing page)' => 'Vstupní stránka, na kterou vede placená reklama (Sklik, Google Ads) — má jeden cíl: přesvědčit návštěvníka k akci (koupit, přihlásit se...).',
+				'Meta title'   => 'Titulek stránky — zobrazuje se v záložce prohlížeče a jako klikatelný nadpis ve výsledcích Google. Liší se od H1 (hlavního nadpisu na stránce).',
+				'Meta description' => 'Krátký popis stránky pod nadpisem ve výsledcích Google. Ovlivňuje, jestli na výsledek lidé kliknou.',
+				'OG (Open Graph)' => 'Standard, který určuje, jak stránka vypadá při sdílení na Facebooku, LinkedInu apod. — náhledový obrázek, titulek, popis. „OG obrázek" = obrázek pro tento náhled.',
+				'CTA (Call To Action)' => 'Výzva k akci — text a odkaz tlačítka, které má návštěvníka přimět k dalšímu kroku.',
+				'UTM' => 'Sada parametrů v URL (<code>utm_source</code>, <code>utm_medium</code>, <code>utm_campaign</code>), díky kterým Google Analytics (GA4) pozná, odkud návštěvník přišel — z jaké reklamy nebo kampaně.',
+				'Quality Score' => 'Hodnocení kvality reklamy/LP v Google Ads — ovlivňuje, kolik platíš za proklik. Lepší message match (shoda reklamy a LP) Quality Score zlepšuje.',
+				'Schema.org / JSON-LD' => 'Strukturovaná data — kód neviditelný pro návštěvníka, který říká Google, co stránka znamená (cena, dostupnost produktu...). Díky němu se může ve vyhledávání zobrazit rozšířený výsledek (rich result) přímo s cenou.',
+				'Message match' => 'Shoda mezi textem reklamy a textem na LP (zejména H1) — pokud nesedí, návštěvník stránku hned opustí.',
+			) ); ?>
+
 			<?php self::section( 'LP — Základ (popi-landing-page)', array(
 				'Hlavní nadpis (H1)'   => 'Největší nadpis stránky — první věc kterou návštěvník přečte. <strong>Musí odpovídat textu v reklamě</strong> (tzv. message match). Pokud reklama říká „Motýlí dům pro děti", H1 musí říkat totéž — jinak návštěvník stránku opustí.',
 				'Hlavní popis (perex)' => 'Jeden nebo dva věty pod H1. Upřesní nabídku a motivuje ke čtení nebo akci.',

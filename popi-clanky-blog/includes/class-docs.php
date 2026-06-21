@@ -26,6 +26,17 @@ class Popi_Clanky_Docs {
 		<div class="wrap" style="max-width:860px;">
 			<h1>Články blog — Nápověda</h1>
 
+			<?php self::section( 'Slovníček pojmů', array(
+				'Meta title'   => 'Titulek stránky — zobrazuje se v záložce prohlížeče a jako klikatelný nadpis ve výsledcích Google. Pokud nevyplníš, použije se název článku.',
+				'Meta description' => 'Krátký popis stránky pod nadpisem ve výsledcích Google. Ovlivňuje, jestli na výsledek lidé kliknou.',
+				'OG (Open Graph)' => 'Standard, který určuje, jak stránka vypadá při sdílení na Facebooku, LinkedInu apod. — náhledový obrázek, titulek, popis. „OG obrázek" = obrázek pro tento náhled.',
+				'CTA (Call To Action)' => 'Výzva k akci — text a odkaz tlačítka, které má čtenáře přimět k dalšímu kroku (koupit, přihlásit se...).',
+				'UTM' => 'Sada parametrů v URL (<code>utm_source</code>, <code>utm_medium</code>, <code>utm_campaign</code>), díky kterým Google Analytics (GA4) pozná, odkud návštěvník přišel.',
+				'Schema.org / JSON-LD' => 'Strukturovaná data — kód neviditelný pro čtenáře, který říká Google, co stránka znamená (autor, datum publikace...). Díky němu se může ve vyhledávání zobrazit rozšířený výsledek (rich result) s těmito údaji.',
+				'BlogPosting' => 'Konkrétní typ Schema.org dat pro blogové články (na rozdíl od kurzu nebo produktu).',
+				'Vydavatel (publisher)' => 'Název a logo webu/firmy, které Google zobrazuje u strukturovaných dat článku — nastavuje se jednou globálně, ne na každém článku.',
+			) ); ?>
+
 			<?php self::section( 'Článek — SEO & Sdílení (popi-clanky-blog)', array(
 				'Meta title'                => 'Název záložky v prohlížeči a výsledku ve vyhledávači. Doporučeno 50–60 znaků. Pokud nevyplníš, použije se název článku.',
 				'Meta description'          => 'Popis zobrazovaný pod nadpisem ve vyhledávači. Doporučeno 140–160 znaků.',
