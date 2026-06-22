@@ -138,7 +138,7 @@ function popi_events_course_cta_url( int $course_id = 0 ): string {
 		return $base_url;
 	}
 
-	$separator = str_contains( $base_url, '?' ) ? '&' : '?';
+	$separator = strpos( $base_url, '?' ) !== false ? '&' : '?';
 	return $base_url . $separator . http_build_query( $params );
 }
 

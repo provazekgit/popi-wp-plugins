@@ -31,7 +31,7 @@ function popi_clanky_cta_url( int $post_id = 0 ): string {
 		return $base_url;
 	}
 
-	$separator = str_contains( $base_url, '?' ) ? '&' : '?';
+	$separator = strpos( $base_url, '?' ) !== false ? '&' : '?';
 	return $base_url . $separator . http_build_query( $params );
 }
 
@@ -68,7 +68,7 @@ add_filter( 'the_content', function ( string $content ): string {
 	return preg_replace_callback(
 		'/<h([23])([^>]*)>(.*?)<\/h[23]>/is',
 		function ( array $m ): string {
-			if ( str_contains( $m[2], 'id=' ) ) {
+			if ( strpos( $m[2], 'id=' ) !== false ) {
 				return $m[0];
 			}
 			$id = popi_clanky_heading_id( wp_strip_all_tags( $m[3] ) );

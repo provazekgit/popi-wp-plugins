@@ -59,7 +59,7 @@ function popi_lp_cta_url( int $post_id = 0 ): string {
 		return $base_url;
 	}
 
-	$separator = str_contains( $base_url, '?' ) ? '&' : '?';
+	$separator = strpos( $base_url, '?' ) !== false ? '&' : '?';
 	return $base_url . $separator . http_build_query( $params );
 }
 

@@ -78,7 +78,7 @@ class Popi_Clanky_Utm_Generator {
 				'utm_medium'   => $channel['utm_medium'],
 				'utm_campaign' => $campaign,
 			) );
-			$separator   = str_contains( $base_url, '?' ) ? '&' : '?';
+			$separator   = strpos( $base_url, '?' ) !== false ? '&' : '?';
 			$urls[ $key ] = $base_url . $separator . http_build_query( $params );
 		}
 
