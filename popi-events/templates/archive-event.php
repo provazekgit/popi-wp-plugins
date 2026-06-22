@@ -38,7 +38,7 @@ if ( $filter_location ) {
 }
 
 $query_args = array(
-	'post_type'      => 'event',
+	'post_type'      => \Popi\Events\Cpt_Event::POST_TYPE,
 	'post_status'    => 'publish',
 	'posts_per_page' => -1,
 	'meta_key'       => 'popi_event_date_start',
@@ -80,7 +80,7 @@ $courses = popi_events_get_courses();
 		<input type="text" name="location" placeholder="Místo" value="<?php echo esc_attr( $filter_location ); ?>">
 
 		<button type="submit">Filtrovat</button>
-		<a href="<?php echo esc_url( get_post_type_archive_link( 'event' ) ); ?>">Zrušit filtr</a>
+		<a href="<?php echo esc_url( get_post_type_archive_link( \Popi\Events\Cpt_Event::POST_TYPE ) ); ?>">Zrušit filtr</a>
 	</form>
 
 	<?php if ( ! $events ) : ?>

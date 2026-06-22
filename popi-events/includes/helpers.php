@@ -42,7 +42,7 @@ function popi_events_get_course_events( int $course_id, bool $upcoming_only = fa
 	}
 
 	return get_posts( array(
-		'post_type'      => 'event',
+		'post_type'      => 'popi_event',
 		'post_status'    => 'publish',
 		'posts_per_page' => -1,
 		'meta_key'       => 'popi_event_date_start',
@@ -62,7 +62,7 @@ function popi_events_get_upcoming_events( int $days = 30 ): array {
 	$until = date( 'Y-m-d', strtotime( "+{$days} days", current_time( 'timestamp' ) ) );
 
 	return get_posts( array(
-		'post_type'      => 'event',
+		'post_type'      => 'popi_event',
 		'post_status'    => 'publish',
 		'posts_per_page' => -1,
 		'meta_key'       => 'popi_event_date_start',
@@ -90,7 +90,7 @@ function popi_events_get_month_events( string $year_month ): array {
 	$end   = date( 'Y-m-t', strtotime( $start ) );
 
 	return get_posts( array(
-		'post_type'      => 'event',
+		'post_type'      => 'popi_event',
 		'post_status'    => 'publish',
 		'posts_per_page' => -1,
 		'meta_key'       => 'popi_event_date_start',
@@ -167,7 +167,7 @@ add_filter( 'bricks/dynamic_data/render_tag', function ( $tag, $post, $context )
  */
 function popi_events_get_courses( string $category_slug = '' ): array {
 	$args = array(
-		'post_type'      => 'course',
+		'post_type'      => 'popi_course',
 		'post_status'    => 'publish',
 		'posts_per_page' => -1,
 		'orderby'        => 'title',

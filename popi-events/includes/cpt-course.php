@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Cpt_Course {
 
-	const POST_TYPE = 'course';
+	const POST_TYPE = 'popi_course';
 
 	public static function register(): void {
 		register_post_type( self::POST_TYPE, array(

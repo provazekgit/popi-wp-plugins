@@ -125,7 +125,7 @@ class Shortcodes {
 							<td class="popi-calendar-day<?php echo $day_events ? ' has-events' : ''; ?>">
 								<span class="popi-calendar-daynum"><?php echo (int) $day; ?></span>
 								<?php if ( $day_events ) : ?>
-									<a class="popi-calendar-badge" href="<?php echo esc_url( get_post_type_archive_link( 'event' ) . '?date=' . $date_str ); ?>">
+									<a class="popi-calendar-badge" href="<?php echo esc_url( get_post_type_archive_link( Cpt_Event::POST_TYPE ) . '?date=' . $date_str ); ?>">
 										<?php echo count( $day_events ); ?>×
 									</a>
 								<?php endif; ?>

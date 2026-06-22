@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Cpt_Event {
 
-	const POST_TYPE = 'event';
+	const POST_TYPE = 'popi_event';
 
 	public static function init(): void {
 		add_action( 'acf/save_post', array( self::class, 'maybe_set_title' ), 20 );
