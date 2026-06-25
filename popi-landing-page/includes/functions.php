@@ -78,6 +78,7 @@ function popi_lp_pricing( int $post_id = 0 ): array {
 		'popi_lp_price_individual' => 'Jednotlivec',
 		'popi_lp_price_child'      => 'Dítě',
 		'popi_lp_price_family'     => 'Rodina',
+		'popi_lp_price_senior'     => 'Senior',
 		'popi_lp_price_group'      => 'Skupina',
 	);
 

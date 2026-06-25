@@ -77,6 +77,20 @@ class Popi_Landing_Settings {
 		);
 
 		self::add_field( 'currency', 'Měna (ISO 4217)', 'text', 'popi_section_schema', 'CZK' );
+
+		// ── Sekce: Ceník ─────────────────────────────────────────────────────────
+		add_settings_section(
+			'popi_section_cenik',
+			'Ceník — výchozí hodnoty',
+			function() { echo '<p>Předvyplní ceník na každé nové landing page. Na konkrétní LP lze libovolnou kategorii přepsat nebo vymazat.</p>'; },
+			'popi-landing-settings'
+		);
+
+		self::add_field( 'price_individual', 'Cena — jednotlivec', 'text', 'popi_section_cenik', '250 Kč' );
+		self::add_field( 'price_child',      'Cena — dítě',        'text', 'popi_section_cenik', '150 Kč' );
+		self::add_field( 'price_family',     'Cena — rodina',      'text', 'popi_section_cenik', '690 Kč' );
+		self::add_field( 'price_senior',     'Cena — senior',      'text', 'popi_section_cenik', '200 Kč' );
+		self::add_field( 'price_group',      'Cena — skupina',     'text', 'popi_section_cenik', '200 Kč/osoba' );
 	}
 
 	private static function add_field( string $field, string $label, string $type, string $section, string $placeholder ): void {
@@ -154,6 +168,11 @@ class Popi_Landing_Settings {
 			'utm_source'        => sanitize_text_field( $input['utm_source'] ?? '' ),
 			'utm_medium'        => sanitize_text_field( $input['utm_medium'] ?? '' ),
 			'currency'          => sanitize_text_field( $input['currency'] ?? '' ),
+			'price_individual'  => sanitize_text_field( $input['price_individual'] ?? '' ),
+			'price_child'       => sanitize_text_field( $input['price_child'] ?? '' ),
+			'price_family'      => sanitize_text_field( $input['price_family'] ?? '' ),
+			'price_senior'      => sanitize_text_field( $input['price_senior'] ?? '' ),
+			'price_group'       => sanitize_text_field( $input['price_group'] ?? '' ),
 		);
 	}
 

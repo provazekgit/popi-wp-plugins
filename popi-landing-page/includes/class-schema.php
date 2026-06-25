@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Schema.org strukturovana data (JSON-LD) — typ Product s vice cenovymi
- * variantami v poli offers (jednotlivec/dite/rodina/skupina).
+ * variantami v poli offers (jednotlivec/dite/rodina/senior/skupina).
  *
  * Vypisuje se jen pokud je na LP vyplnena alespon jedna cena — bez ceny
  * by Product schema bylo neuplne/neplatne, takze se v tom pripade necha

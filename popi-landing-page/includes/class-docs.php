@@ -78,14 +78,15 @@ class Popi_Landing_Docs {
 				) ); ?>
 
 				<?php self::section( 'Ceník (popi-landing-page)', array(
-					'Pole'           => '4 pevné kategorie: <strong>Cena — jednotlivec, dítě, rodina, skupina</strong>. Volný text (umožňuje „od 250 Kč"). Nepoužitou kategorii nech prázdnou — do tabulky ani do Schema.org se pak nezahrne.',
+					'Pole'           => '5 pevných kategorií: <strong>Cena — jednotlivec, dítě, rodina, senior, skupina</strong>. Volný text (umožňuje „od 250 Kč"). Nepoužitou kategorii nech prázdnou — do tabulky ani do Schema.org se pak nezahrne.',
+					'Výchozí hodnoty' => 'Ceny lze předvyplnit globálně v podmenu <strong>Výchozí hodnoty</strong> (sekce Ceník) — předvyplní se na každé nové LP, na konkrétní položce lze přepsat nebo vymazat.',
 					'Zobrazení'      => 'Shortcode <code>[popi_lp_pricing]</code> vypíše jednoduchou HTML tabulku všech vyplněných cen (bez stylu — vzhled dodej v Bricks/CSS přes třídu <code>.popi-pricing-table</code>).',
 					'Schema.org'     => 'Stejné ceny se použijí i ve strukturovaných datech (sekce níže) — nemusí se zadávat dvakrát.',
 				) ); ?>
 
 				<?php self::section( 'Schema.org — strukturovaná data (Product)', array(
 					'Kdy se vypisuje' => 'Jen pokud je na LP vyplněná alespoň jedna cena z ceníku. Bez ceny by Product schema bylo neúplné, takže se v tom případě nevypíše vůbec — lepší nic, než neplatná structured data.',
-					'Formát'          => 'Typ <code>Product</code> s polem <code>offers</code> obsahujícím jednu nabídku za každou vyplněnou kategorii ceníku (jednotlivec/dítě/rodina/skupina) — Google rich results umí zobrazit víc cenových variant najednou.',
+					'Formát'          => 'Typ <code>Product</code> s polem <code>offers</code> obsahujícím jednu nabídku za každou vyplněnou kategorii ceníku (jednotlivec/dítě/rodina/senior/skupina) — Google rich results umí zobrazit víc cenových variant najednou.',
 					'Cena'            => 'Z textu ceny se vytáhne první číslo (např. „250 Kč" → 250). Měna se nastavuje globálně v podmenu Výchozí hodnoty.',
 					'Ověření'         => 'Po nasazení zkontroluj výstup v <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener">Google Rich Results Test</a>.',
 				) ); ?>
