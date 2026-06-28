@@ -48,18 +48,53 @@ class Seo {
 		return $course_url ?: $canonical;
 	}
 
-	public static function filter_yoast_robots( array $robots ): array {
-		if ( self::is_noindex() ) {
-			$robots['index'] = 'noindex';
+	/**
+	 * Yoast SEO menilo format teto hodnoty mezi verzemi — starsi Yoast predava
+	 * asociativni array (napr. ['index' => 'index, follow']), novejsi (od
+	 * prechodu na WP wp_robots API) predava uz slozeny string (napr.
+	 * "index, follow, max-snippet:-1"). Musime zvladnout obe varianty, jinak
+	 * na aktualnim Yoastu spadne cely web s TypeError (wpseo_robots bezi na
+	 * wp_head, tedy na kazde strance).
+	 *
+	 * @param array|string $robots
+	 * @return array|string
+	 */
+	public static function filter_yoast_robots( $robots ) {
+		if ( ! self::is_noindex() ) {
+			return $robots;
 		}
-		return $robots;
+
+		if ( is_array( $robots ) ) {
+			$robots['index'] = 'noindex';
+			return $robots;
+		}
+
+		$robots = (string) $robots;
+		if ( false !== strpos( $robots, 'noindex' ) ) {
+			return $robots;
+		}
+		if ( false !== strpos( $robots, 'index' ) ) {
+			return preg_replace( '/\bindex\b/', 'noindex', $robots, 1 );
+		}
+		return 'noindex, ' . $robots;
 	}
 
-	public static function filter_rank_math_robots( array $robots ): array {
-		if ( self::is_noindex() ) {
-			$robots['noindex'] = 'noindex';
+	/**
+	 * @param array|string $robots
+	 * @return array|string
+	 */
+	public static function filter_rank_math_robots( $robots ) {
+		if ( ! self::is_noindex() ) {
+			return $robots;
 		}
-		return $robots;
+
+		if ( is_array( $robots ) ) {
+			$robots['noindex'] = 'noindex';
+			return $robots;
+		}
+
+		$robots = (string) $robots;
+		return false !== strpos( $robots, 'noindex' ) ? $robots : 'noindex, ' . $robots;
 	}
 
 	public static function output_fallback_tags(): void {
