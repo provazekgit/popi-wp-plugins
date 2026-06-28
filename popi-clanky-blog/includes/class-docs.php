@@ -26,6 +26,22 @@ class Popi_Clanky_Docs {
 		<div class="wrap" style="max-width:860px;">
 			<h1>Články blog — Nápověda</h1>
 
+			<div class="popi-quickstart">
+				<div class="popi-badges">
+					<span class="popi-badge">WordPress 6.2+</span>
+					<span class="popi-badge">PHP 7.4+ (i 8.x)</span>
+					<span class="popi-badge popi-badge-required">ACF Free — povinné</span>
+				</div>
+				<h2>Rychlý start</h2>
+				<ol>
+					<li>Přidej nový <strong>Článek</strong> a piš nadpisy jako H2/H3 — z nich se automaticky složí Table of Contents.</li>
+					<li>Vyplň pole <strong>SEO & Sdílení</strong> (meta title, meta description, OG obrázek).</li>
+					<li>Vyplň <strong>CTA & Tracking</strong> (CTA text, CTA URL bez UTM, UTM source/medium/campaign).</li>
+					<li>Hodně polí lze předvyplnit jednou v <strong>Výchozí hodnoty</strong>.</li>
+					<li>V Bricks šabloně použij CTA URL výhradně přes dynamic tag <code>{popi_clanek_cta_url_utm}</code> (ne holé <code>{popi_clanek_cta_url}</code>).</li>
+				</ol>
+			</div>
+
 			<?php self::section( 'Požadavky', array(
 				'WordPress'  => 'Minimálně verze <strong>6.2</strong>.',
 				'PHP'        => 'Minimálně verze <strong>7.4</strong>. Aktuální verze pluginu je odzkoušená i na PHP 8.x.',
@@ -105,6 +121,12 @@ class Popi_Clanky_Docs {
 				'Šablona'          => 'Vytvoř šablonu v <strong>Bricks → Templates → Add New</strong>. Typ: <code>Content</code>. Podmínka: <code>Post Type = Články blog</code>.',
 			) ); ?>
 
+			<?php self::section( 'Pro vývoj a design — Bricks / Beaver Builder + Astra', array(
+				'Bricks (doporučeno)' => 'Plugin má pro Bricks vlastní skupinu dynamických dat „Popi" (viz sekce výše) — dynamic tagy pro meta title, OG obrázek, CTA URL s UTM, TOC.',
+				'Beaver Builder + Astra' => 'Plugin nemá vlastní BB modul ani dynamic tags pro Beaver Builder. Pole se vypisují přes <strong>PHP/Code modul</strong>, např. <code>&lt;?php echo popi_clanky_cta_url( get_the_ID() ); ?&gt;</code> nebo <code>&lt;?php echo popi_clanky_toc( get_the_ID() ); ?&gt;</code> pro obsah.',
+				'Hooky a filtry' => 'Všechny <code>popi_clanky_*()</code> funkce (CTA, TOC, UTM) lze volat odkudkoliv (PHP/Code modul, vlastní šablona článku v tématu) bez závislosti na konkrétním builderu.',
+			) ); ?>
+
 		</div>
 		<style>
 			.popi-docs-section { margin: 0 0 32px; }
@@ -113,6 +135,12 @@ class Popi_Clanky_Docs {
 			.popi-docs-table th { text-align: left; background: #f9f9f9; padding: 8px 12px; width: 220px; border: 1px solid #e5e5e5; font-weight: 600; vertical-align: top; }
 			.popi-docs-table td { padding: 8px 12px; border: 1px solid #e5e5e5; vertical-align: top; line-height: 1.6; }
 			.popi-docs-table code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+			.popi-quickstart { background: #f0f6fc; border: 1px solid #c3d9ed; border-radius: 6px; padding: 16px 20px 20px; margin: 0 0 32px; }
+			.popi-quickstart h2 { margin: 4px 0 10px; border: 0; padding: 0; }
+			.popi-quickstart ol { margin: 0; padding-left: 22px; line-height: 1.7; }
+			.popi-badges { margin: 0 0 10px; }
+			.popi-badge { display: inline-block; background: #2271b1; color: #fff; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px; margin: 0 6px 6px 0; }
+			.popi-badge-required { background: #c0392b; }
 		</style>
 		<?php
 	}

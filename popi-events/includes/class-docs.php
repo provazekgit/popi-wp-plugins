@@ -29,6 +29,22 @@ class Docs {
 		<div class="wrap" style="max-width:860px;">
 			<h1>Kurzy / Akce — Nápověda</h1>
 
+			<div class="popi-quickstart">
+				<div class="popi-badges">
+					<span class="popi-badge">WordPress 6.2+</span>
+					<span class="popi-badge">PHP 7.4+ (i 8.x)</span>
+					<span class="popi-badge popi-badge-required">ACF Free — povinné</span>
+				</div>
+				<h2>Rychlý start</h2>
+				<ol>
+					<li>Založ <strong>Kurz</strong> (Kurzy / Akce → Přidat nový) — vyplň popis, sylabus, pole SEO &amp; Sdílení a CTA &amp; UTM.</li>
+					<li>Založ <strong>Termín</strong> (Termíny → Přidat nový) — vyber Kurz, vyplň datum, místo, cenu. Nezapomeň na „Skrýt z vyhledávačů" (doporučeno zapnuto).</li>
+					<li>Hodně polí lze předvyplnit jednou v <strong>Výchozí hodnoty</strong>, ať se neopisují u každého kurzu/termínu.</li>
+					<li>Zobraz termíny/kalendář na webu — shortcode (<code>[popi_course_events]</code>, <code>[popi_events_calendar]</code>...) nebo dedikovaná šablona (Bricks/téma).</li>
+					<li>Ověř výstup v <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener">Google Rich Results Test</a>.</li>
+				</ol>
+			</div>
+
 			<?php self::section( 'Požadavky', array(
 				'WordPress'  => 'Minimálně verze <strong>6.2</strong>.',
 				'PHP'        => 'Minimálně verze <strong>7.4</strong>. Aktuální verze pluginu je odzkoušená i na PHP 8.x.',
@@ -146,6 +162,13 @@ class Docs {
 				'Povolení CPT'     => 'Aby Bricks Kurzy/Akce a Termíny renderoval, musí být povoleny: <strong>Bricks → Settings → Post Types</strong>.',
 			) ); ?>
 
+			<?php self::section( 'Pro vývoj a design — Bricks / Beaver Builder + Astra', array(
+				'Bricks (doporučeno)' => 'Plugin má pro Bricks vlastní skupinu dynamických dat „Popi" (viz sekce výše) — dynamic tagy pro meta title, OG obrázek, CTA URL s UTM. Nezapomeň povolit CPT v <strong>Bricks → Settings → Post Types</strong>.',
+				'Beaver Builder + Astra' => 'Plugin nemá vlastní BB modul ani dynamic tags pro Beaver Builder. Pole se vypisují přes <strong>PHP/Code modul</strong>, např. <code>&lt;?php echo popi_events_course_cta_url( get_the_ID() ); ?&gt;</code> nebo přímo <code>&lt;?php the_field(\'popi_course_meta_title\'); ?&gt;</code>. Výpis termínů/kalendáře jde i bez PHP — přes modul HTML/Shortcode se vloží <code>[popi_course_events]</code>, <code>[popi_events_calendar]</code> apod.',
+				'Přepis šablon v tématu' => 'Pro úplnou kontrolu nad vzhledem (funguje u Astry i jakéhokoliv jiného tématu) zkopíruj <code>templates/single-event.php</code> nebo <code>templates/archive-event.php</code> do kořenu šablony tématu a uprav — plugin přednostně použije verzi z tématu, pokud existuje.',
+				'Hooky a filtry' => 'Datová vrstva (<code>includes/helpers.php</code>) je oddělená od výstupu — všechny <code>popi_events_get_*()</code> funkce lze volat odkudkoliv (PHP/Code modul, vlastní šablona) bez závislosti na konkrétním builderu.',
+			) ); ?>
+
 			<?php self::section( 'Rozšíření do budoucna', array(
 				'API endpoints' => 'Datový model (helpers.php) je oddělený od výstupu — lze snadno přidat REST endpoint nad stejnými funkcemi.',
 				'ICS export'    => 'Termín má vše potřebné (datum, čas, místo) pro generování .ics — připraveno jako budoucí doplněk, není v MVP.',
@@ -160,6 +183,12 @@ class Docs {
 			.popi-docs-table th { text-align: left; background: #f9f9f9; padding: 8px 12px; width: 220px; border: 1px solid #e5e5e5; font-weight: 600; vertical-align: top; }
 			.popi-docs-table td { padding: 8px 12px; border: 1px solid #e5e5e5; vertical-align: top; line-height: 1.6; }
 			.popi-docs-table code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+			.popi-quickstart { background: #f0f6fc; border: 1px solid #c3d9ed; border-radius: 6px; padding: 16px 20px 20px; margin: 0 0 32px; }
+			.popi-quickstart h2 { margin: 4px 0 10px; border: 0; padding: 0; }
+			.popi-quickstart ol { margin: 0; padding-left: 22px; line-height: 1.7; }
+			.popi-badges { margin: 0 0 10px; }
+			.popi-badge { display: inline-block; background: #2271b1; color: #fff; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px; margin: 0 6px 6px 0; }
+			.popi-badge-required { background: #c0392b; }
 		</style>
 		<?php
 	}
