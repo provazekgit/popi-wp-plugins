@@ -69,7 +69,12 @@ class Seo {
 			return $robots;
 		}
 
-		$robots = (string) $robots;
+		if ( ! is_string( $robots ) ) {
+			// Neznamy format (budouci verze SEO pluginu) — nic neupravujeme,
+			// at se web nikdy nezastavi na neceka vstupu, ktery nekontrolujeme.
+			return $robots;
+		}
+
 		if ( false !== strpos( $robots, 'noindex' ) ) {
 			return $robots;
 		}
@@ -93,7 +98,10 @@ class Seo {
 			return $robots;
 		}
 
-		$robots = (string) $robots;
+		if ( ! is_string( $robots ) ) {
+			return $robots;
+		}
+
 		return false !== strpos( $robots, 'noindex' ) ? $robots : 'noindex, ' . $robots;
 	}
 
@@ -112,7 +120,17 @@ class Seo {
 		}
 	}
 
+	/**
+	 * Sem patri jakykoliv SEO plugin, ktery uz sam vypisuje canonical/robots
+	 * meta tagy — jinak by se nas fallback vypsal soubezne s nim a vznikly
+	 * by duplicitni/konfliktni tagy ve <head>.
+	 */
 	private static function seo_plugin_active(): bool {
-		return defined( 'WPSEO_VERSION' ) || class_exists( 'RankMath' );
+		return defined( 'WPSEO_VERSION' )                  // Yoast SEO
+			|| class_exists( 'RankMath' )                   // Rank Math
+			|| defined( 'AIOSEO_VERSION' )                  // All in One SEO
+			|| class_exists( '\AIOSEO\Plugin\AIOSEO' )       // All in One SEO (novejsi)
+			|| defined( 'WPSEOPRESS_VERSION' )               // SEOPress
+			|| class_exists( 'SEOPress' );
 	}
 }
