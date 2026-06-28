@@ -29,6 +29,12 @@ class Docs {
 		<div class="wrap" style="max-width:860px;">
 			<h1>Kurzy / Akce — Nápověda</h1>
 
+			<?php self::section( 'Požadavky', array(
+				'Advanced Custom Fields (ACF)' => '<strong>Povinné.</strong> Postačí bezplatná verze. Všechna vlastní pole kurzu i termínu (datum, místo, cena, SEO, CTA...) jsou ACF pole — bez aktivního ACF se nedají vyplnit ani zobrazit. Pokud ACF chybí, plugin to v adminu nahlásí (červené upozornění nahoře).',
+				'Kompatibilita s SEO pluginy'  => 'Funguje s <strong>Yoast SEO</strong> a <strong>Rank Math</strong> — canonical (termín → kurz) a noindex se napojí přímo na jejich filtry. S jiným SEO pluginem (All in One SEO, SEOPress) se použije vlastní záložní <code>&lt;meta&gt;</code> tag, aby web vždy fungoval.',
+				'Proč sluggy popi_course/popi_event' => 'Typ obsahu kurzu/termínu má interní název (slug) <code>popi_course</code>/<code>popi_event</code>, ne jen obecné „course"/„event" — to by se mohlo srazit s jiným pluginem se stejnou funkcí (LMS systémy, The Events Calendar, WooCommerce). Veřejné URL adresy (<code>/kurzy/</code>, <code>/terminy/</code>) tím nejsou ovlivněny.',
+			) ); ?>
+
 			<?php self::section( 'Slovníček pojmů', array(
 				'Meta title'   => 'Titulek stránky — zobrazuje se v záložce prohlížeče a jako klikatelný nadpis ve výsledcích Google. Liší se od H1 (nadpisu na stránce) — meta title je pro vyhledávač, H1 pro návštěvníka.',
 				'Meta description' => 'Krátký popis stránky pod nadpisem ve výsledcích Google. Nemá přímý vliv na pořadí ve vyhledávání, ale ovlivňuje, jestli na výsledek lidé kliknou.',
@@ -111,6 +117,7 @@ class Docs {
 				'Canonical' => 'Termín vždy nastaví <code>rel="canonical"</code> na URL svého kurzu — automaticky, není potřeba nic vyplňovat. Funguje samostatně, nebo se napojí na Yoast SEO / Rank Math, pokud je aktivní.',
 				'Noindex'   => 'Pokud je u termínu zapnuté „Skrýt z vyhledávačů", plugin nastaví <code>noindex</code> (vlastní meta tag, nebo přes Yoast/Rank Math filtr).',
 				'Proč'      => 'The Events Calendar a podobné pluginy generují pro každý termín plnohodnotnou indexovatelnou stránku → duplicitní obsah a tříštění SEO hodnoty mezi termíny. Tady všechna SEO hodnota zůstává na kurzu.',
+				'Odolnost vůči aktualizacím SEO pluginu' => 'Yoast SEO i Rank Math občas změní formát dat předávaných do svých filtrů (stalo se to např. u Yoastu mezi verzemi). Plugin to zvládá obě varianty — a pokud by v budoucnu přišel úplně jiný formát, raději tu jednu funkci (noindex) nevykoná, než aby spadl celý web.',
 			) ); ?>
 
 			<?php self::section( 'Výchozí hodnoty (popi-events-settings)', array(

@@ -3,7 +3,7 @@
  * Plugin Name: Popi Events
  * Plugin URI:  https://popisite.cz/plugins/popi-events/
  * Description: Lehka sprava kurzu a jejich terminu (CPT, ACF, shortcody, archiv, kalendar) — nahrazuje The Events Calendar pro SEO-cisty use-case kurzu s opakovanymi terminy.
- * Version:     1.3.5
+ * Version:     1.3.6
  * Author:      Karel Provázek – Popiweb
  * Author URI:  https://popisite.cz
  * Requires at least: 6.2
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'POPI_EVENTS_VERSION',    '1.3.5' );
+define( 'POPI_EVENTS_VERSION',    '1.3.6' );
 define( 'POPI_EVENTS_DIR',        plugin_dir_path( __FILE__ ) );
 define( 'POPI_EVENTS_URL',        plugin_dir_url( __FILE__ ) );
 define( 'POPI_EVENTS_UPDATE_URL', 'https://api.popisite.cz/api/v1/public/plugins/popi-events' );

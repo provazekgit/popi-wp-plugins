@@ -26,6 +26,10 @@ class Popi_Landing_Docs {
 		<div class="wrap" style="max-width:860px;">
 			<h1>Landing Pages — Nápověda</h1>
 
+			<?php self::section( 'Požadavky', array(
+				'Advanced Custom Fields (ACF)' => '<strong>Povinné.</strong> Postačí bezplatná verze. Všechna vlastní pole landing page (SEO, CTA, UTM, ceník...) jsou ACF pole — bez aktivního ACF se nedají vyplnit ani zobrazit. Pokud ACF chybí, plugin to v adminu nahlásí (červené upozornění nahoře).',
+			) ); ?>
+
 			<?php self::section( 'Slovníček pojmů', array(
 				'LP (landing page)' => 'Vstupní stránka, na kterou vede placená reklama (Sklik, Google Ads) — má jeden cíl: přesvědčit návštěvníka k akci (koupit, přihlásit se...).',
 				'Meta title'   => 'Titulek stránky — zobrazuje se v záložce prohlížeče a jako klikatelný nadpis ve výsledcích Google. Liší se od H1 (hlavního nadpisu na stránce).',

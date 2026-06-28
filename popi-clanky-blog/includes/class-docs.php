@@ -26,6 +26,10 @@ class Popi_Clanky_Docs {
 		<div class="wrap" style="max-width:860px;">
 			<h1>Články blog — Nápověda</h1>
 
+			<?php self::section( 'Požadavky', array(
+				'Advanced Custom Fields (ACF)' => '<strong>Povinné.</strong> Postačí bezplatná verze. Všechna vlastní pole článku (SEO, CTA, UTM...) jsou ACF pole — bez aktivního ACF se nedají vyplnit ani zobrazit. Pokud ACF chybí, plugin to v adminu nahlásí (červené upozornění nahoře).',
+			) ); ?>
+
 			<?php self::section( 'Slovníček pojmů', array(
 				'Meta title'   => 'Titulek stránky — zobrazuje se v záložce prohlížeče a jako klikatelný nadpis ve výsledcích Google. Pokud nevyplníš, použije se název článku.',
 				'Meta description' => 'Krátký popis stránky pod nadpisem ve výsledcích Google. Ovlivňuje, jestli na výsledek lidé kliknou.',
