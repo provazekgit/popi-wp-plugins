@@ -30,6 +30,8 @@ class Docs {
 			<h1>Kurzy / Akce — Nápověda</h1>
 
 			<?php self::section( 'Požadavky', array(
+				'WordPress'  => 'Minimálně verze <strong>6.2</strong>.',
+				'PHP'        => 'Minimálně verze <strong>7.4</strong>. Aktuální verze pluginu je odzkoušená i na PHP 8.x.',
 				'Advanced Custom Fields (ACF)' => '<strong>Povinné.</strong> Postačí bezplatná verze. Všechna vlastní pole kurzu i termínu (datum, místo, cena, SEO, CTA...) jsou ACF pole — bez aktivního ACF se nedají vyplnit ani zobrazit. Pokud ACF chybí, plugin to v adminu nahlásí (červené upozornění nahoře).',
 				'Kompatibilita s SEO pluginy'  => 'Funguje s <strong>Yoast SEO</strong> a <strong>Rank Math</strong> — canonical (termín → kurz) a noindex se napojí přímo na jejich filtry. S jiným SEO pluginem (All in One SEO, SEOPress) se použije vlastní záložní <code>&lt;meta&gt;</code> tag, aby web vždy fungoval.',
 				'Proč sluggy popi_course/popi_event' => 'Typ obsahu kurzu/termínu má interní název (slug) <code>popi_course</code>/<code>popi_event</code>, ne jen obecné „course"/„event" — to by se mohlo srazit s jiným pluginem se stejnou funkcí (LMS systémy, The Events Calendar, WooCommerce). Veřejné URL adresy (<code>/kurzy/</code>, <code>/terminy/</code>) tím nejsou ovlivněny.',

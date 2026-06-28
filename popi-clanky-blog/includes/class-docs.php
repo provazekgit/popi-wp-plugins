@@ -27,6 +27,8 @@ class Popi_Clanky_Docs {
 			<h1>Články blog — Nápověda</h1>
 
 			<?php self::section( 'Požadavky', array(
+				'WordPress'  => 'Minimálně verze <strong>6.2</strong>.',
+				'PHP'        => 'Minimálně verze <strong>7.4</strong>. Aktuální verze pluginu je odzkoušená i na PHP 8.x.',
 				'Advanced Custom Fields (ACF)' => '<strong>Povinné.</strong> Postačí bezplatná verze. Všechna vlastní pole článku (SEO, CTA, UTM...) jsou ACF pole — bez aktivního ACF se nedají vyplnit ani zobrazit. Pokud ACF chybí, plugin to v adminu nahlásí (červené upozornění nahoře).',
 			) ); ?>
 
