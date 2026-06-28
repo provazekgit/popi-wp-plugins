@@ -9,6 +9,21 @@ defined( 'ABSPATH' ) || exit;
  */
 
 /**
+ * Bezpecny wrapper kolem ACF get_field() — bez nej by kterekoliv volani
+ * get_field() spadlo s "Call to undefined function", pokud ACF neni na
+ * webu aktivni (ACF neni tvrda zavislost v composer/plugin headeru, takze
+ * to nejde vyloucit). Misto fatalni chyby vrati null — pole se na strance
+ * jen nezobrazi, web nespadne.
+ *
+ * @param string   $selector
+ * @param int|bool $post_id
+ * @return mixed
+ */
+function popi_events_get_field( string $selector, $post_id = false ) {
+	return function_exists( 'get_field' ) ? get_field( $selector, $post_id ) : null;
+}
+
+/**
  * Formatuje datum 'Y-m-d' na cesky tvar "12. 6. 2026".
  */
 function popi_events_format_date( string $date_start ): string {
@@ -123,15 +138,15 @@ function popi_events_course_cta_url( int $course_id = 0 ): string {
 		$course_id = get_the_ID();
 	}
 
-	$base_url = get_field( 'popi_course_cta_url', $course_id );
+	$base_url = popi_events_get_field( 'popi_course_cta_url', $course_id );
 	if ( ! $base_url ) {
 		return '';
 	}
 
 	$params = array_filter( array(
-		'utm_source'   => get_field( 'popi_course_utm_source', $course_id ),
-		'utm_medium'   => get_field( 'popi_course_utm_medium', $course_id ),
-		'utm_campaign' => get_field( 'popi_course_utm_kampan', $course_id ),
+		'utm_source'   => popi_events_get_field( 'popi_course_utm_source', $course_id ),
+		'utm_medium'   => popi_events_get_field( 'popi_course_utm_medium', $course_id ),
+		'utm_campaign' => popi_events_get_field( 'popi_course_utm_kampan', $course_id ),
 	) );
 
 	if ( empty( $params ) ) {

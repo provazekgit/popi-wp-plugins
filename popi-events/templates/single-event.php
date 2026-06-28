@@ -11,8 +11,8 @@ get_header();
 while ( have_posts() ) :
 	the_post();
 	$event_id   = get_the_ID();
-	$course_id  = (int) get_field( 'popi_event_course_id', $event_id );
-	$date_start = get_field( 'popi_event_date_start', $event_id );
+	$course_id  = (int) popi_events_get_field( 'popi_event_course_id', $event_id );
+	$date_start = popi_events_get_field( 'popi_event_date_start', $event_id );
 	?>
 	<article class="popi-event-single">
 		<header class="popi-event-single-header">
@@ -23,8 +23,8 @@ while ( have_posts() ) :
 		</header>
 
 		<dl class="popi-event-single-meta">
-			<?php $time_start = get_field( 'popi_event_time_start', $event_id ); ?>
-			<?php $time_end   = get_field( 'popi_event_time_end', $event_id ); ?>
+			<?php $time_start = popi_events_get_field( 'popi_event_time_start', $event_id ); ?>
+			<?php $time_end   = popi_events_get_field( 'popi_event_time_end', $event_id ); ?>
 			<?php if ( $time_start || $time_end ) : ?>
 				<div class="popi-event-single-meta-row">
 					<dt>Čas</dt>
@@ -32,7 +32,7 @@ while ( have_posts() ) :
 				</div>
 			<?php endif; ?>
 
-			<?php $hours = get_field( 'popi_event_hours_total', $event_id ); ?>
+			<?php $hours = popi_events_get_field( 'popi_event_hours_total', $event_id ); ?>
 			<?php if ( $hours ) : ?>
 				<div class="popi-event-single-meta-row">
 					<dt>Rozsah</dt>
@@ -40,7 +40,7 @@ while ( have_posts() ) :
 				</div>
 			<?php endif; ?>
 
-			<?php $location = get_field( 'popi_event_location', $event_id ); ?>
+			<?php $location = popi_events_get_field( 'popi_event_location', $event_id ); ?>
 			<?php if ( $location ) : ?>
 				<div class="popi-event-single-meta-row">
 					<dt>Místo</dt>
@@ -48,7 +48,7 @@ while ( have_posts() ) :
 				</div>
 			<?php endif; ?>
 
-			<?php $price = get_field( 'popi_event_price', $event_id ); ?>
+			<?php $price = popi_events_get_field( 'popi_event_price', $event_id ); ?>
 			<?php if ( $price ) : ?>
 				<div class="popi-event-single-meta-row">
 					<dt>Cena</dt>
@@ -57,7 +57,7 @@ while ( have_posts() ) :
 			<?php endif; ?>
 		</dl>
 
-		<?php $note = get_field( 'popi_event_note', $event_id ); ?>
+		<?php $note = popi_events_get_field( 'popi_event_note', $event_id ); ?>
 		<?php if ( $note ) : ?>
 			<p class="popi-event-single-note"><?php echo esc_html( $note ); ?></p>
 		<?php endif; ?>

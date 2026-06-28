@@ -31,7 +31,7 @@ class Seo {
 		if ( ! is_singular( Cpt_Event::POST_TYPE ) ) {
 			return null;
 		}
-		$course_id = (int) get_field( 'popi_event_course_id', get_the_ID() );
+		$course_id = (int) \popi_events_get_field( 'popi_event_course_id', get_the_ID() );
 		if ( ! $course_id ) {
 			return null;
 		}
@@ -40,7 +40,7 @@ class Seo {
 	}
 
 	private static function is_noindex(): bool {
-		return is_singular( Cpt_Event::POST_TYPE ) && (bool) get_field( 'popi_event_noindex', get_the_ID() );
+		return is_singular( Cpt_Event::POST_TYPE ) && (bool) \popi_events_get_field( 'popi_event_noindex', get_the_ID() );
 	}
 
 	public static function filter_canonical( $canonical ) {

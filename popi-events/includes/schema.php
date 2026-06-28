@@ -54,23 +54,23 @@ class Schema {
 	}
 
 	private static function build_event( int $course_id, int $event_id ): ?array {
-		$date_start = get_field( 'popi_event_date_start', $event_id );
+		$date_start = \popi_events_get_field( 'popi_event_date_start', $event_id );
 		if ( ! $date_start ) {
 			return null;
 		}
 
-		$location = get_field( 'popi_event_location', $event_id );
+		$location = \popi_events_get_field( 'popi_event_location', $event_id );
 
 		$event = array(
 			'@type'    => 'Event',
 			'name'     => get_the_title( $course_id ),
-			'startDate' => self::iso_datetime( $date_start, get_field( 'popi_event_time_start', $event_id ) ),
+			'startDate' => self::iso_datetime( $date_start, \popi_events_get_field( 'popi_event_time_start', $event_id ) ),
 			'url'      => get_permalink( $event_id ),
-			'eventAttendanceMode' => self::attendance_mode_url( get_field( 'popi_event_attendance_mode', $event_id ) ?: 'offline' ),
+			'eventAttendanceMode' => self::attendance_mode_url( \popi_events_get_field( 'popi_event_attendance_mode', $event_id ) ?: 'offline' ),
 			'eventStatus' => 'https://schema.org/EventScheduled',
 		);
 
-		$time_end = get_field( 'popi_event_time_end', $event_id );
+		$time_end = \popi_events_get_field( 'popi_event_time_end', $event_id );
 		if ( $time_end ) {
 			$event['endDate'] = self::iso_datetime( $date_start, $time_end );
 		}
@@ -82,7 +82,7 @@ class Schema {
 			);
 		}
 
-		$description = get_field( 'popi_event_note', $event_id ) ?: get_field( 'popi_course_meta_desc', $course_id );
+		$description = \popi_events_get_field( 'popi_event_note', $event_id ) ?: \popi_events_get_field( 'popi_course_meta_desc', $course_id );
 		if ( $description ) {
 			$event['description'] = wp_strip_all_tags( $description );
 		}
@@ -107,7 +107,7 @@ class Schema {
 	}
 
 	private static function build_offers( int $event_id ): ?array {
-		$price_raw = get_field( 'popi_event_price', $event_id );
+		$price_raw = \popi_events_get_field( 'popi_event_price', $event_id );
 		$price     = self::parse_price( (string) $price_raw );
 		if ( null === $price ) {
 			return null;
@@ -148,7 +148,7 @@ class Schema {
 	}
 
 	private static function course_image_url( int $course_id ): ?string {
-		$og_image = get_field( 'popi_course_og_image', $course_id );
+		$og_image = \popi_events_get_field( 'popi_course_og_image', $course_id );
 		if ( is_array( $og_image ) && ! empty( $og_image['url'] ) ) {
 			return $og_image['url'];
 		}

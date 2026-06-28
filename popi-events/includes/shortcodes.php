@@ -32,12 +32,12 @@ class Shortcodes {
 			<?php foreach ( $events as $event ) : ?>
 				<li class="popi-event-item">
 					<a class="popi-event-link" href="<?php echo esc_url( get_permalink( $event ) ); ?>">
-						<span class="popi-event-date"><?php echo esc_html( \popi_events_format_date( get_field( 'popi_event_date_start', $event->ID ) ) ); ?></span>
-						<?php $location = get_field( 'popi_event_location', $event->ID ); ?>
+						<span class="popi-event-date"><?php echo esc_html( \popi_events_format_date( \popi_events_get_field( 'popi_event_date_start', $event->ID ) ) ); ?></span>
+						<?php $location = \popi_events_get_field( 'popi_event_location', $event->ID ); ?>
 						<?php if ( $location ) : ?>
 							<span class="popi-event-location"><?php echo esc_html( $location ); ?></span>
 						<?php endif; ?>
-						<?php $price = get_field( 'popi_event_price', $event->ID ); ?>
+						<?php $price = \popi_events_get_field( 'popi_event_price', $event->ID ); ?>
 						<?php if ( $price ) : ?>
 							<span class="popi-event-price"><?php echo esc_html( $price ); ?></span>
 						<?php endif; ?>
@@ -62,10 +62,10 @@ class Shortcodes {
 		?>
 		<ul class="popi-events-list popi-events-list--upcoming">
 			<?php foreach ( $events as $event ) : ?>
-				<?php $course_id = (int) get_field( 'popi_event_course_id', $event->ID ); ?>
+				<?php $course_id = (int) \popi_events_get_field( 'popi_event_course_id', $event->ID ); ?>
 				<li class="popi-event-item">
 					<a class="popi-event-link" href="<?php echo esc_url( get_permalink( $event ) ); ?>">
-						<span class="popi-event-date"><?php echo esc_html( \popi_events_format_date( get_field( 'popi_event_date_start', $event->ID ) ) ); ?></span>
+						<span class="popi-event-date"><?php echo esc_html( \popi_events_format_date( \popi_events_get_field( 'popi_event_date_start', $event->ID ) ) ); ?></span>
 						<span class="popi-event-course"><?php echo esc_html( $course_id ? get_the_title( $course_id ) : get_the_title( $event ) ); ?></span>
 					</a>
 				</li>
@@ -86,7 +86,7 @@ class Shortcodes {
 
 		$events_by_day = array();
 		foreach ( \popi_events_get_month_events( $year_month ) as $event ) {
-			$date = get_field( 'popi_event_date_start', $event->ID );
+			$date = \popi_events_get_field( 'popi_event_date_start', $event->ID );
 			$events_by_day[ $date ][] = $event;
 		}
 

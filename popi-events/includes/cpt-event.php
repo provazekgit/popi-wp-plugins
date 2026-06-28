@@ -53,8 +53,8 @@ class Cpt_Event {
 			return;
 		}
 
-		$course_id  = (int) get_field( 'popi_event_course_id', $post_id );
-		$date_start = get_field( 'popi_event_date_start', $post_id );
+		$course_id  = (int) \popi_events_get_field( 'popi_event_course_id', $post_id );
+		$date_start = \popi_events_get_field( 'popi_event_date_start', $post_id );
 		if ( ! $course_id || ! $date_start ) {
 			return;
 		}
@@ -86,18 +86,18 @@ class Cpt_Event {
 	public static function admin_column_content( string $column, int $post_id ): void {
 		switch ( $column ) {
 			case 'popi_course':
-				$course_id = (int) get_field( 'popi_event_course_id', $post_id );
+				$course_id = (int) \popi_events_get_field( 'popi_event_course_id', $post_id );
 				echo $course_id ? esc_html( get_the_title( $course_id ) ) : '—';
 				break;
 			case 'popi_date':
-				$date = get_field( 'popi_event_date_start', $post_id );
+				$date = \popi_events_get_field( 'popi_event_date_start', $post_id );
 				echo $date ? esc_html( \popi_events_format_date( $date ) ) : '—';
 				break;
 			case 'popi_location':
-				echo esc_html( get_field( 'popi_event_location', $post_id ) ?: '—' );
+				echo esc_html( \popi_events_get_field( 'popi_event_location', $post_id ) ?: '—' );
 				break;
 			case 'popi_price':
-				echo esc_html( get_field( 'popi_event_price', $post_id ) ?: '—' );
+				echo esc_html( \popi_events_get_field( 'popi_event_price', $post_id ) ?: '—' );
 				break;
 		}
 	}

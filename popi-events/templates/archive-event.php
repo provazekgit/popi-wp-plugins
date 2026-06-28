@@ -88,12 +88,12 @@ $courses = popi_events_get_courses();
 	<?php else : ?>
 		<ul class="popi-events-list">
 			<?php foreach ( $events as $event ) : ?>
-				<?php $course_id = (int) get_field( 'popi_event_course_id', $event->ID ); ?>
+				<?php $course_id = (int) popi_events_get_field( 'popi_event_course_id', $event->ID ); ?>
 				<li class="popi-event-item">
 					<a class="popi-event-link" href="<?php echo esc_url( get_permalink( $event ) ); ?>">
-						<span class="popi-event-date"><?php echo esc_html( popi_events_format_date( get_field( 'popi_event_date_start', $event->ID ) ) ); ?></span>
+						<span class="popi-event-date"><?php echo esc_html( popi_events_format_date( popi_events_get_field( 'popi_event_date_start', $event->ID ) ) ); ?></span>
 						<span class="popi-event-course"><?php echo esc_html( $course_id ? get_the_title( $course_id ) : get_the_title( $event ) ); ?></span>
-						<?php $location = get_field( 'popi_event_location', $event->ID ); ?>
+						<?php $location = popi_events_get_field( 'popi_event_location', $event->ID ); ?>
 						<?php if ( $location ) : ?>
 							<span class="popi-event-location"><?php echo esc_html( $location ); ?></span>
 						<?php endif; ?>

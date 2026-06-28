@@ -63,7 +63,7 @@ class Utm_Generator {
 			return array();
 		}
 
-		$campaign = get_field( 'popi_course_utm_kampan', $post_id ) ?: $post->post_name;
+		$campaign = \popi_events_get_field( 'popi_course_utm_kampan', $post_id ) ?: $post->post_name;
 
 		$urls = array();
 		foreach ( self::CHANNELS as $key => $channel ) {
@@ -86,7 +86,7 @@ class Utm_Generator {
 			return;
 		}
 
-		$campaign = get_field( 'popi_course_utm_kampan', $post->ID ) ?: $post->post_name;
+		$campaign = \popi_events_get_field( 'popi_course_utm_kampan', $post->ID ) ?: $post->post_name;
 		?>
 		<div class="popi-utm-generator-wrap">
 			<p>Hotové odkazy pro nastavení cílové URL v reklamních kampaních. Skládají se z trvalé adresy tohoto kurzu/akce a názvu kampaně níže.</p>

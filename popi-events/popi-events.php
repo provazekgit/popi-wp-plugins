@@ -3,7 +3,7 @@
  * Plugin Name: Popi Events
  * Plugin URI:  https://popisite.cz/plugins/popi-events/
  * Description: Lehka sprava kurzu a jejich terminu (CPT, ACF, shortcody, archiv, kalendar) — nahrazuje The Events Calendar pro SEO-cisty use-case kurzu s opakovanymi terminy.
- * Version:     1.3.4
+ * Version:     1.3.5
  * Author:      Karel Provázek – Popiweb
  * Author URI:  https://popisite.cz
  * Requires at least: 6.2
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'POPI_EVENTS_VERSION',    '1.3.4' );
+define( 'POPI_EVENTS_VERSION',    '1.3.5' );
 define( 'POPI_EVENTS_DIR',        plugin_dir_path( __FILE__ ) );
 define( 'POPI_EVENTS_URL',        plugin_dir_url( __FILE__ ) );
 define( 'POPI_EVENTS_UPDATE_URL', 'https://api.popisite.cz/api/v1/public/plugins/popi-events' );
@@ -73,6 +73,15 @@ Docs::init();
 // Auto-aktualizace
 add_action( 'plugins_loaded', function () {
 	new Updater( __FILE__, POPI_EVENTS_UPDATE_URL, POPI_EVENTS_VERSION );
+} );
+
+// Upozorneni v adminu, pokud chybi ACF — bez nej plugin nema odkud cist
+// data kurzu/terminu (vsechna vlastni pole jsou ACF pole).
+add_action( 'admin_notices', function () {
+	if ( function_exists( 'get_field' ) || ! current_user_can( 'activate_plugins' ) ) {
+		return;
+	}
+	echo '<div class="notice notice-error"><p><strong>Popi Events:</strong> plugin <strong>Advanced Custom Fields</strong> (ACF) neni aktivni. Bez nej nepujde vyplnit ani zobrazit zadne pole kurzu/terminu (datum, misto, cena...). Nainstaluj a aktivuj ACF (postaci bezplatna verze).</p></div>';
 } );
 
 // Flush rewrite rules pri aktivaci/deaktivaci
