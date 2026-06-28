@@ -33,7 +33,7 @@ class Popi_Landing_Schema {
 			'offers'   => $offers,
 		);
 
-		$description = get_field( 'popi_lp_meta_desc', $post_id ) ?: get_field( 'popi_lp_hlavni_popis', $post_id );
+		$description = popi_lp_get_field( 'popi_lp_meta_desc', $post_id ) ?: popi_lp_get_field( 'popi_lp_hlavni_popis', $post_id );
 		if ( $description ) {
 			$product['description'] = wp_strip_all_tags( $description );
 		}
@@ -81,7 +81,7 @@ class Popi_Landing_Schema {
 	}
 
 	private static function image_url( int $post_id ): ?string {
-		$og_image = get_field( 'popi_lp_og_image', $post_id );
+		$og_image = popi_lp_get_field( 'popi_lp_og_image', $post_id );
 		if ( is_array( $og_image ) && ! empty( $og_image['url'] ) ) {
 			return $og_image['url'];
 		}

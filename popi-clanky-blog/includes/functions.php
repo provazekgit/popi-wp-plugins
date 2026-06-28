@@ -1,6 +1,19 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Bezpecny wrapper kolem ACF get_field() — bez nej by kterekoliv volani
+ * get_field() spadlo s "Call to undefined function", pokud ACF neni na
+ * webu aktivni. Misto Fatal Error vrati null — pole se jen nezobrazi.
+ *
+ * @param string   $selector
+ * @param int|bool $post_id
+ * @return mixed
+ */
+function popi_clanky_get_field( string $selector, $post_id = false ) {
+	return function_exists( 'get_field' ) ? get_field( $selector, $post_id ) : null;
+}
+
 // ── CTA URL ────────────────────────────────────────────────────────────────────
 
 /**
@@ -12,14 +25,14 @@ function popi_clanky_cta_url( int $post_id = 0 ): string {
 		$post_id = get_the_ID();
 	}
 
-	$base_url = get_field( 'popi_clanek_cta_url', $post_id );
+	$base_url = popi_clanky_get_field( 'popi_clanek_cta_url', $post_id );
 	if ( ! $base_url ) {
 		return '';
 	}
 
-	$utm_source   = get_field( 'popi_clanek_utm_source', $post_id );
-	$utm_medium   = get_field( 'popi_clanek_utm_medium', $post_id );
-	$utm_campaign = get_field( 'popi_clanek_utm_kampan', $post_id );
+	$utm_source   = popi_clanky_get_field( 'popi_clanek_utm_source', $post_id );
+	$utm_medium   = popi_clanky_get_field( 'popi_clanek_utm_medium', $post_id );
+	$utm_campaign = popi_clanky_get_field( 'popi_clanek_utm_kampan', $post_id );
 
 	$params = array_filter( array(
 		'utm_source'   => $utm_source,

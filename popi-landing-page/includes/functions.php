@@ -2,6 +2,19 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Bezpecny wrapper kolem ACF get_field() — bez nej by kterekoliv volani
+ * get_field() spadlo s "Call to undefined function", pokud ACF neni na
+ * webu aktivni. Misto Fatal Error vrati null — pole se jen nezobrazi.
+ *
+ * @param string   $selector
+ * @param int|bool $post_id
+ * @return mixed
+ */
+function popi_lp_get_field( string $selector, $post_id = false ) {
+	return function_exists( 'get_field' ) ? get_field( $selector, $post_id ) : null;
+}
+
+/**
  * Vrátí CTA URL s automaticky přidanými UTM parametry.
  *
  * UTM source a medium se čtou z nastavení pluginu (Landing Pages → Výchozí hodnoty).
@@ -40,14 +53,14 @@ function popi_lp_cta_url( int $post_id = 0 ): string {
 		$post_id = get_the_ID();
 	}
 
-	$base_url = get_field( 'popi_lp_cta_url', $post_id );
+	$base_url = popi_lp_get_field( 'popi_lp_cta_url', $post_id );
 	if ( ! $base_url ) {
 		return '';
 	}
 
-	$utm_source   = get_field( 'popi_lp_utm_source', $post_id );
-	$utm_medium   = get_field( 'popi_lp_utm_medium', $post_id );
-	$utm_campaign = get_field( 'popi_lp_utm_kampan', $post_id );
+	$utm_source   = popi_lp_get_field( 'popi_lp_utm_source', $post_id );
+	$utm_medium   = popi_lp_get_field( 'popi_lp_utm_medium', $post_id );
+	$utm_campaign = popi_lp_get_field( 'popi_lp_utm_kampan', $post_id );
 
 	$params = array_filter( array(
 		'utm_source'   => $utm_source,
@@ -84,7 +97,7 @@ function popi_lp_pricing( int $post_id = 0 ): array {
 
 	$pricing = array();
 	foreach ( $categories as $field => $label ) {
-		$value = get_field( $field, $post_id );
+		$value = popi_lp_get_field( $field, $post_id );
 		if ( $value ) {
 			$pricing[ $label ] = $value;
 		}

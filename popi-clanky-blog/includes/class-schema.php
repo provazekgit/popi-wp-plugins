@@ -38,7 +38,7 @@ class Popi_Clanky_Schema {
 			$article['image'] = array( $image_url );
 		}
 
-		$meta_desc = get_field( 'popi_clanek_meta_desc', $post_id );
+		$meta_desc = popi_clanky_get_field( 'popi_clanek_meta_desc', $post_id );
 		if ( $meta_desc ) {
 			$article['description'] = wp_strip_all_tags( $meta_desc );
 		}
@@ -62,7 +62,7 @@ class Popi_Clanky_Schema {
 	}
 
 	private static function image_url( int $post_id ): ?string {
-		$og_image = get_field( 'popi_clanek_og_image', $post_id );
+		$og_image = popi_clanky_get_field( 'popi_clanek_og_image', $post_id );
 		if ( is_array( $og_image ) && ! empty( $og_image['url'] ) ) {
 			return $og_image['url'];
 		}
