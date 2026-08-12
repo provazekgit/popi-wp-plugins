@@ -19,6 +19,13 @@ Rotating the key in POPIshop immediately invalidates the previous key. Update
 the plugin setting in the same maintenance window. The 12-character key
 fingerprint shown on both administration screens must match.
 
+## Updates
+
+WordPress checks the public POPIsite plugin registry and offers new versions in
+the standard Plugins screen. Release ZIP files are published from tags named
+`popishop-v*`. Before installation, the plugin verifies the SHA-256 checksum
+provided by the registry.
+
 ## Security properties
 
 - Tokens expire after five minutes.

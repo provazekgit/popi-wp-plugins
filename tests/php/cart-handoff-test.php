@@ -1,9 +1,13 @@
 <?php
 
 define('ABSPATH', __DIR__);
+define('HOUR_IN_SECONDS', 3600);
 
 $GLOBALS['popishop_test_secret'] = '';
 $GLOBALS['popishop_test_products'] = array();
+$GLOBALS['popishop_test_transients'] = array();
+$GLOBALS['popishop_test_remote'] = null;
+$GLOBALS['popishop_test_download'] = null;
 
 class WP_Error {
     private $code;
@@ -56,14 +60,26 @@ class WC_Product_Variation extends Fake_Product {
 }
 
 function add_action() {}
+function add_filter() {}
 function add_submenu_page() {}
 function register_setting() {}
 function register_rest_route() {}
+function plugin_dir_path($file) { return dirname($file) . '/'; }
+function plugin_basename($file) { return 'popishop-cart-handoff/' . basename($file); }
 function sanitize_text_field($value) { return trim((string) $value); }
 function add_settings_error() {}
 function get_option($name, $default = '') { return $name === 'popishop_cart_handoff_secret' ? $GLOBALS['popishop_test_secret'] : $default; }
 function is_wp_error($value) { return $value instanceof WP_Error; }
 function wc_get_product($id) { return isset($GLOBALS['popishop_test_products'][$id]) ? $GLOBALS['popishop_test_products'][$id] : false; }
+function get_transient($key) { return array_key_exists($key, $GLOBALS['popishop_test_transients']) ? $GLOBALS['popishop_test_transients'][$key] : false; }
+function set_transient($key, $value) { $GLOBALS['popishop_test_transients'][$key] = $value; }
+function wp_remote_get() { return $GLOBALS['popishop_test_remote']; }
+function wp_remote_retrieve_response_code($response) { return isset($response['code']) ? $response['code'] : 0; }
+function wp_remote_retrieve_body($response) { return isset($response['body']) ? $response['body'] : ''; }
+function get_bloginfo($key) { return $key === 'version' ? '6.7' : 'https://shop.test'; }
+function download_url() { return $GLOBALS['popishop_test_download']; }
+function wp_delete_file($file) { if (is_file($file)) unlink($file); }
+function trailingslashit($value) { return rtrim($value, '/\\') . '/'; }
 
 require dirname(__DIR__, 2) . '/popishop-cart-handoff/popishop-cart-handoff.php';
 
@@ -102,6 +118,22 @@ function token_for($secret, $expires) {
         'items' => array(array(101, 0, 2)),
     )));
     return $payload . '.' . base64url(hash_hmac('sha256', $payload, $secret, true));
+}
+
+function update_manifest($version, $sha256) {
+    return array(
+        'code' => 200,
+        'body' => json_encode(array(
+            'version' => $version,
+            'download_url' => 'https://github.com/provazekgit/popi-wp-plugins/releases/download/popishop-v' . $version . '/popishop-cart-handoff.zip',
+            'sha256' => $sha256,
+            'requires' => '6.4',
+            'requires_php' => '7.4',
+            'tested' => '6.7',
+            'last_updated' => '2026-08-12',
+            'sections' => array('description' => 'Test', 'changelog' => 'Test'),
+        )),
+    );
 }
 
 run_test('valid signed token', function() {
@@ -146,6 +178,43 @@ run_test('health fingerprint', function() {
     check($response->data['woocommerceActive'] === true, 'WooCommerce state is false');
     check($response->data['fingerprint'] === substr(hash('sha256', $GLOBALS['popishop_test_secret']), 0, 12), 'fingerprint does not match');
     check($response->headers['Cache-Control'] === 'no-store', 'health response is cacheable');
+});
+
+run_test('update is offered for a newer version', function() {
+    $GLOBALS['popishop_test_transients'] = array();
+    $GLOBALS['popishop_test_remote'] = update_manifest('0.1.2', str_repeat('a', 64));
+    $updater = new POPIshop_Cart_Handoff_Updater(__DIR__ . '/popishop-cart-handoff.php', POPISHOP_CART_HANDOFF_UPDATE_URL, '0.1.1');
+    $transient = (object) array('checked' => array('popishop-cart-handoff/popishop-cart-handoff.php' => '0.1.1'));
+    $result = $updater->check_update($transient);
+    check(isset($result->response['popishop-cart-handoff/popishop-cart-handoff.php']), 'new version was not offered');
+    check($result->response['popishop-cart-handoff/popishop-cart-handoff.php']->new_version === '0.1.2', 'wrong update version');
+});
+
+run_test('valid update checksum is accepted', function() {
+    $contents = 'signed-plugin-archive';
+    $temporary = tempnam(sys_get_temp_dir(), 'popishop-update-');
+    file_put_contents($temporary, $contents);
+    $GLOBALS['popishop_test_download'] = $temporary;
+    $GLOBALS['popishop_test_transients'] = array();
+    $GLOBALS['popishop_test_remote'] = update_manifest('0.1.2', hash('sha256', $contents));
+    $updater = new POPIshop_Cart_Handoff_Updater(__DIR__ . '/popishop-cart-handoff.php', POPISHOP_CART_HANDOFF_UPDATE_URL, '0.1.1');
+    $package = json_decode($GLOBALS['popishop_test_remote']['body'])->download_url;
+    $result = $updater->verify_download(false, $package, null, array('plugin' => 'popishop-cart-handoff/popishop-cart-handoff.php'));
+    check($result === $temporary, 'valid package checksum was rejected');
+    unlink($temporary);
+});
+
+run_test('invalid update checksum is rejected and deleted', function() {
+    $temporary = tempnam(sys_get_temp_dir(), 'popishop-update-');
+    file_put_contents($temporary, 'tampered-plugin-archive');
+    $GLOBALS['popishop_test_download'] = $temporary;
+    $GLOBALS['popishop_test_transients'] = array();
+    $GLOBALS['popishop_test_remote'] = update_manifest('0.1.2', str_repeat('b', 64));
+    $updater = new POPIshop_Cart_Handoff_Updater(__DIR__ . '/popishop-cart-handoff.php', POPISHOP_CART_HANDOFF_UPDATE_URL, '0.1.1');
+    $package = json_decode($GLOBALS['popishop_test_remote']['body'])->download_url;
+    $result = $updater->verify_download(false, $package, null, array('plugin' => 'popishop-cart-handoff/popishop-cart-handoff.php'));
+    check(is_wp_error($result) && $result->get_error_code() === 'popishop_update_checksum_mismatch', 'tampered package was accepted');
+    check(!file_exists($temporary), 'tampered package was not deleted');
 });
 
 if ($failures > 0) exit(1);

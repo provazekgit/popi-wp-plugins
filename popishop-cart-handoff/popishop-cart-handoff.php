@@ -2,7 +2,7 @@
 /**
  * Plugin Name: POPIshop Cart Handoff
  * Description: Přijme krátkodobě podepsaný košík z POPIshopu a bezpečně jej předá do WooCommerce checkoutu.
- * Version: 0.1.0
+ * Version: 0.1.1
  * Requires at least: 6.4
  * Requires PHP: 7.4
  * WC requires at least: 8.0
@@ -12,8 +12,14 @@
 
 defined('ABSPATH') || exit;
 
+define('POPISHOP_CART_HANDOFF_FILE', __FILE__);
+define('POPISHOP_CART_HANDOFF_DIR', plugin_dir_path(__FILE__));
+define('POPISHOP_CART_HANDOFF_UPDATE_URL', 'https://api.popisite.cz/api/v1/public/plugins/popishop-cart-handoff');
+
+require_once POPISHOP_CART_HANDOFF_DIR . 'includes/class-updater.php';
+
 final class POPIshop_Cart_Handoff {
-    const VERSION = '0.1.0';
+    const VERSION = '0.1.1';
     const OPTION_SECRET = 'popishop_cart_handoff_secret';
     const SESSION_USED_TOKENS = 'popishop_cart_handoff_used_tokens';
 
@@ -269,3 +275,8 @@ final class POPIshop_Cart_Handoff {
 }
 
 POPIshop_Cart_Handoff::boot();
+new POPIshop_Cart_Handoff_Updater(
+    POPISHOP_CART_HANDOFF_FILE,
+    POPISHOP_CART_HANDOFF_UPDATE_URL,
+    POPIshop_Cart_Handoff::VERSION
+);
