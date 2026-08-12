@@ -3,9 +3,10 @@ name: Release plugin ZIP
 on:
   push:
     tags:
-      - 'popi-clanky-v*'
-      - 'popi-landing-v*'
-      - 'popi-events-v*'
+      - "popi-clanky-v*"
+      - "popi-landing-v*"
+      - "popi-events-v*"
+      - "popishop-v*"
 
 jobs:
   release:
@@ -16,27 +17,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Zjisti název pluginu z tagu
+      - name: Select plugin from tag
         id: plugin
+        shell: bash
         run: |
           TAG="${GITHUB_REF_NAME}"
           if [[ "$TAG" == popi-clanky-* ]]; then
-            echo "dir=popi-clanky-blog" >> $GITHUB_OUTPUT
-            echo "name=popi-clanky-blog" >> $GITHUB_OUTPUT
+            echo "dir=popi-clanky-blog" >> "$GITHUB_OUTPUT"
+            echo "name=popi-clanky-blog" >> "$GITHUB_OUTPUT"
           elif [[ "$TAG" == popi-events-* ]]; then
-            echo "dir=popi-events" >> $GITHUB_OUTPUT
-            echo "name=popi-events" >> $GITHUB_OUTPUT
+            echo "dir=popi-events" >> "$GITHUB_OUTPUT"
+            echo "name=popi-events" >> "$GITHUB_OUTPUT"
+          elif [[ "$TAG" == popishop-* ]]; then
+            echo "dir=popishop-cart-handoff" >> "$GITHUB_OUTPUT"
+            echo "name=popishop-cart-handoff" >> "$GITHUB_OUTPUT"
           else
-            echo "dir=popi-landing-page" >> $GITHUB_OUTPUT
-            echo "name=popi-landing-page" >> $GITHUB_OUTPUT
+            echo "dir=popi-landing-page" >> "$GITHUB_OUTPUT"
+            echo "name=popi-landing-page" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Vytvoř ZIP
-        run: |
-          cd ${{ steps.plugin.outputs.dir }}
-          zip -r ../${{ steps.plugin.outputs.name }}.zip .
+      - name: Test POPIshop plugin
+        if: startsWith(github.ref_name, 'popishop-')
+        run: php tests/php/cart-handoff-test.php
 
-      - name: Vytvoř GitHub Release se ZIPem
+      - name: Create ZIP and checksum
+        shell: bash
+        run: |
+          cd "${{ steps.plugin.outputs.dir }}"
+          zip -r "../${{ steps.plugin.outputs.name }}.zip" .
+          cd ..
+          sha256sum "${{ steps.plugin.outputs.name }}.zip" > "${{ steps.plugin.outputs.name }}.zip.sha256"
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ steps.plugin.outputs.name }}.zip
+          files: |
+            ${{ steps.plugin.outputs.name }}.zip
+            ${{ steps.plugin.outputs.name }}.zip.sha256

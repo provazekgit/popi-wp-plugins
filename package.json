@@ -1,0 +1,11 @@
+{
+  "name": "popi-wp-plugins",
+  "private": true,
+  "scripts": {
+    "test:popishop": "php tests/php/cart-handoff-test.php",
+    "package:popishop": "node scripts/package-popishop-plugin.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

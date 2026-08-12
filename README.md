@@ -4,6 +4,10 @@ WordPress pluginy pro weby Popiweb. Distribuovány přes update server na `api.p
 
 ## Pluginy
 
+### popishop-cart-handoff
+Bezpečné předání krátkodobě podepsaného košíku z POPIshop storefrontu do
+existujícího WooCommerce checkoutu.
+
 ### popi-clanky-blog
 CPT Články se SEO poli, CTA tlačítkem, UTM trackingem a automatickým Table of Contents.
 
@@ -24,7 +28,15 @@ git tag popi-clanky-v1.1.0
 git push origin main --tags
 ```
 
-GitHub Actions automaticky vytvoří ZIP a přiloží ho k Release.
+Pro POPIshop použij tag `popishop-v*`. GitHub Actions automaticky vytvoří ZIP
+a přiloží ho k Release.
+
+## POPIshop plugin lokálně
+
+```bash
+npm run test:popishop
+npm run package:popishop
+```
 
 ## Po releasu — update server
 
