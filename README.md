@@ -25,7 +25,7 @@ git add . && git commit -m "popi-clanky-blog: bump na 1.1.0"
 
 # 3. Tag ve formátu popi-clanky-v* nebo popi-landing-v*
 git tag popi-clanky-v1.1.0
-git push origin main --tags
+git push origin master --tags
 ```
 
 Pro POPIshop použij tag `popishop-v*`. GitHub Actions automaticky vytvoří ZIP
