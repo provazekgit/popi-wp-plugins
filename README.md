@@ -8,6 +8,10 @@ WordPress pluginy pro weby Popiweb. Distribuovány přes update server na `api.p
 Bezpečné předání krátkodobě podepsaného košíku z POPIshop storefrontu do
 existujícího WooCommerce checkoutu.
 
+### popishop-staging-guard
+MU plugin pro chráněnou WooCommerce staging kopii. Vynutí `noindex`, zachytí
+e-maily bez odeslání a povolí pouze určené offline platební brány.
+
 ### popi-clanky-blog
 CPT Články se SEO poli, CTA tlačítkem, UTM trackingem a automatickým Table of Contents.
 
@@ -35,6 +39,7 @@ a přiloží ho k Release.
 
 ```bash
 npm run test:popishop
+npm run test:staging-guard
 npm run package:popishop
 ```
 

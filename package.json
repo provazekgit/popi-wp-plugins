@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "test:popishop": "php tests/php/cart-handoff-test.php",
+    "test:staging-guard": "php tests/php/staging-guard-test.php",
+    "test": "npm run test:popishop && npm run test:staging-guard",
     "package:popishop": "node scripts/package-popishop-plugin.mjs"
   },
   "engines": {

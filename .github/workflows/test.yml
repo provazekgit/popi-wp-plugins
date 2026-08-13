@@ -20,3 +20,4 @@ jobs:
           php-version: ${{ matrix.php-version }}
           coverage: none
       - run: php tests/php/cart-handoff-test.php
+      - run: php tests/php/staging-guard-test.php
