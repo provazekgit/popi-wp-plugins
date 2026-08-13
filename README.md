@@ -12,6 +12,10 @@ existujícího WooCommerce checkoutu.
 MU plugin pro chráněnou WooCommerce staging kopii. Vynutí `noindex`, zachytí
 e-maily bez odeslání a povolí pouze určené offline platební brány.
 
+### popi-migration-recovery-guard
+Dočasný MU plugin pro bezpečné odstavení přesně určených neúplných pluginů po
+migraci. Nemění databázi a po opravě souborů se odstraní.
+
 ### popi-clanky-blog
 CPT Články se SEO poli, CTA tlačítkem, UTM trackingem a automatickým Table of Contents.
 
