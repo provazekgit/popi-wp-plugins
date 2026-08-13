@@ -21,3 +21,8 @@ jobs:
           coverage: none
       - run: php tests/php/cart-handoff-test.php
       - run: php tests/php/staging-guard-test.php
+      - run: php tests/php/migration-recovery-guard-test.php
+      - if: matrix.php-version == '8.3'
+        run: npm run package:migration-toolkit
+      - if: matrix.php-version == '8.3'
+        run: unzip -t dist/popi-wordpress-migration-toolkit.zip

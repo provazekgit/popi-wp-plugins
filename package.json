@@ -6,7 +6,8 @@
     "test:staging-guard": "php tests/php/staging-guard-test.php",
     "test:migration-recovery": "php tests/php/migration-recovery-guard-test.php",
     "test": "npm run test:popishop && npm run test:staging-guard && npm run test:migration-recovery",
-    "package:popishop": "node scripts/package-popishop-plugin.mjs"
+    "package:popishop": "node scripts/package-popishop-plugin.mjs",
+    "package:migration-toolkit": "node scripts/package-migration-toolkit.mjs"
   },
   "engines": {
     "node": ">=20"

@@ -47,6 +47,16 @@ npm run test:staging-guard
 npm run package:popishop
 ```
 
+## Migrační toolkit lokálně
+
+Po commitu zdrojů vytvoří ověřitelný ZIP s recovery a staging MU pluginem:
+
+```bash
+npm run package:migration-toolkit
+```
+
+Výstup je `dist/popi-wordpress-migration-toolkit.zip` a jeho SHA-256 součet.
+
 ## Po releasu — update server
 
 Uprav `REGISTRY` v `popi_site/apps/api/src/routes/wp-plugins.ts`:
