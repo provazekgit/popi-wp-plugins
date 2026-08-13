@@ -58,8 +58,8 @@ try {
   let packaged;
   if (process.platform === "win32") {
     packaged = spawnSync(
-      "powershell",
-      ["-NoProfile", "-Command", "Compress-Archive -LiteralPath $args[0] -DestinationPath $args[1] -Force", packageRoot, archive],
+      "tar.exe",
+      ["-a", "-c", "-f", archive, "-C", stagingRoot, basename(packageRoot)],
       { stdio: "inherit" },
     );
   } else {
