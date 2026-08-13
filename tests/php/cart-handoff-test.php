@@ -120,6 +120,17 @@ function token_for($secret, $expires) {
     return $payload . '.' . base64url(hash_hmac('sha256', $payload, $secret, true));
 }
 
+function contract_token() {
+    $secret = 'test-secret-with-at-least-forty-characters-123';
+    $payload = base64url(json_encode(array(
+        'v' => 1,
+        'exp' => 1786536300,
+        'nonce' => 'abcdefghijklmnop',
+        'items' => array(array(42, 0, 2), array(80, 81, 1)),
+    )));
+    return $payload . '.' . base64url(hash_hmac('sha256', $payload, $secret, true));
+}
+
 function update_manifest($version, $sha256) {
     return array(
         'code' => 200,
@@ -139,6 +150,11 @@ function update_manifest($version, $sha256) {
 run_test('valid signed token', function() {
     $payload = private_call('verify_token', array(token_for('test-secret-with-at-least-forty-characters-123', time() + 300), 'test-secret-with-at-least-forty-characters-123'));
     check(is_array($payload) && $payload['items'][0][0] === 101, 'valid token was rejected');
+});
+
+run_test('POPIshop API v1 contract vector', function() {
+    $expected = 'eyJ2IjoxLCJleHAiOjE3ODY1MzYzMDAsIm5vbmNlIjoiYWJjZGVmZ2hpamtsbW5vcCIsIml0ZW1zIjpbWzQyLDAsMl0sWzgwLDgxLDFdXX0.oFF4DeRvOaqFS7SQ7_lqP1tg33XQxMCHhqn6INCaCiE';
+    check(contract_token() === $expected, 'plugin signature format differs from the POPIshop API');
 });
 
 run_test('invalid signature', function() {
