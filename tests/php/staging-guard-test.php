@@ -46,6 +46,17 @@ guard_test('responses are marked as protected staging content', function() {
     guard_check(strpos($headers['Cache-Control'], 'no-store') !== false, 'staging response remains cacheable');
 });
 
+guard_test('Apache staging template keeps server and WordPress diagnostics distinct', function() {
+    $template = file_get_contents(dirname(__DIR__, 2) . '/migration-toolkit/.htaccess.staging.example');
+    guard_check($template !== false, 'staging .htaccess template is missing');
+    guard_check(strpos($template, 'X-POPIshop-Staging-Protection "active"') !== false, 'server protection header is missing');
+    guard_check(strpos($template, 'X-POPIshop-Staging-Guard "server"') === false, 'server overwrites the WordPress guard header');
+    guard_check(strpos($template, '^/wp-json/wc/v3/') !== false, 'Woo REST exception is missing');
+    guard_check(strpos($template, '^/wp-json/popishop/v1/cart-handoff/?$') !== false, 'readiness exception is missing');
+    guard_check(strpos($template, 'Require valid-user') !== false, 'Basic Auth fallback is missing');
+    guard_check(strpos($template, 'wp-admin') === false, 'WordPress administration must not bypass Basic Auth');
+});
+
 guard_test('mail is captured without storing the recipient', function() {
     $GLOBALS['popishop_guard_options'] = array();
     $result = POPIshop_Staging_Guard::capture_mail(null, array(

@@ -33,8 +33,9 @@ kopie. Není to běžný WordPress plugin instalovaný přes administraci.
    heslem. Soubor ani heslo nepatří do repozitáře.
 5. Bez hesla musí HTML vracet `401`. Woo REST API smí obejít HTTP heslo, ale bez
    vlastních WooCommerce klíčů musí odmítnout přístup.
-6. Po přihlášení musí odpověď obsahovat `X-Robots-Tag` a
-   `X-POPIshop-Staging-Guard`. Pokud chybí, staging se nepoužívá.
+6. Po přihlášení musí odpověď obsahovat `X-Robots-Tag`, serverovou hlavičku
+   `X-POPIshop-Staging-Protection: active` a WordPress hlavičku
+   `X-POPIshop-Staging-Guard: active`. Pokud některá chybí, staging se nepoužívá.
 
 ## Odstranění
 
