@@ -39,6 +39,13 @@ guard_test('robots are disabled', function() {
     guard_check($robots['noindex'] === true && $robots['nofollow'] === true && $robots['noarchive'] === true, 'robots remain enabled');
 });
 
+guard_test('responses are marked as protected staging content', function() {
+    $headers = POPIshop_Staging_Guard::protect_response_headers(array('Content-Type' => 'text/html'));
+    guard_check($headers['X-Robots-Tag'] === 'noindex, nofollow, noarchive', 'X-Robots-Tag is missing');
+    guard_check($headers['X-POPIshop-Staging-Guard'] === 'active', 'diagnostic guard header is missing');
+    guard_check(strpos($headers['Cache-Control'], 'no-store') !== false, 'staging response remains cacheable');
+});
+
 guard_test('mail is captured without storing the recipient', function() {
     $GLOBALS['popishop_guard_options'] = array();
     $result = POPIshop_Staging_Guard::capture_mail(null, array(

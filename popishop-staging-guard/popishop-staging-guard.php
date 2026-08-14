@@ -11,7 +11,7 @@
 defined('ABSPATH') || exit;
 
 final class POPIshop_Staging_Guard {
-    const VERSION = '0.1.0';
+    const VERSION = '0.2.0';
     const MAIL_LOG_OPTION = 'popishop_staging_mail_log';
     const MAX_MAIL_LOG = 50;
 
@@ -25,6 +25,7 @@ final class POPIshop_Staging_Guard {
         add_filter('pre_wp_mail', array(__CLASS__, 'capture_mail'), 10, 2);
         add_filter('woocommerce_available_payment_gateways', array(__CLASS__, 'limit_payment_gateways'));
         add_filter('woocommerce_allow_tracking', '__return_false');
+        add_filter('wp_headers', array(__CLASS__, 'protect_response_headers'));
         add_action('send_headers', array(__CLASS__, 'send_noindex_header'));
         add_action('admin_menu', array(__CLASS__, 'admin_menu'));
         add_action('admin_notices', array(__CLASS__, 'admin_notice'));
@@ -48,7 +49,17 @@ final class POPIshop_Staging_Guard {
     public static function send_noindex_header() {
         if (!headers_sent()) {
             header('X-Robots-Tag: noindex, nofollow, noarchive', true);
+            header('X-POPIshop-Staging-Guard: active', true);
+            header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0', true);
         }
+    }
+
+    public static function protect_response_headers($headers) {
+        $headers = is_array($headers) ? $headers : array();
+        $headers['X-Robots-Tag'] = 'noindex, nofollow, noarchive';
+        $headers['X-POPIshop-Staging-Guard'] = 'active';
+        $headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0';
+        return $headers;
     }
 
     public static function capture_mail($return, $attributes) {

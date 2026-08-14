@@ -18,6 +18,10 @@ const sources = [
     source: "migration-toolkit/wp-config.migration.example.php",
     target: "wp-config.migration.example.php",
   },
+  {
+    source: "migration-toolkit/.htaccess.staging.example",
+    target: ".htaccess.staging.example",
+  },
 ];
 
 const trackedPaths = [...new Set(sources.map(({ source }) => source).concat(import.meta.url.endsWith("package-migration-toolkit.mjs") ? ["scripts/package-migration-toolkit.mjs"] : []))];

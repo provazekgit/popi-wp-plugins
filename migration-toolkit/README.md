@@ -10,6 +10,8 @@ kopie. Není to běžný WordPress plugin instalovaný přes administraci.
 - `mu-plugins/popishop-staging-guard.php` zablokuje indexaci, ostré e-maily a
   jiné než výslovně povolené offline platební brány.
 - `wp-config.migration.example.php` obsahuje pouze bezpečné příklady konstant.
+- `.htaccess.staging.example` vynutí HTTP heslo, serverový `noindex` a zákaz
+  cachování ještě před spuštěním WordPressu.
 - `manifest.json` uvádí zdrojový commit a SHA-256 obou PHP souborů.
 
 ## Nasazení na staging
@@ -20,6 +22,19 @@ kopie. Není to běžný WordPress plugin instalovaný přes administraci.
 4. Recovery seznam ponechte prázdný, dokud log neurčí konkrétní rozbitý plugin.
 5. Ověřte upozornění v administraci, `noindex`, zachycení e-mailu a dostupné
    platební metody.
+
+## WEDOS ochrana před prvním přihlášením
+
+1. Existující `.htaccess` nejprve zazálohujte.
+2. Z příkladu přeneste ochranný blok nad standardní WordPress rewrite pravidla.
+3. `XXXXXX` nahraďte číselným ID hostingu a `SUBDOMAIN` názvem složky ve
+   `www/subdom`.
+4. Vedle `.htaccess` vytvořte `.htpasswd` s jedním silným, náhodně generovaným
+   heslem. Soubor ani heslo nepatří do repozitáře.
+5. Bez hesla musí HTML vracet `401`. Woo REST API smí obejít HTTP heslo, ale bez
+   vlastních WooCommerce klíčů musí odmítnout přístup.
+6. Po přihlášení musí odpověď obsahovat `X-Robots-Tag` a
+   `X-POPIshop-Staging-Guard`. Pokud chybí, staging se nepoužívá.
 
 ## Odstranění
 

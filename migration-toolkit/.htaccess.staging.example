@@ -1,0 +1,27 @@
+# POPIshop staging protection for Apache 2.4 on WEDOS.
+# Replace XXXXXX with the numeric hosting ID and SUBDOMAIN with the folder name.
+# Keep this block above the standard WordPress rewrite block.
+
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive"
+  Header always set X-POPIshop-Staging-Guard "server"
+  Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+</IfModule>
+
+AuthType Basic
+AuthName "POPIshop staging"
+AuthBasicProvider file
+AuthUserFile "/data/web/virtuals/XXXXXX/virtual/www/subdom/SUBDOMAIN/.htpasswd"
+
+<RequireAny>
+  Require expr "%{REQUEST_URI} =~ m#^/wp-json/wc/v3/#"
+  Require expr "%{REQUEST_URI} =~ m#^/wp-json/popishop/v1/cart-handoff/?$#"
+  Require expr "%{REQUEST_URI} =~ m#^/wp-cron\.php$#"
+  Require valid-user
+</RequireAny>
+
+<FilesMatch "^(wp-config\.php|\.htaccess|\.htpasswd|\.user\.ini|debug\.log|.*\.(sql|bak|zip|tar|gz))$">
+  Require all denied
+</FilesMatch>
+
+# Keep the standard WordPress rewrite block below this line.
