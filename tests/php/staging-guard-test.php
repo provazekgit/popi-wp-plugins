@@ -34,6 +34,13 @@ guard_test('staging environment is required', function() {
     guard_check(POPIshop_Staging_Guard::is_staging() === true, 'guard did not recognize staging');
 });
 
+guard_test('plugin metadata matches the runtime version', function() {
+    $source = file_get_contents(dirname(__DIR__, 2) . '/popishop-staging-guard/popishop-staging-guard.php');
+    guard_check($source !== false, 'staging guard source is missing');
+    guard_check(preg_match('/^ \* Version: ([^\r\n]+)$/m', $source, $match) === 1, 'plugin version header is missing');
+    guard_check(trim($match[1]) === POPIshop_Staging_Guard::VERSION, 'plugin header and runtime versions differ');
+});
+
 guard_test('robots are disabled', function() {
     $robots = POPIshop_Staging_Guard::robots(array('index' => true, 'follow' => true));
     guard_check($robots['noindex'] === true && $robots['nofollow'] === true && $robots['noarchive'] === true, 'robots remain enabled');

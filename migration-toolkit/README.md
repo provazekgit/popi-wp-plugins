@@ -37,6 +37,11 @@ kopie. Není to běžný WordPress plugin instalovaný přes administraci.
    `X-POPIshop-Staging-Protection: active` a WordPress hlavičku
    `X-POPIshop-Staging-Guard: active`. Pokud některá chybí, staging se nepoužívá.
 
+Staging guard zachytí e-maily odesílané přes standardní WordPress funkci
+`wp_mail()`. Pluginy, které volají vlastní SMTP nebo marketingové API přímo,
+musí být na stagingu deaktivované nebo přepnuté do testovacího režimu. Totéž
+platí pro účetní exporty, marketingové webhooky a externí automatizace.
+
 ## Odstranění
 
 Recovery guard se odstraní ihned po nahrání a ověření čistých pluginů. Staging

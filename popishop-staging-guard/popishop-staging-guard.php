@@ -2,7 +2,7 @@
 /**
  * Plugin Name: POPIshop Staging Guard
  * Description: Bezpečnostní pojistky pro neveřejnou WooCommerce staging kopii.
- * Version: 0.1.0
+ * Version: 0.2.0
  * Requires at least: 6.4
  * Requires PHP: 7.4
  * Author: POPI
