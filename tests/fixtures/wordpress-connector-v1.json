@@ -1,0 +1,24 @@
+{
+  "contract": "1.0.0-rc.1",
+  "protocol": "popi-hmac-v1",
+  "pluginMajors": [1],
+  "defaultEnabled": false,
+  "hmacVector": {
+    "secret": "0123456789abcdefghijklmnopqrstuvwxyzABCDEFG",
+    "method": "POST",
+    "path": "/wp-json/popi-connector/v1/popiweb/entries/search",
+    "envelope": {
+      "protocol": "popi-hmac-v1",
+      "key_id": "key_test",
+      "timestamp": 1787836800,
+      "nonce": "abcdefghijklmnopqrstuv",
+      "request_id": "018f0000-0000-7000-8000-000000000001",
+      "tenant_id": "tenant_1",
+      "project_id": "project_1",
+      "module_installation_id": "installation_1",
+      "connection_id": "connection_1",
+      "payload_b64": "eyJwYWdlIjoxfQ"
+    },
+    "signature": "RzKFpOVYHxHp8OU6A1Wn-MgiZDVUIlugJ6XOlNvjlRA"
+  }
+}

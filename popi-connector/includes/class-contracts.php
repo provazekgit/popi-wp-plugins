@@ -4,6 +4,8 @@ defined( 'ABSPATH' ) || exit;
 
 final class POPI_Connector_Contracts {
 
+	const CONTRACT_VERSION = '1.0.0-rc.1';
+
 	public static function health( $context ) {
 		global $wpdb;
 		$tables = POPI_Connector_Storage::tables();
@@ -15,7 +17,7 @@ final class POPI_Connector_Contracts {
 			'ok'               => ! in_array( false, $table_status, true ),
 			'plugin'           => 'popi-connector',
 			'plugin_version'   => POPI_CONNECTOR_VERSION,
-			'contract_version' => '1.0.0',
+			'contract_version' => self::CONTRACT_VERSION,
 			'wordpress_version'=> get_bloginfo( 'version' ),
 			'php_version'      => PHP_VERSION,
 			'server_time'      => time(),
@@ -29,9 +31,9 @@ final class POPI_Connector_Contracts {
 		return array(
 			'protocols' => array( POPI_Connector_Crypto::PROTOCOL ),
 			'contracts' => array(
-				'core'     => '1.0.0',
-				'popiweb'  => '1.0.0',
-				'popicast' => '1.0.0',
+				'core'     => self::CONTRACT_VERSION,
+				'popiweb'  => self::CONTRACT_VERSION,
+				'popicast' => self::CONTRACT_VERSION,
 			),
 			'operations' => array(
 				'core.health', 'core.manifest', 'core.site', 'core.frontend.get', 'core.frontend.set',
