@@ -3,7 +3,10 @@
   "private": true,
   "scripts": {
     "test:popishop": "php tests/php/cart-handoff-test.php",
-    "package:popishop": "node scripts/package-popishop-plugin.mjs"
+    "test:connector": "php tests/php/connector-test.php",
+    "test": "npm run test:popishop && npm run test:connector",
+    "package:popishop": "node scripts/package-popishop-plugin.mjs",
+    "package:connector": "node scripts/package-popi-connector.mjs"
   },
   "engines": {
     "node": ">=20"

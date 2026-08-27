@@ -4,6 +4,13 @@ WordPress pluginy pro weby Popiweb. Distribuovány přes update server na `api.p
 
 ## Pluginy
 
+### popi-connector
+Univerzální bezpečné propojení WordPressu s POPIsite, POPIwebem a POPIcastem.
+Používá jednorázové párovací kódy, HMAC podpisy, per-installation scopes,
+ochranu proti replay útokům, audit, rate limiting a vratné řízení headless
+frontendu. Nevyžaduje hlavní WordPress heslo ani předávání `Authorization`
+hlavičky.
+
 ### popishop-cart-handoff
 Bezpečné předání krátkodobě podepsaného košíku z POPIshop storefrontu do
 existujícího WooCommerce checkoutu.
@@ -37,6 +44,17 @@ a přiloží ho k Release.
 npm run test:popishop
 npm run package:popishop
 ```
+
+## POPI Connector lokálně
+
+```bash
+npm run test:connector
+npm run package:connector
+```
+
+Release tag má tvar `popi-connector-v*`. Registry updateru používá endpoint
+`https://api.popisite.cz/api/v1/public/plugins/popi-connector` a před instalací
+ověřuje SHA-256 release ZIPu.
 
 ## Po releasu — update server
 
