@@ -41,7 +41,7 @@ final class POPI_Connector_Audit {
 			$output = array();
 			foreach ( array_slice( $value, 0, 30, true ) as $key => $item ) {
 				$safe_key = is_string( $key ) ? sanitize_key( $key ) : $key;
-				if ( in_array( $safe_key, array( 'secret', 'signature', 'payload', 'content', 'password', 'token' ), true ) ) {
+				if ( preg_match( '/(?:secret|signature|payload|content|password|token|authorization)/', (string) $safe_key ) ) {
 					$output[ $safe_key ] = '[redacted]';
 					continue;
 				}
@@ -55,4 +55,3 @@ final class POPI_Connector_Audit {
 		return substr( sanitize_text_field( (string) $value ), 0, 500 );
 	}
 }
-
