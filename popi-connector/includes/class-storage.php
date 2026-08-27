@@ -30,6 +30,15 @@ final class POPI_Connector_Storage {
 		);
 	}
 
+	public static function get_binding_by_installation( $installation_id ) {
+		global $wpdb;
+		$table = self::tables()['bindings'];
+		return $wpdb->get_row(
+			$wpdb->prepare( "SELECT * FROM $table WHERE installation_id = %s LIMIT 1", $installation_id ),
+			ARRAY_A
+		);
+	}
+
 	public static function get_binding_by_key( $key_id ) {
 		global $wpdb;
 		$tables = self::tables();
@@ -87,6 +96,9 @@ final class POPI_Connector_Storage {
 		}
 
 		$existing = self::get_binding( $binding['binding_id'] );
+		if ( ! $existing ) {
+			$existing = self::get_binding_by_installation( $binding['installation_id'] );
+		}
 		$data     = array(
 			'binding_id'     => sanitize_text_field( $binding['binding_id'] ),
 			'connection_id'  => sanitize_text_field( $binding['connection_id'] ),
@@ -100,13 +112,21 @@ final class POPI_Connector_Storage {
 			'updated_at'     => $now,
 		);
 
+		$wpdb->query( 'START TRANSACTION' );
 		if ( $existing ) {
-			$wpdb->update( $tables['bindings'], $data, array( 'binding_id' => $binding['binding_id'] ) );
+			$binding_saved = $wpdb->update( $tables['bindings'], $data, array( 'id' => $existing['id'] ) );
 		} else {
 			$data['created_at'] = $now;
-			$wpdb->insert( $tables['bindings'], $data );
+			$binding_saved = $wpdb->insert( $tables['bindings'], $data );
+		}
+		if ( false === $binding_saved ) {
+			$wpdb->query( 'ROLLBACK' );
+			return new WP_Error( 'popi_binding_store_failed', 'Připojení se nepodařilo uložit do databáze.' );
 		}
 
+		if ( $existing && $existing['binding_id'] !== $binding['binding_id'] ) {
+			$wpdb->query( $wpdb->prepare( "UPDATE {$tables['keys']} SET status = 'revoked', updated_at = %s WHERE binding_id = %s", $now, $existing['binding_id'] ) );
+		}
 		$wpdb->query( $wpdb->prepare( "UPDATE {$tables['keys']} SET status = 'retiring', updated_at = %s WHERE binding_id = %s AND status = 'active'", $now, $binding['binding_id'] ) );
 		$key_data = array(
 			'binding_id'   => sanitize_text_field( $binding['binding_id'] ),
@@ -118,11 +138,16 @@ final class POPI_Connector_Storage {
 		);
 		$existing_key = self::get_binding_by_key( $key_id );
 		if ( $existing_key ) {
-			$wpdb->update( $tables['keys'], $key_data, array( 'key_id' => $key_id ) );
+			$key_saved = $wpdb->update( $tables['keys'], $key_data, array( 'key_id' => $key_id ) );
 		} else {
-			$wpdb->insert( $tables['keys'], $key_data );
+			$key_saved = $wpdb->insert( $tables['keys'], $key_data );
+		}
+		if ( false === $key_saved ) {
+			$wpdb->query( 'ROLLBACK' );
+			return new WP_Error( 'popi_key_store_failed', 'Klíč připojení se nepodařilo uložit do databáze.' );
 		}
 
+		$wpdb->query( 'COMMIT' );
 		return true;
 	}
 

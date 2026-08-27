@@ -128,10 +128,11 @@ final class POPI_Connector_Pairing {
 			'/api/v1/connectors/wordpress/revoke',
 			array( 'reason' => 'revoked_by_wordpress_administrator' )
 		);
-		if ( is_wp_error( $remote ) ) {
-			return $remote;
-		}
 		POPI_Connector_Storage::revoke_binding( $binding_id );
+		if ( is_wp_error( $remote ) ) {
+			POPI_Connector_Audit::record( 'binding.revoked', 'partial', array( 'binding_id' => $binding_id, 'actor_type' => 'user', 'actor_id' => get_current_user_id(), 'metadata' => array( 'remote_error' => $remote->get_error_code() ) ) );
+			return new WP_Error( 'popi_revoke_remote_failed', 'Připojení bylo lokálně zablokováno, ale POPIsite potvrzení selhalo. Odvolejte binding také v POPIsite.' );
+		}
 		POPI_Connector_Audit::record( 'binding.revoked', 'success', array( 'binding_id' => $binding_id, 'actor_type' => 'user', 'actor_id' => get_current_user_id() ) );
 		return true;
 	}
@@ -175,4 +176,3 @@ final class POPI_Connector_Pairing {
 		return true;
 	}
 }
-
