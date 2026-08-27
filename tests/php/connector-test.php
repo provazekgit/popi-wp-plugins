@@ -41,8 +41,7 @@ expect_true($cipherA !== $cipherB, 'AES-GCM encryption must use a fresh IV');
 expect_same($secret, POPI_Connector_Crypto::decrypt_secret($cipherA), 'Encrypted secret must round-trip');
 
 $tamperedCipher = json_decode($cipherA, true);
-$last = strlen($tamperedCipher['data']) - 1;
-$tamperedCipher['data'][$last] = $tamperedCipher['data'][$last] === 'A' ? 'B' : 'A';
+$tamperedCipher['data'][0] = $tamperedCipher['data'][0] === 'A' ? 'B' : 'A';
 expect_true(is_wp_error(POPI_Connector_Crypto::decrypt_secret(json_encode($tamperedCipher))), 'Tampered ciphertext must be rejected');
 
 $envelope = array(
