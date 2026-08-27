@@ -48,7 +48,15 @@ jobs:
         if: startsWith(github.ref_name, 'popi-connector-')
         run: php tests/php/connector-test.php
 
+      - name: Create POPI Connector ZIP and checksum
+        if: startsWith(github.ref_name, 'popi-connector-')
+        run: |
+          npm run package:connector
+          cp dist/popi-connector.zip .
+          cp dist/popi-connector.zip.sha256 .
+
       - name: Create ZIP and checksum
+        if: ${{ !startsWith(github.ref_name, 'popi-connector-') }}
         shell: bash
         run: |
           cd "${{ steps.plugin.outputs.dir }}"
