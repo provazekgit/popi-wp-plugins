@@ -18,7 +18,10 @@ const runtimeVersion = source.match(/define\( 'POPI_CONNECTOR_VERSION', '([^']+)
 if (!headerVersion || headerVersion !== runtimeVersion) throw new Error("Plugin header and runtime versions do not match");
 
 await mkdir(outputDir, { recursive: true });
-const packaged = spawnSync("git", ["archive", "--format=zip", "--prefix=popi-connector/", `--output=${archive}`, `HEAD:${pluginPath}`], { stdio: "inherit" });
+// Store entries without DEFLATE. The resulting archive is byte-for-byte stable
+// across Windows and the Linux GitHub runner; zlib versions can otherwise emit
+// different bytes for identical sources and invalidate the published SHA-256.
+const packaged = spawnSync("git", ["archive", "--format=zip", "-0", "--prefix=popi-connector/", `--output=${archive}`, `HEAD:${pluginPath}`], { stdio: "inherit" });
 if (packaged.status !== 0) throw new Error("Unable to create POPI Connector archive");
 
 const bytes = await readFile(archive);
