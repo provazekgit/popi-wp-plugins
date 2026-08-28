@@ -1,0 +1,19 @@
+{
+  "contract": "popi-connector",
+  "version": "1.0.0",
+  "openapi": "openapi.json",
+  "popisite_openapi": "popisite-openapi.json",
+  "files": {
+    "openapi.json": "1274e7cde7cf42db4927cf6705917e184c580776bfa8e3bf9cb6d6aee262ea83",
+    "popisite-openapi.json": "1fcf15b8acf935eaa28d33cb4b71a1f16a978964dd72ccadd525386ad8bbbd03",
+    "schemas/binding.json": "568f530e87be3987271a0154dd794bde0e3ced397fabe98b501bd1aa62f4c284",
+    "schemas/core.json": "5226c2ed4eb4756fd6cc6c8609573f5bda26a542447127ddf0ba6ce2350607ee",
+    "schemas/event.json": "63d3bd17b06e9f312f025a9bc44b7a0e542687a300574cff24d26a90ce386656",
+    "schemas/gateway.json": "b9a5b9d3e5d3668667aa03a71e0997f4593929f827a1fb2d0ba607e843b62905",
+    "schemas/hmac-request.json": "2d62b946199edc79d791ac0212b0e19f95585c030591521119e1ea2c1f33b1cd",
+    "schemas/hmac-response.json": "266372578e7b3297bd3e19c0c9280ae761205cae49712606c901e6cc675a9314",
+    "schemas/pairing.json": "f8778113595e80f5c3a4ec00f4546c8bd08acbd97445044a74d82f733ffe45c6",
+    "schemas/popicast.json": "e42812965b72bf02ef04936ae6043248a6d6b4209878e8908a80575167c47f43",
+    "schemas/popiweb.json": "73c54589fd163aaca14e28ff3b03ef68efe9929c1556d204550d77c49259c4a7"
+  }
+}

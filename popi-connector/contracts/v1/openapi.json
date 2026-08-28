@@ -1,0 +1,61 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "POPI Connector WordPress API",
+    "version": "1.0.0",
+    "description": "Typed, capability-scoped WordPress operations. Every operation uses a signed popi-hmac-v1 JSON envelope; Authorization headers are not required."
+  },
+  "servers": [{ "url": "https://wordpress.example" }],
+  "x-popi-authentication": {
+    "protocol": "popi-hmac-v1",
+    "requestSchema": "schemas/hmac-request.json",
+    "responseSchema": "schemas/hmac-response.json",
+    "replayProtection": ["timestamp", "nonce", "request_id"]
+  },
+  "paths": {
+    "/wp-json/popi-connector/v1/core/health": { "$ref": "#/components/pathItems/coreHealth" },
+    "/wp-json/popi-connector/v1/core/manifest": { "$ref": "#/components/pathItems/coreManifest" },
+    "/wp-json/popi-connector/v1/core/site": { "$ref": "#/components/pathItems/coreSite" },
+    "/wp-json/popi-connector/v1/core/frontend/get": { "$ref": "#/components/pathItems/coreFrontendGet" },
+    "/wp-json/popi-connector/v1/core/frontend/set": { "$ref": "#/components/pathItems/coreFrontendSet" },
+    "/wp-json/popi-connector/v1/core/key/prepare": { "$ref": "#/components/pathItems/coreKeyPrepare" },
+    "/wp-json/popi-connector/v1/core/key/commit": { "$ref": "#/components/pathItems/coreKeyCommit" },
+    "/wp-json/popi-connector/v1/core/revoke": { "$ref": "#/components/pathItems/coreRevoke" },
+    "/wp-json/popi-connector/v1/popiweb/schema/read": { "$ref": "#/components/pathItems/popiwebSchemaRead" },
+    "/wp-json/popi-connector/v1/popiweb/entries/search": { "$ref": "#/components/pathItems/popiwebEntriesSearch" },
+    "/wp-json/popi-connector/v1/popiweb/entries/get": { "$ref": "#/components/pathItems/popiwebEntriesGet" },
+    "/wp-json/popi-connector/v1/popiweb/entries/patch": { "$ref": "#/components/pathItems/popiwebEntriesPatch" },
+    "/wp-json/popi-connector/v1/popicast/show/get": { "$ref": "#/components/pathItems/popicastShowGet" },
+    "/wp-json/popi-connector/v1/popicast/episodes/search": { "$ref": "#/components/pathItems/popicastEpisodesSearch" },
+    "/wp-json/popi-connector/v1/popicast/episodes/get": { "$ref": "#/components/pathItems/popicastEpisodesGet" }
+  },
+  "components": {
+    "requestBodies": {
+      "SignedRequest": {
+      "required": true,
+      "content": { "application/json": { "schema": { "$ref": "schemas/hmac-request.json" } } }
+      }
+    },
+    "responses": {
+      "SignedSuccess": { "description": "Signed success response", "content": { "application/json": { "schema": { "$ref": "schemas/hmac-response.json" } } } },
+      "SignedError": { "description": "Signed error response", "content": { "application/json": { "schema": { "$ref": "schemas/hmac-response.json" } } } }
+    },
+    "pathItems": {
+      "coreHealth": { "post": { "operationId": "core.health", "x-popi-scope": "core.health:read", "x-popi-payload-schema": { "$ref": "schemas/core.json#/$defs/empty" }, "x-popi-success-schema": { "$ref": "schemas/core.json#/$defs/healthResponse" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "coreManifest": { "post": { "operationId": "core.manifest", "x-popi-scope": "core.manifest:read", "x-popi-payload-schema": { "$ref": "schemas/core.json#/$defs/empty" }, "x-popi-success-schema": { "$ref": "schemas/core.json#/$defs/manifestResponse" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "coreSite": { "post": { "operationId": "core.site", "x-popi-scope": "core.site:read", "x-popi-payload-schema": { "$ref": "schemas/core.json#/$defs/empty" }, "x-popi-success-schema": { "$ref": "schemas/core.json#/$defs/siteResponse" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "coreFrontendGet": { "post": { "operationId": "core.frontend.get", "x-popi-scope": "frontend:read", "x-popi-payload-schema": { "$ref": "schemas/core.json#/$defs/empty" }, "x-popi-success-schema": { "$ref": "schemas/core.json#/$defs/frontendSettings" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "coreFrontendSet": { "post": { "operationId": "core.frontend.set", "x-popi-scope": "frontend:write", "x-popi-payload-schema": { "$ref": "schemas/core.json#/$defs/frontendSetRequest" }, "x-popi-success-schema": { "$ref": "schemas/core.json#/$defs/frontendSettings" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "coreKeyPrepare": { "post": { "operationId": "core.key.prepare", "x-popi-scope": "keys:rotate", "x-popi-payload-schema": { "$ref": "schemas/core.json#/$defs/rotationPrepareRequest" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "coreKeyCommit": { "post": { "operationId": "core.key.commit", "x-popi-scope": "keys:rotate", "x-popi-payload-schema": { "$ref": "schemas/core.json#/$defs/rotationCommitRequest" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "coreRevoke": { "post": { "operationId": "core.revoke", "x-popi-scope": "connection:revoke", "x-popi-payload-schema": { "$ref": "schemas/core.json#/$defs/revokeRequest" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "popiwebSchemaRead": { "post": { "operationId": "popiweb.schema.read", "x-popi-scope": "popiweb.schema:read", "x-popi-payload-schema": { "$ref": "schemas/popiweb.json#/$defs/schemaReadRequest" }, "x-popi-success-schema": { "$ref": "schemas/popiweb.json#/$defs/schemaReadResponse" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "popiwebEntriesSearch": { "post": { "operationId": "popiweb.entries.search", "x-popi-scope": "popiweb.entries:read", "x-popi-payload-schema": { "$ref": "schemas/popiweb.json#/$defs/entriesSearchRequest" }, "x-popi-success-schema": { "$ref": "schemas/popiweb.json#/$defs/entriesSearchResponse" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "popiwebEntriesGet": { "post": { "operationId": "popiweb.entries.get", "x-popi-scope": "popiweb.entries:read", "x-popi-payload-schema": { "$ref": "schemas/popiweb.json#/$defs/entryGetRequest" }, "x-popi-success-schema": { "$ref": "schemas/popiweb.json#/$defs/entry" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "popiwebEntriesPatch": { "post": { "operationId": "popiweb.entries.patch", "x-popi-scope": "popiweb.entries:write", "x-popi-payload-schema": { "$ref": "schemas/popiweb.json#/$defs/entryPatchRequest" }, "x-popi-success-schema": { "$ref": "schemas/popiweb.json#/$defs/entry" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "popicastShowGet": { "post": { "operationId": "popicast.show.get", "x-popi-scope": "popicast.show:read", "x-popi-payload-schema": { "$ref": "schemas/popicast.json#/$defs/showGetRequest" }, "x-popi-success-schema": { "$ref": "schemas/popicast.json#/$defs/showResponse" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "popicastEpisodesSearch": { "post": { "operationId": "popicast.episodes.search", "x-popi-scope": "popicast.episodes:read", "x-popi-payload-schema": { "$ref": "schemas/popicast.json#/$defs/episodesSearchRequest" }, "x-popi-success-schema": { "$ref": "schemas/popicast.json#/$defs/episodesSearchResponse" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } },
+      "popicastEpisodesGet": { "post": { "operationId": "popicast.episodes.get", "x-popi-scope": "popicast.episodes:read", "x-popi-payload-schema": { "$ref": "schemas/popicast.json#/$defs/episodeGetRequest" }, "x-popi-success-schema": { "$ref": "schemas/popicast.json#/$defs/episodeResponse" }, "requestBody": { "$ref": "#/components/requestBodies/SignedRequest" }, "responses": { "200": { "$ref": "#/components/responses/SignedSuccess" }, "default": { "$ref": "#/components/responses/SignedError" } } } }
+    }
+  }
+}

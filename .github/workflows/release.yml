@@ -7,6 +7,7 @@ on:
       - "popi-landing-v*"
       - "popi-events-v*"
       - "popishop-v*"
+      - "popi-connector-v*"
 
 jobs:
   release:
@@ -31,6 +32,9 @@ jobs:
           elif [[ "$TAG" == popishop-* ]]; then
             echo "dir=popishop-cart-handoff" >> "$GITHUB_OUTPUT"
             echo "name=popishop-cart-handoff" >> "$GITHUB_OUTPUT"
+          elif [[ "$TAG" == popi-connector-* ]]; then
+            echo "dir=popi-connector" >> "$GITHUB_OUTPUT"
+            echo "name=popi-connector" >> "$GITHUB_OUTPUT"
           else
             echo "dir=popi-landing-page" >> "$GITHUB_OUTPUT"
             echo "name=popi-landing-page" >> "$GITHUB_OUTPUT"
@@ -40,7 +44,19 @@ jobs:
         if: startsWith(github.ref_name, 'popishop-')
         run: php tests/php/cart-handoff-test.php
 
+      - name: Test POPI Connector
+        if: startsWith(github.ref_name, 'popi-connector-')
+        run: npm run test:connector
+
+      - name: Create POPI Connector ZIP and checksum
+        if: startsWith(github.ref_name, 'popi-connector-')
+        run: |
+          npm run package:connector
+          cp dist/popi-connector.zip .
+          cp dist/popi-connector.zip.sha256 .
+
       - name: Create ZIP and checksum
+        if: ${{ !startsWith(github.ref_name, 'popi-connector-') }}
         shell: bash
         run: |
           cd "${{ steps.plugin.outputs.dir }}"

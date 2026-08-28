@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popisite.cz/contracts/popi-connector/v1/schemas/hmac-request.json",
+  "title": "POPI Connector signed request envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "key_id", "timestamp", "nonce", "request_id", "tenant_id", "project_id", "module_installation_id", "connection_id", "payload_b64", "signature"],
+  "properties": {
+    "protocol": { "const": "popi-hmac-v1" },
+    "key_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{3,191}$" },
+    "timestamp": { "type": "integer", "minimum": 1 },
+    "nonce": { "type": "string", "pattern": "^[A-Za-z0-9_-]{22,96}$" },
+    "request_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{3,191}$" },
+    "tenant_id": { "type": "string", "minLength": 3, "maxLength": 191 },
+    "project_id": { "type": "string", "minLength": 3, "maxLength": 191 },
+    "module_installation_id": { "type": "string", "minLength": 3, "maxLength": 191 },
+    "connection_id": { "type": "string", "minLength": 3, "maxLength": 191 },
+    "payload_b64": { "type": "string", "pattern": "^[A-Za-z0-9_-]{2,1398102}$", "x-content-encoding": "base64url-json" },
+    "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]{40,96}$" }
+  }
+}
