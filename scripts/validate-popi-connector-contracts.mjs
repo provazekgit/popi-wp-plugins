@@ -10,7 +10,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
 const manifestPath = resolve(root, "manifest.json");
 const manifest = await parse(manifestPath);
 assert(manifest.contract === "popi-connector", "Unexpected contract bundle name");
-assert(manifest.version === "1.0.0-rc.1", "Unexpected contract bundle version");
+assert(manifest.version === "1.0.0", "Unexpected contract bundle version");
 
 for (const [relative, expected] of Object.entries(manifest.files)) {
   const bytes = await readFile(resolve(root, relative));

@@ -92,7 +92,7 @@ git commit -m "Add POPI Connector"
 npm run package:connector
 ```
 
-Release tag `popi-connector-v1.0.0` spustí GitHub Action, která zopakuje test,
+Release tag `popi-connector-v1.0.1` spustí GitHub Action, která zopakuje test,
 vytvoří `popi-connector.zip` a jeho SHA-256. Updater přijímá jen balíčky z
 odpovídajícího GitHub Releases prefixu a checksum ověřuje před instalací.
 
