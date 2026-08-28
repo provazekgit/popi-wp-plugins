@@ -30,6 +30,8 @@ final class POPI_Connector_Pairing {
 				'wordpress_version'=> get_bloginfo( 'version' ),
 				'php_version'      => PHP_VERSION,
 				'multisite'        => is_multisite(),
+				'contract_version' => POPI_CONNECTOR_CONTRACT_VERSION,
+				'contract_sha256'  => POPI_Connector_Contracts::bundle_sha256(),
 			)
 		);
 		if ( is_wp_error( $response ) ) {

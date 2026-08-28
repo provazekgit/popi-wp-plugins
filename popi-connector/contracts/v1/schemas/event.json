@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popisite.cz/contracts/popi-connector/v1/schemas/event.json",
+  "title": "POPI Connector event payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "event_name", "occurred_at", "data"],
+  "properties": {
+    "event_id": { "type": "string", "minLength": 3, "maxLength": 191 },
+    "event_name": { "const": "content.changed" },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["post_id", "post_type", "status", "modified_gmt", "change"],
+      "properties": {
+        "post_id": { "type": "integer", "minimum": 1 },
+        "post_type": { "type": "string" },
+        "status": { "type": "string" },
+        "modified_gmt": { "type": "string" },
+        "change": { "enum": ["created", "updated"] }
+      }
+    }
+  }
+}

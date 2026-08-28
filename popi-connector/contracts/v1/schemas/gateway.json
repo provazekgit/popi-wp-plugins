@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popisite.cz/contracts/popi-connector/v1/schemas/gateway.json",
+  "title": "POPIsite typed WordPress connector gateway",
+  "$defs": {
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "installationId", "operation", "payload"],
+      "properties": {
+        "tenantId": { "type": "string", "minLength": 3, "maxLength": 191 },
+        "installationId": { "type": "string", "minLength": 3, "maxLength": 191 },
+        "operation": {
+          "enum": ["core.health", "core.manifest", "core.site", "core.frontend.get", "core.frontend.set", "popiweb.schema.read", "popiweb.entries.search", "popiweb.entries.get", "popiweb.entries.patch", "popicast.show.get", "popicast.episodes.search", "popicast.episodes.get"]
+        },
+        "payload": { "type": "object" }
+      }
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "ok", "body"],
+      "properties": {
+        "status": { "type": "integer", "minimum": 100, "maximum": 599 },
+        "ok": { "type": "boolean" },
+        "body": { "type": "object" }
+      }
+    }
+  }
+}

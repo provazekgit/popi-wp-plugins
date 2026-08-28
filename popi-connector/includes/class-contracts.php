@@ -4,6 +4,15 @@ defined( 'ABSPATH' ) || exit;
 
 final class POPI_Connector_Contracts {
 
+	public static function bundle_sha256() {
+		$path = POPI_CONNECTOR_DIR . 'contracts/v1/manifest.json';
+		return is_readable( $path ) ? hash_file( 'sha256', $path ) : '';
+	}
+
+	public static function openapi_url() {
+		return POPI_CONNECTOR_URL . 'contracts/v1/openapi.json';
+	}
+
 	public static function health( $context ) {
 		global $wpdb;
 		$tables = POPI_Connector_Storage::tables();
@@ -15,7 +24,8 @@ final class POPI_Connector_Contracts {
 			'ok'               => ! in_array( false, $table_status, true ),
 			'plugin'           => 'popi-connector',
 			'plugin_version'   => POPI_CONNECTOR_VERSION,
-			'contract_version' => '1.0.0',
+			'contract_version' => POPI_CONNECTOR_CONTRACT_VERSION,
+			'contract_sha256'  => self::bundle_sha256(),
 			'wordpress_version'=> get_bloginfo( 'version' ),
 			'php_version'      => PHP_VERSION,
 			'server_time'      => time(),
@@ -29,10 +39,12 @@ final class POPI_Connector_Contracts {
 		return array(
 			'protocols' => array( POPI_Connector_Crypto::PROTOCOL ),
 			'contracts' => array(
-				'core'     => '1.0.0',
-				'popiweb'  => '1.0.0',
-				'popicast' => '1.0.0',
+				'core'     => POPI_CONNECTOR_CONTRACT_VERSION,
+				'popiweb'  => POPI_CONNECTOR_CONTRACT_VERSION,
+				'popicast' => POPI_CONNECTOR_CONTRACT_VERSION,
 			),
+			'contract_sha256' => self::bundle_sha256(),
+			'openapi_url'     => self::openapi_url(),
 			'operations' => array(
 				'core.health', 'core.manifest', 'core.site', 'core.frontend.get', 'core.frontend.set',
 				'core.key.prepare', 'core.key.commit', 'core.revoke',

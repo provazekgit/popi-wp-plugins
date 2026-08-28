@@ -49,6 +49,13 @@ web znovu spárujte.
 Všechny routes používají `POST` a podepsanou JSON obálku pod namespace
 `/wp-json/popi-connector/v1`.
 
+Strojově čitelné kontrakty jsou součástí každého instalačního ZIPu v
+`contracts/v1/`: `openapi.json` popisuje WordPress API,
+`popisite-openapi.json` POPIsite lifecycle/gateway API a adresář `schemas/`
+obsahuje JSON Schema 2020-12 pro HMAC obálky, pairing, binding, core, POPIweb,
+POPIcast a události. `manifest.json` připíná SHA-256 každého souboru; jeho
+vlastní SHA-256 se posílá při párování a vrací v health/manifest odpovědi.
+
 - Core: health, manifest, site, frontend get/set, rotation, revoke.
 - POPIweb: schema read, entries search/get/patch.
 - POPIcast: show get, episodes search/get.
@@ -77,7 +84,7 @@ umět reconciliation.
 
 ```bash
 npm run test:connector
-git add popi-connector tests/php/connector-test.php
+git add popi-connector tests/php/connector-test.php scripts/validate-popi-connector-contracts.mjs
 git commit -m "Add POPI Connector"
 npm run package:connector
 ```
