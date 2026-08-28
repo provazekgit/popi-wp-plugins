@@ -46,6 +46,9 @@ web znovu spárujte.
 
 ## REST contracts v1
 
+Aktuální maturity je preview `1.0.0-rc.1`. Produkční adaptéry zůstávají bez
+samostatného schválení vypnuté; plugin sám nic nepřepíná ani nepřebírá provoz.
+
 Všechny routes používají `POST` a podepsanou JSON obálku pod namespace
 `/wp-json/popi-connector/v1`.
 

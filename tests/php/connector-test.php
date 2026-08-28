@@ -7,7 +7,7 @@ define('AUTH_KEY', 'connector-auth-test-key');
 define('SECURE_AUTH_KEY', 'connector-secure-auth-test-key');
 define('LOGGED_IN_KEY', 'connector-logged-in-test-key');
 define('NONCE_KEY', 'connector-nonce-test-key');
-define('POPI_CONNECTOR_CONTRACT_VERSION', '1.0.0');
+define('POPI_CONNECTOR_CONTRACT_VERSION', '1.0.0-rc.1');
 define('POPI_CONNECTOR_DIR', __DIR__ . '/../../popi-connector/');
 define('POPI_CONNECTOR_URL', 'https://example.test/wp-content/plugins/popi-connector/');
 
@@ -23,6 +23,8 @@ final class WP_Error {
 
 function is_wp_error($value) { return $value instanceof WP_Error; }
 function wp_json_encode($value, $flags = 0) { return json_encode($value, $flags); }
+function sanitize_key($value) { return preg_replace('/[^a-z0-9_.-]/', '', strtolower((string) $value)); }
+function sanitize_text_field($value) { return trim(strip_tags((string) $value)); }
 
 require_once __DIR__ . '/../../popi-connector/includes/class-crypto.php';
 require_once __DIR__ . '/../../popi-connector/includes/class-contracts.php';
@@ -48,19 +50,14 @@ $tamperedCipher = json_decode($cipherA, true);
 $tamperedCipher['data'][0] = $tamperedCipher['data'][0] === 'A' ? 'B' : 'A';
 expect_true(is_wp_error(POPI_Connector_Crypto::decrypt_secret(json_encode($tamperedCipher))), 'Tampered ciphertext must be rejected');
 
-$envelope = array(
-    'key_id' => 'key_test',
-    'timestamp' => 1787836800,
-    'nonce' => 'abcdefghijklmnopqrstuv',
-    'request_id' => '018f0000-0000-7000-8000-000000000001',
-    'tenant_id' => 'tenant_1',
-    'project_id' => 'project_1',
-    'module_installation_id' => 'installation_1',
-    'connection_id' => 'connection_1',
-    'payload_b64' => POPI_Connector_Crypto::base64url_encode('{"page":1}'),
-);
-$signature = POPI_Connector_Crypto::sign_request($secret, 'POST', '/wp-json/popi-connector/v1/popiweb/entries/search', $envelope);
-expect_same('RzKFpOVYHxHp8OU6A1Wn-MgiZDVUIlugJ6XOlNvjlRA', $signature, 'HMAC contract vector changed unexpectedly');
+$fixture = json_decode(file_get_contents(__DIR__ . '/../fixtures/wordpress-connector-v1.json'), true);
+expect_true(is_array($fixture), 'Executable connector compatibility fixture must be valid JSON');
+expect_same('1.0.0-rc.1', $fixture['contract'], 'Connector contract version changed unexpectedly');
+expect_same(false, $fixture['defaultEnabled'], 'Connector adapters must stay disabled by default');
+$envelope = $fixture['hmacVector']['envelope'];
+unset($envelope['protocol']);
+$signature = POPI_Connector_Crypto::sign_request($fixture['hmacVector']['secret'], $fixture['hmacVector']['method'], $fixture['hmacVector']['path'], $envelope);
+expect_same($fixture['hmacVector']['signature'], $signature, 'HMAC contract vector changed unexpectedly');
 $envelope['signature'] = $signature;
 expect_true(POPI_Connector_Crypto::verify_request_signature($secret, 'POST', '/wp-json/popi-connector/v1/popiweb/entries/search', $envelope), 'Valid request signature must pass');
 
@@ -95,8 +92,26 @@ foreach ($phpFiles as $path) {
 }
 
 $restSource = file_get_contents($pluginRoot . '/includes/class-rest-api.php');
+$authSource = file_get_contents($pluginRoot . '/includes/class-authentication.php');
+$pairingSource = file_get_contents($pluginRoot . '/includes/class-pairing.php');
+$storageSource = file_get_contents($pluginRoot . '/includes/class-storage.php');
+$contractsSource = file_get_contents($pluginRoot . '/includes/class-contracts.php');
 expect_true(strpos($restSource, "'permission_callback' => '__return_true'") === false, 'Connector REST endpoints must never be public');
 expect_true(strpos($restSource, 'DELETE') === false, 'Connector v1 must not expose DELETE operations');
 expect_true(strpos($allSource, 'Authorization:') === false, 'Connector must not depend on the Authorization header');
+expect_true(strpos($authSource, 'verify_request_signature') < strpos($authSource, 'consume_nonce'), 'Replay nonce must be consumed only after signature verification');
+expect_true(strpos($authSource, 'binding_mismatch') !== false && strpos($authSource, 'scope_denied') !== false, 'Tenant tuple and capability scopes must fail closed');
+expect_true(strpos($pairingSource, 'CLAIM_PATH') !== false && strpos($pairingSource, 'claim_token') !== false, 'Pairing must use a one-time claim token');
+expect_true(strpos($pairingSource, 'rotations/prepare') !== false && strpos($pairingSource, 'rotations/commit') !== false, 'Rotation must use prepare and commit phases');
+expect_true(strpos($storageSource, "status = 'retiring'") !== false && strpos($storageSource, "status = 'revoked'") !== false, 'Rotation grace and revocation states must be persisted');
+expect_same('1.0.0-rc.1', POPI_CONNECTOR_CONTRACT_VERSION, 'Plugin must expose the preview contract version');
+
+require_once $pluginRoot . '/includes/class-audit.php';
+$auditMethod = new ReflectionMethod('POPI_Connector_Audit', 'sanitize_metadata');
+$auditMethod->setAccessible(true);
+$redacted = $auditMethod->invoke(null, array('token' => 'secret', 'nested' => array('authorization' => 'Bearer x'), 'safe' => 'ok'));
+expect_same('[redacted]', $redacted['token'], 'Audit must redact token fields');
+expect_same('[redacted]', $redacted['nested']['authorization'], 'Audit must redact nested authorization fields');
+expect_same('ok', $redacted['safe'], 'Audit must retain non-sensitive diagnostics');
 
 echo "POPI Connector tests passed\n";

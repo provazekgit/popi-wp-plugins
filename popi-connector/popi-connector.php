@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
 
 define( 'POPI_CONNECTOR_VERSION', '1.0.0' );
 define( 'POPI_CONNECTOR_DB_VERSION', '1.0.0' );
-define( 'POPI_CONNECTOR_CONTRACT_VERSION', '1.0.0' );
+define( 'POPI_CONNECTOR_CONTRACT_VERSION', '1.0.0-rc.1' );
 define( 'POPI_CONNECTOR_FILE', __FILE__ );
 define( 'POPI_CONNECTOR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'POPI_CONNECTOR_URL', plugin_dir_url( __FILE__ ) );
