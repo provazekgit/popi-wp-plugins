@@ -7,6 +7,9 @@ define('AUTH_KEY', 'connector-auth-test-key');
 define('SECURE_AUTH_KEY', 'connector-secure-auth-test-key');
 define('LOGGED_IN_KEY', 'connector-logged-in-test-key');
 define('NONCE_KEY', 'connector-nonce-test-key');
+define('POPI_CONNECTOR_CONTRACT_VERSION', '1.0.0-rc.1');
+define('POPI_CONNECTOR_DIR', __DIR__ . '/../../popi-connector/');
+define('POPI_CONNECTOR_URL', 'https://example.test/wp-content/plugins/popi-connector/');
 
 final class WP_Error {
     private $code;
@@ -24,6 +27,7 @@ function sanitize_key($value) { return preg_replace('/[^a-z0-9_.-]/', '', strtol
 function sanitize_text_field($value) { return trim(strip_tags((string) $value)); }
 
 require_once __DIR__ . '/../../popi-connector/includes/class-crypto.php';
+require_once __DIR__ . '/../../popi-connector/includes/class-contracts.php';
 
 function expect_true($condition, string $message): void {
     if (!$condition) throw new RuntimeException($message);
@@ -71,6 +75,9 @@ $signedResponse['status'] = 500;
 expect_true(is_wp_error(POPI_Connector_Crypto::verify_response($secret, $signedResponse, 'request-response-test', POPI_Connector_Crypto::RESPONSE_INFO)), 'Tampered response must fail verification');
 
 $pluginRoot = realpath(__DIR__ . '/../../popi-connector');
+$contractHash = hash_file('sha256', $pluginRoot . '/contracts/v1/manifest.json');
+expect_same($contractHash, POPI_Connector_Contracts::bundle_sha256(), 'Runtime contract hash must identify the shipped bundle manifest');
+expect_same('https://example.test/wp-content/plugins/popi-connector/contracts/v1/openapi.json', POPI_Connector_Contracts::openapi_url(), 'Runtime must expose the shipped OpenAPI document');
 $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($pluginRoot, FilesystemIterator::SKIP_DOTS));
 $phpFiles = array();
 foreach ($iterator as $file) {
@@ -97,7 +104,7 @@ expect_true(strpos($authSource, 'binding_mismatch') !== false && strpos($authSou
 expect_true(strpos($pairingSource, 'CLAIM_PATH') !== false && strpos($pairingSource, 'claim_token') !== false, 'Pairing must use a one-time claim token');
 expect_true(strpos($pairingSource, 'rotations/prepare') !== false && strpos($pairingSource, 'rotations/commit') !== false, 'Rotation must use prepare and commit phases');
 expect_true(strpos($storageSource, "status = 'retiring'") !== false && strpos($storageSource, "status = 'revoked'") !== false, 'Rotation grace and revocation states must be persisted');
-expect_true(strpos($contractsSource, "const CONTRACT_VERSION = '1.0.0-rc.1'") !== false, 'Plugin must expose the preview contract version');
+expect_same('1.0.0-rc.1', POPI_CONNECTOR_CONTRACT_VERSION, 'Plugin must expose the preview contract version');
 
 require_once $pluginRoot . '/includes/class-audit.php';
 $auditMethod = new ReflectionMethod('POPI_Connector_Audit', 'sanitize_metadata');

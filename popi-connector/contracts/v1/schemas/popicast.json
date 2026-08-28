@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popisite.cz/contracts/popi-connector/v1/schemas/popicast.json",
+  "title": "POPIcast payloads",
+  "$defs": {
+    "showGetRequest": { "type": "object", "maxProperties": 0 },
+    "showResponse": {
+      "type": "object",
+      "required": ["name", "description", "url", "language", "site_icon", "updated_gmt"],
+      "properties": {
+        "name": { "type": "string" }, "description": { "type": "string" },
+        "url": { "type": "string", "format": "uri" }, "language": { "type": "string" },
+        "site_icon": { "type": "string" }, "updated_gmt": { "type": "string" }
+      }
+    },
+    "episodesSearchRequest": { "$ref": "popiweb.json#/$defs/entriesSearchRequest" },
+    "episodesSearchResponse": { "$ref": "popiweb.json#/$defs/entriesSearchResponse" },
+    "episodeGetRequest": { "$ref": "popiweb.json#/$defs/entryGetRequest" },
+    "episodeResponse": { "$ref": "popiweb.json#/$defs/entry" }
+  }
+}

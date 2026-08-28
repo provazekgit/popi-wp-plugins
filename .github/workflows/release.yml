@@ -46,7 +46,7 @@ jobs:
 
       - name: Test POPI Connector
         if: startsWith(github.ref_name, 'popi-connector-')
-        run: php tests/php/connector-test.php
+        run: npm run test:connector
 
       - name: Create POPI Connector ZIP and checksum
         if: startsWith(github.ref_name, 'popi-connector-')

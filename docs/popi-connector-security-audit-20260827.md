@@ -48,8 +48,8 @@
 
 ## Verification evidence
 
-- Deterministic plugin artifact: two consecutive builds produced 118,157-byte archives with SHA-256 `52bd94dfcb179a56d441f597b96d6e89002b268fa525bf2c81eb27320c735779`.
-- Archive inventory: 19 expected files below `popi-connector/`; no environment file, private key or credential artifact was present.
+- Deterministic plugin artifact: two consecutive builds produced 158,172-byte archives with SHA-256 `f75da16fc2a31e1918240ebdec2d02415eedb8b0b84e754bcd5593c41d62b099`.
+- Archive inventory: 31 expected files below `popi-connector/`, including the versioned OpenAPI/JSON contract bundle; no environment file, private key or credential artifact was present.
 - Plugin PHP tests and PHP syntax checks: passed.
 - Executable contracts type-check, tests and build: passed.
 - POPIsite API: 40 files / 350 tests passed; type-check and production build passed.

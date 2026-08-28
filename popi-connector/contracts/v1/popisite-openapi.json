@@ -1,0 +1,45 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "POPIsite WordPress Connector API",
+    "version": "1.0.0",
+    "description": "Pairing, lifecycle, event ingestion and the typed POPIsite-to-WordPress gateway."
+  },
+  "servers": [{ "url": "https://api.popisite.cz" }],
+  "paths": {
+    "/api/v1/connectors/wordpress/pairings": {
+      "get": { "operationId": "popisite.pairings.list", "x-popi-auth": "tenant-admin", "responses": { "200": { "$ref": "#/components/responses/Json" } } },
+      "post": { "operationId": "popisite.pairings.create", "x-popi-auth": "tenant-admin", "requestBody": { "$ref": "#/components/requestBodies/Json" }, "responses": { "201": { "$ref": "#/components/responses/Json" } } }
+    },
+    "/api/v1/connectors/wordpress/pairings/{id}/confirm": { "post": { "operationId": "popisite.pairings.confirm", "x-popi-auth": "tenant-admin", "parameters": [{ "$ref": "#/components/parameters/PairingId" }], "responses": { "200": { "$ref": "#/components/responses/Json" } } } },
+    "/api/v1/connectors/wordpress/pairings/{id}/revoke": { "post": { "operationId": "popisite.pairings.revoke", "x-popi-auth": "tenant-admin", "parameters": [{ "$ref": "#/components/parameters/PairingId" }], "responses": { "200": { "$ref": "#/components/responses/Json" } } } },
+    "/api/v1/public/connectors/wordpress/pairings/claim": { "post": { "operationId": "popisite.pairings.claim", "x-popi-auth": "one-time-code", "requestBody": { "$ref": "#/components/requestBodies/Claim" }, "responses": { "200": { "description": "Pending claim", "content": { "application/json": { "schema": { "$ref": "schemas/pairing.json#/$defs/claimResponse" } } } } } } },
+    "/api/v1/public/connectors/wordpress/pairings/status": { "post": { "operationId": "popisite.pairings.status", "x-popi-auth": "claim-token", "requestBody": { "$ref": "#/components/requestBodies/Status" }, "responses": { "200": { "description": "Claim status", "content": { "application/json": { "schema": { "$ref": "schemas/pairing.json#/$defs/statusResponse" } } } } } } },
+    "/api/v1/public/connectors/wordpress/pairings/activate": { "post": { "operationId": "popisite.pairings.activate", "x-popi-auth": "claim-token", "requestBody": { "$ref": "#/components/requestBodies/Activate" }, "responses": { "201": { "description": "Active binding", "content": { "application/json": { "schema": { "$ref": "schemas/pairing.json#/$defs/activateResponse" } } } } } } },
+    "/api/v1/connectors/wordpress/events": { "$ref": "#/components/pathItems/event" },
+    "/api/v1/connectors/wordpress/rotations/prepare": { "$ref": "#/components/pathItems/rotationPrepare" },
+    "/api/v1/connectors/wordpress/rotations/commit": { "$ref": "#/components/pathItems/rotationCommit" },
+    "/api/v1/connectors/wordpress/revoke": { "$ref": "#/components/pathItems/revoke" },
+    "/api/v1/internal/connectors/wordpress/request": { "post": { "operationId": "popisite.gateway.request", "x-popi-auth": "internal-secret", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "schemas/gateway.json#/$defs/request" } } } }, "responses": { "200": { "description": "Typed gateway result", "content": { "application/json": { "schema": { "$ref": "schemas/gateway.json#/$defs/response" } } } } } } }
+  },
+  "components": {
+    "parameters": { "PairingId": { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "minLength": 3, "maxLength": 191 } } },
+    "requestBodies": {
+      "Json": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } },
+      "Signed": { "required": true, "content": { "application/json": { "schema": { "$ref": "schemas/hmac-request.json" } } } },
+      "Claim": { "required": true, "content": { "application/json": { "schema": { "$ref": "schemas/pairing.json#/$defs/claimRequest" } } } },
+      "Status": { "required": true, "content": { "application/json": { "schema": { "$ref": "schemas/pairing.json#/$defs/statusRequest" } } } },
+      "Activate": { "required": true, "content": { "application/json": { "schema": { "$ref": "schemas/pairing.json#/$defs/activateRequest" } } } }
+    },
+    "responses": {
+      "Json": { "description": "JSON response", "content": { "application/json": { "schema": { "type": "object" } } } },
+      "Signed": { "description": "Signed JSON response", "content": { "application/json": { "schema": { "$ref": "schemas/hmac-response.json" } } } }
+    },
+    "pathItems": {
+      "event": { "post": { "operationId": "popisite.events.accept", "x-popi-auth": "popi-hmac-v1", "x-popi-scope": ["popiweb.events:emit", "popicast.events:emit"], "x-popi-payload-schema": { "$ref": "schemas/event.json" }, "requestBody": { "$ref": "#/components/requestBodies/Signed" }, "responses": { "200": { "$ref": "#/components/responses/Signed" } } } },
+      "rotationPrepare": { "post": { "operationId": "popisite.rotations.prepare", "x-popi-auth": "popi-hmac-v1", "x-popi-scope": "keys:rotate", "x-popi-payload-schema": { "$ref": "schemas/core.json#/$defs/rotationPrepareRequest" }, "requestBody": { "$ref": "#/components/requestBodies/Signed" }, "responses": { "200": { "$ref": "#/components/responses/Signed" } } } },
+      "rotationCommit": { "post": { "operationId": "popisite.rotations.commit", "x-popi-auth": "popi-hmac-v1", "x-popi-scope": "keys:rotate", "x-popi-payload-schema": { "$ref": "schemas/core.json#/$defs/rotationCommitRequest" }, "requestBody": { "$ref": "#/components/requestBodies/Signed" }, "responses": { "200": { "$ref": "#/components/responses/Signed" } } } },
+      "revoke": { "post": { "operationId": "popisite.binding.revoke", "x-popi-auth": "popi-hmac-v1", "x-popi-scope": "connection:revoke", "x-popi-payload-schema": { "$ref": "schemas/core.json#/$defs/revokeRequest" }, "requestBody": { "$ref": "#/components/requestBodies/Signed" }, "responses": { "200": { "$ref": "#/components/responses/Signed" } } } }
+    }
+  }
+}

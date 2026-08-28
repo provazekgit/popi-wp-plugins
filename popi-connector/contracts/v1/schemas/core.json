@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popisite.cz/contracts/popi-connector/v1/schemas/core.json",
+  "title": "POPI Connector core payloads",
+  "$defs": {
+    "empty": { "type": "object", "maxProperties": 0 },
+    "frontendSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "title", "description", "redirect_url", "redirect_status", "allow_remote_manage"],
+      "properties": {
+        "mode": { "enum": ["wordpress", "noindex", "information", "redirect", "disabled"] },
+        "title": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string" },
+        "redirect_url": { "type": "string" },
+        "redirect_status": { "enum": [301, 302, 307, 308] },
+        "allow_remote_manage": { "type": "integer", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "frontendSetRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": { "enum": ["wordpress", "noindex", "information", "redirect", "disabled"] },
+        "title": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string" },
+        "redirect_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+        "redirect_status": { "enum": [301, 302, 307, 308] },
+        "confirm_permanent": { "type": "boolean" },
+        "allow_remote_manage": { "type": "boolean" }
+      }
+    },
+    "healthResponse": {
+      "type": "object",
+      "required": ["ok", "plugin", "plugin_version", "contract_version", "contract_sha256", "wordpress_version", "php_version", "server_time", "multisite", "tables", "binding_status"],
+      "properties": {
+        "ok": { "type": "boolean" },
+        "plugin": { "const": "popi-connector" },
+        "plugin_version": { "type": "string" },
+        "contract_version": { "const": "1.0.0" },
+        "contract_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "wordpress_version": { "type": "string" },
+        "php_version": { "type": "string" },
+        "server_time": { "type": "integer" },
+        "multisite": { "type": "boolean" },
+        "tables": { "type": "object", "additionalProperties": { "type": "boolean" } },
+        "binding_status": { "type": "string" }
+      }
+    },
+    "manifestResponse": {
+      "type": "object",
+      "required": ["protocols", "contracts", "contract_sha256", "openapi_url", "operations", "destructive_operations", "max_request_bytes"],
+      "properties": {
+        "protocols": { "type": "array", "contains": { "const": "popi-hmac-v1" } },
+        "contracts": { "type": "object", "required": ["core", "popiweb", "popicast"], "additionalProperties": { "type": "string" } },
+        "contract_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "openapi_url": { "type": "string", "format": "uri" },
+        "operations": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "destructive_operations": { "type": "array", "maxItems": 0 },
+        "max_request_bytes": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "siteResponse": {
+      "type": "object",
+      "required": ["site_instance_id", "canonical_url", "rest_url", "name", "description", "language", "timezone"],
+      "properties": {
+        "site_instance_id": { "type": "string" },
+        "canonical_url": { "type": "string", "format": "uri" },
+        "rest_url": { "type": "string", "format": "uri" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "language": { "type": "string" },
+        "timezone": { "type": "string" }
+      }
+    },
+    "rotationPrepareRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["new_key_id", "new_master_secret"],
+      "properties": {
+        "new_key_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{3,191}$" },
+        "new_master_secret": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43,96}$", "writeOnly": true }
+      }
+    },
+    "rotationCommitRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["new_key_id", "proof"],
+      "properties": {
+        "new_key_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{3,191}$" },
+        "proof": { "type": "string", "pattern": "^[a-f0-9]{64}$", "writeOnly": true }
+      }
+    },
+    "revokeRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "reason": { "type": "string", "maxLength": 200 } }
+    }
+  }
+}

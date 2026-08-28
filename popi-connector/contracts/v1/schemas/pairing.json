@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popisite.cz/contracts/popi-connector/v1/schemas/pairing.json",
+  "title": "POPI Connector pairing contracts",
+  "$defs": {
+    "reportedSite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["site_instance_id", "canonical_url", "admin_url", "callback_url", "plugin_version", "wordpress_version", "php_version", "multisite", "contract_version", "contract_sha256"],
+      "properties": {
+        "site_instance_id": { "type": "string", "minLength": 3, "maxLength": 191 },
+        "canonical_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+        "admin_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+        "callback_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+        "plugin_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "wordpress_version": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "php_version": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "multisite": { "const": false },
+        "contract_version": { "const": "1.0.0" },
+        "contract_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "claimRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pairing_code", "site_instance_id", "canonical_url", "admin_url", "callback_url", "plugin_version", "wordpress_version", "php_version", "multisite", "contract_version", "contract_sha256"],
+      "properties": {
+        "pairing_code": { "type": "string", "pattern": "^[A-Z0-9]{12}$" },
+        "site_instance_id": { "$ref": "#/$defs/reportedSite/properties/site_instance_id" },
+        "canonical_url": { "$ref": "#/$defs/reportedSite/properties/canonical_url" },
+        "admin_url": { "$ref": "#/$defs/reportedSite/properties/admin_url" },
+        "callback_url": { "$ref": "#/$defs/reportedSite/properties/callback_url" },
+        "plugin_version": { "$ref": "#/$defs/reportedSite/properties/plugin_version" },
+        "wordpress_version": { "$ref": "#/$defs/reportedSite/properties/wordpress_version" },
+        "php_version": { "$ref": "#/$defs/reportedSite/properties/php_version" },
+        "multisite": { "$ref": "#/$defs/reportedSite/properties/multisite" },
+        "contract_version": { "$ref": "#/$defs/reportedSite/properties/contract_version" },
+        "contract_sha256": { "$ref": "#/$defs/reportedSite/properties/contract_sha256" }
+      }
+    },
+    "claimResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "claim_token", "expires_at", "status", "reported_site"],
+      "properties": {
+        "claim_id": { "type": "string", "minLength": 3, "maxLength": 191 },
+        "claim_token": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43,96}$" },
+        "expires_at": { "type": "string", "format": "date-time" },
+        "status": { "const": "pending_confirmation" },
+        "reported_site": { "$ref": "#/$defs/reportedSite" }
+      }
+    },
+    "statusRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "claim_token"],
+      "properties": {
+        "claim_id": { "type": "string", "minLength": 3, "maxLength": 191 },
+        "claim_token": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43,96}$" }
+      }
+    },
+    "statusResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["pending_confirmation", "approved", "active", "expired", "revoked"] },
+        "reported_site": { "$ref": "#/$defs/reportedSite" }
+      }
+    },
+    "activateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "claim_token", "site_instance_id", "key_id", "master_secret"],
+      "properties": {
+        "claim_id": { "type": "string", "minLength": 3, "maxLength": 191 },
+        "claim_token": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43,96}$" },
+        "site_instance_id": { "type": "string", "minLength": 3, "maxLength": 191 },
+        "key_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{3,191}$" },
+        "master_secret": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43,96}$", "writeOnly": true }
+      }
+    },
+    "activateResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "binding"],
+      "properties": {
+        "status": { "const": "active" },
+        "binding": { "$ref": "binding.json" }
+      }
+    }
+  }
+}
