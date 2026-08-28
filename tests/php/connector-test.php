@@ -7,7 +7,7 @@ define('AUTH_KEY', 'connector-auth-test-key');
 define('SECURE_AUTH_KEY', 'connector-secure-auth-test-key');
 define('LOGGED_IN_KEY', 'connector-logged-in-test-key');
 define('NONCE_KEY', 'connector-nonce-test-key');
-define('POPI_CONNECTOR_CONTRACT_VERSION', '1.0.0-rc.1');
+define('POPI_CONNECTOR_CONTRACT_VERSION', '1.0.0');
 define('POPI_CONNECTOR_DIR', __DIR__ . '/../../popi-connector/');
 define('POPI_CONNECTOR_URL', 'https://example.test/wp-content/plugins/popi-connector/');
 
@@ -52,7 +52,7 @@ expect_true(is_wp_error(POPI_Connector_Crypto::decrypt_secret(json_encode($tampe
 
 $fixture = json_decode(file_get_contents(__DIR__ . '/../fixtures/wordpress-connector-v1.json'), true);
 expect_true(is_array($fixture), 'Executable connector compatibility fixture must be valid JSON');
-expect_same('1.0.0-rc.1', $fixture['contract'], 'Connector contract version changed unexpectedly');
+expect_same('1.0.0', $fixture['contract'], 'Connector contract version changed unexpectedly');
 expect_same(false, $fixture['defaultEnabled'], 'Connector adapters must stay disabled by default');
 $envelope = $fixture['hmacVector']['envelope'];
 unset($envelope['protocol']);
@@ -104,7 +104,7 @@ expect_true(strpos($authSource, 'binding_mismatch') !== false && strpos($authSou
 expect_true(strpos($pairingSource, 'CLAIM_PATH') !== false && strpos($pairingSource, 'claim_token') !== false, 'Pairing must use a one-time claim token');
 expect_true(strpos($pairingSource, 'rotations/prepare') !== false && strpos($pairingSource, 'rotations/commit') !== false, 'Rotation must use prepare and commit phases');
 expect_true(strpos($storageSource, "status = 'retiring'") !== false && strpos($storageSource, "status = 'revoked'") !== false, 'Rotation grace and revocation states must be persisted');
-expect_same('1.0.0-rc.1', POPI_CONNECTOR_CONTRACT_VERSION, 'Plugin must expose the preview contract version');
+expect_same('1.0.0', POPI_CONNECTOR_CONTRACT_VERSION, 'Plugin must expose the stable contract version');
 
 require_once $pluginRoot . '/includes/class-audit.php';
 $auditMethod = new ReflectionMethod('POPI_Connector_Audit', 'sanitize_metadata');

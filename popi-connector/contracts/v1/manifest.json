@@ -1,6 +1,6 @@
 {
   "contract": "popi-connector",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "openapi": "openapi.json",
   "popisite_openapi": "popisite-openapi.json",
   "files": {

@@ -1,5 +1,5 @@
 {
-  "contract": "1.0.0-rc.1",
+  "contract": "1.0.0",
   "protocol": "popi-hmac-v1",
   "pluginMajors": [1],
   "defaultEnabled": false,
