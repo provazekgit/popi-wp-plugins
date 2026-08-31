@@ -96,6 +96,6 @@ for (const [path, rawPathItem] of Object.entries(popisiteOpenapi.paths)) {
   }
   assert(!pathItem.delete, `DELETE operation is forbidden: ${path}`);
 }
-assert(popisiteOperationIds.size === 12, `Expected 12 POPIsite operations, got ${popisiteOperationIds.size}`);
+assert(popisiteOperationIds.size === 13, `Expected 13 POPIsite operations, got ${popisiteOperationIds.size}`);
 
 console.log(`POPI Connector contracts passed (${documented.size} WordPress and ${popisiteOperationIds.size} POPIsite operations, ${Object.keys(manifest.files).length} hashed files)`);

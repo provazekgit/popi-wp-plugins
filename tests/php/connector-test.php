@@ -96,6 +96,9 @@ $authSource = file_get_contents($pluginRoot . '/includes/class-authentication.ph
 $pairingSource = file_get_contents($pluginRoot . '/includes/class-pairing.php');
 $storageSource = file_get_contents($pluginRoot . '/includes/class-storage.php');
 $contractsSource = file_get_contents($pluginRoot . '/includes/class-contracts.php');
+$remoteSource = file_get_contents($pluginRoot . '/includes/class-remote.php');
+$adminSource = file_get_contents($pluginRoot . '/includes/class-admin.php');
+$outboxSource = file_get_contents($pluginRoot . '/includes/class-outbox.php');
 expect_true(strpos($restSource, "'permission_callback' => '__return_true'") === false, 'Connector REST endpoints must never be public');
 expect_true(strpos($restSource, 'DELETE') === false, 'Connector v1 must not expose DELETE operations');
 expect_true(strpos($allSource, 'Authorization:') === false, 'Connector must not depend on the Authorization header');
@@ -105,6 +108,10 @@ expect_true(strpos($pairingSource, 'CLAIM_PATH') !== false && strpos($pairingSou
 expect_true(strpos($pairingSource, 'rotations/prepare') !== false && strpos($pairingSource, 'rotations/commit') !== false, 'Rotation must use prepare and commit phases');
 expect_true(strpos($storageSource, "status = 'retiring'") !== false && strpos($storageSource, "status = 'revoked'") !== false, 'Rotation grace and revocation states must be persisted');
 expect_same('1.0.0', POPI_CONNECTOR_CONTRACT_VERSION, 'Plugin must expose the stable contract version');
+expect_true(strpos($remoteSource, "'/api/v1/connectors/wordpress/health'") !== false, 'Signed outbound health must target the typed POPIsite endpoint');
+expect_true(strpos($remoteSource, "'core.health:read'") !== false, 'Outbound health must fail closed without the existing health scope');
+expect_true(strpos($adminSource, 'POPI_Connector_Remote::report_health') !== false, 'Diagnostics must verify HMAC health instead of only public HTTPS');
+expect_true(strpos($outboxSource, 'POPI_Connector_Remote::report_health') !== false, 'Scheduled maintenance must report signed health outbound');
 
 require_once $pluginRoot . '/includes/class-authentication.php';
 $payloadValidator = new ReflectionMethod('POPI_Connector_Authentication', 'valid_payload_b64');

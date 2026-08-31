@@ -24,6 +24,11 @@ WordPress Application Password.
    odešle jej do POPIsite přes TLS a uloží jej šifrovaně.
 7. Zkontrolujte záložku Diagnostika. Frontend přepněte až samostatně.
 
+Diagnostika neposílá anonymní veřejný ping. Pro každé aktivní připojení odešle
+do POPIsite podepsaný `core.health` report a ověří podepsanou odpověď. Stejný
+heartbeat běží jednou za hodinu přes WP-Cron. Komunikaci zahajuje WordPress,
+takže funguje i na sdílených hostinzích, které blokují příchozí REST požadavky.
+
 Jeden párovací kód vytváří jeden binding na konkrétní tuple
 `workspace + project + ModuleInstallation + Connection`. Stejný WordPress může
 mít samostatný POPIweb i POPIcast binding, každý s vlastním klíčem a scopes.
@@ -104,7 +109,7 @@ git commit -m "Add POPI Connector"
 npm run package:connector
 ```
 
-Release tag `popi-connector-v1.0.2` spustí GitHub Action, která zopakuje test,
+Release tag `popi-connector-v1.1.0` spustí GitHub Action, která zopakuje test,
 vytvoří `popi-connector.zip` a jeho SHA-256. Updater přijímá jen balíčky z
 odpovídajícího GitHub Releases prefixu a checksum ověřuje před instalací.
 
