@@ -106,6 +106,17 @@ expect_true(strpos($pairingSource, 'rotations/prepare') !== false && strpos($pai
 expect_true(strpos($storageSource, "status = 'retiring'") !== false && strpos($storageSource, "status = 'revoked'") !== false, 'Rotation grace and revocation states must be persisted');
 expect_same('1.0.0', POPI_CONNECTOR_CONTRACT_VERSION, 'Plugin must expose the stable contract version');
 
+require_once $pluginRoot . '/includes/class-authentication.php';
+$payloadValidator = new ReflectionMethod('POPI_Connector_Authentication', 'valid_payload_b64');
+$payloadValidator->setAccessible(true);
+expect_same(true, $payloadValidator->invoke(null, 'e30'), 'A valid base64url payload must pass validation');
+expect_same(false, $payloadValidator->invoke(null, 'A='), 'Base64 padding must be rejected');
+expect_same(false, $payloadValidator->invoke(null, 'A'), 'A one-character payload must be rejected');
+$maximumPayload = str_repeat('A', POPI_Connector_Authentication::MAX_PAYLOAD_B64_BYTES);
+expect_same(true, $payloadValidator->invoke(null, $maximumPayload), 'The documented maximum payload length must pass without a PCRE compilation error');
+expect_same(false, $payloadValidator->invoke(null, $maximumPayload . 'A'), 'An oversized payload must be rejected before regex validation');
+unset($maximumPayload);
+
 require_once $pluginRoot . '/includes/class-audit.php';
 $auditMethod = new ReflectionMethod('POPI_Connector_Audit', 'sanitize_metadata');
 $auditMethod->setAccessible(true);

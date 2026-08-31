@@ -3,7 +3,7 @@
  * Plugin Name: POPI Connector
  * Plugin URI:  https://popisite.cz/plugins/popi-connector/
  * Description: Bezpečné propojení WordPressu s POPIsite, POPIwebem a POPIcastem pomocí párovacího kódu a HMAC podpisů.
- * Version:     1.0.1
+ * Version:     1.0.2
  * Author:      POPI
  * Author URI:  https://popisite.cz
  * Requires at least: 6.2
@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'POPI_CONNECTOR_VERSION', '1.0.1' );
+define( 'POPI_CONNECTOR_VERSION', '1.0.2' );
 define( 'POPI_CONNECTOR_DB_VERSION', '1.0.0' );
 define( 'POPI_CONNECTOR_CONTRACT_VERSION', '1.0.0' );
 define( 'POPI_CONNECTOR_FILE', __FILE__ );

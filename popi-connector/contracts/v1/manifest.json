@@ -10,7 +10,7 @@
     "schemas/core.json": "5226c2ed4eb4756fd6cc6c8609573f5bda26a542447127ddf0ba6ce2350607ee",
     "schemas/event.json": "63d3bd17b06e9f312f025a9bc44b7a0e542687a300574cff24d26a90ce386656",
     "schemas/gateway.json": "b9a5b9d3e5d3668667aa03a71e0997f4593929f827a1fb2d0ba607e843b62905",
-    "schemas/hmac-request.json": "2d62b946199edc79d791ac0212b0e19f95585c030591521119e1ea2c1f33b1cd",
+    "schemas/hmac-request.json": "36e0a2c74f06990222b6dfe9d9998cac3e29b58d630514bd205afdf58ede3f6c",
     "schemas/hmac-response.json": "266372578e7b3297bd3e19c0c9280ae761205cae49712606c901e6cc675a9314",
     "schemas/pairing.json": "f8778113595e80f5c3a4ec00f4546c8bd08acbd97445044a74d82f733ffe45c6",
     "schemas/popicast.json": "e42812965b72bf02ef04936ae6043248a6d6b4209878e8908a80575167c47f43",

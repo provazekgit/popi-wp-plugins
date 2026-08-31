@@ -153,6 +153,20 @@ final class POPI_Connector_Admin {
 		}
 		$s = POPI_Connector_Frontend::settings();
 		?>
+		<div class="notice notice-info inline">
+			<p><strong>Tato záložka řídí pouze veřejný frontend právě tohoto WordPress webu.</strong> Neřídí ani nenastavuje nový frontend generovaný projektem POPIweb nebo POPIcast. Ten se spravuje samostatně v příslušném POPI projektu.</p>
+		</div>
+		<div class="card" style="max-width:none">
+			<h2>Co jednotlivé režimy udělají</h2>
+			<dl>
+				<dt><strong>WordPress frontend aktivní</strong></dt><dd>Veřejní návštěvníci dál vidí současnou WordPress šablonu a obsah tohoto webu. Plugin do zobrazení nezasahuje.</dd>
+				<dt><strong>Pouze noindex</strong></dt><dd>WordPress web zůstane veřejně dostupný, ale požádá vyhledávače, aby jej neindexovaly. Není to heslo ani ochrana před návštěvníky.</dd>
+				<dt><strong>Informační stránka</strong></dt><dd>Místo WordPress šablony zobrazí jednoduchý titulek a text z polí níže. Administrace, přihlášení, REST API a cron zůstanou dostupné.</dd>
+				<dt><strong>Přesměrování</strong></dt><dd>Návštěvníka přesměruje na zadanou HTTPS adresu, například na samostatný frontend nasazený projektem POPI. Dočasný status 302/307 je bezpečný pro zkoušku; 301/308 je trvalý a vyžaduje potvrzení.</dd>
+				<dt><strong>Frontend vypnutý (404)</strong></dt><dd>Veřejná část tohoto WordPressu vrací informační 404 stránku. WordPress dál funguje jako neveřejný CMS a API backend.</dd>
+			</dl>
+			<p><strong>Bezpečný postup:</strong> nejprve ověřte nový POPI frontend na jeho vlastní adrese, poté použijte dočasné přesměrování a až po kontrole případně trvalé. První změna uloží vratný snapshot.</p>
+		</div>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 			<input type="hidden" name="action" value="popi_connector_frontend_save">
 			<?php wp_nonce_field( 'popi_connector_frontend_save' ); ?>
@@ -161,11 +175,11 @@ final class POPI_Connector_Admin {
 			<?php foreach ( array( 'wordpress' => 'WordPress frontend aktivní', 'noindex' => 'Pouze noindex', 'information' => 'Informační stránka', 'redirect' => 'Přesměrování', 'disabled' => 'Frontend vypnutý (404)' ) as $value => $label ) : ?>
 			<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $s['mode'], $value ); ?>><?php echo esc_html( $label ); ?></option>
 			<?php endforeach; ?></select><p class="description">Aktivace pluginu frontend sama nemění. Každá změna zde vytvoří vratný snapshot.</p></td></tr>
-			<tr><th><label for="popi-title">Titulek</label></th><td><input id="popi-title" name="title" class="regular-text" value="<?php echo esc_attr( $s['title'] ); ?>"></td></tr>
-			<tr><th>Popis informační stránky</th><td><?php wp_editor( $s['description'], 'popi_connector_description', array( 'textarea_name' => 'description', 'textarea_rows' => 10, 'media_buttons' => false ) ); ?></td></tr>
-			<tr><th><label for="popi-redirect">Cílová HTTPS URL</label></th><td><input id="popi-redirect" type="url" name="redirect_url" class="regular-text" value="<?php echo esc_attr( $s['redirect_url'] ); ?>" placeholder="https://www.example.cz/"></td></tr>
-			<tr><th><label for="popi-status">HTTP status</label></th><td><select id="popi-status" name="redirect_status"><?php foreach ( array( 302, 307, 301, 308 ) as $status ) : ?><option value="<?php echo esc_attr( $status ); ?>" <?php selected( (int) $s['redirect_status'], $status ); ?>><?php echo esc_html( $status ); ?></option><?php endforeach; ?></select> <label><input type="checkbox" name="confirm_permanent" value="1"> Potvrzuji permanentní redirect 301/308</label></td></tr>
-			<tr><th>Vzdálená správa</th><td><label><input type="checkbox" name="allow_remote_manage" value="1" <?php checked( ! empty( $s['allow_remote_manage'] ) ); ?>> POPIsite smí měnit frontend v rámci ověřeného projektu</label></td></tr>
+			<tr><th><label for="popi-title">Titulek</label></th><td><input id="popi-title" name="title" class="regular-text" value="<?php echo esc_attr( $s['title'] ); ?>"><p class="description">Použije se jen v režimu Informační stránka nebo Frontend vypnutý.</p></td></tr>
+			<tr><th>Popis informační stránky</th><td><?php wp_editor( $s['description'], 'popi_connector_description', array( 'textarea_name' => 'description', 'textarea_rows' => 10, 'media_buttons' => false ) ); ?><p class="description">Text veřejné informační stránky tohoto WordPressu; nemění obsah v POPI projektu.</p></td></tr>
+			<tr><th><label for="popi-redirect">Cílová HTTPS URL</label></th><td><input id="popi-redirect" type="url" name="redirect_url" class="regular-text" value="<?php echo esc_attr( $s['redirect_url'] ); ?>" placeholder="https://www.example.cz/"><p class="description">Použije se jen v režimu Přesměrování. Zadejte ověřenou veřejnou adresu cílového frontendu.</p></td></tr>
+			<tr><th><label for="popi-status">HTTP status</label></th><td><select id="popi-status" name="redirect_status"><?php foreach ( array( 302, 307, 301, 308 ) as $status ) : ?><option value="<?php echo esc_attr( $status ); ?>" <?php selected( (int) $s['redirect_status'], $status ); ?>><?php echo esc_html( $status ); ?></option><?php endforeach; ?></select> <label><input type="checkbox" name="confirm_permanent" value="1"> Potvrzuji permanentní redirect 301/308</label><p class="description">302/307 jsou dočasné a vhodné pro pilot. 301/308 mohou prohlížeče a vyhledávače dlouhodobě cachovat.</p></td></tr>
+			<tr><th>Vzdálená správa</th><td><label><input type="checkbox" name="allow_remote_manage" value="1" <?php checked( ! empty( $s['allow_remote_manage'] ) ); ?>> POPIsite smí měnit frontend v rámci ověřeného projektu</label><p class="description">Povolí pouze podepsané změny z POPIsite pro správný workspace, projekt a instalaci se scope <code>frontend:write</code>.</p></td></tr>
 			</table>
 			<?php submit_button( 'Uložit frontend' ); ?>
 		</form>
