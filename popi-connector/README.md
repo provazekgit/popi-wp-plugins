@@ -69,12 +69,24 @@ vždy odmítnut.
 
 ## Frontend
 
+Záložka Frontend řídí výhradně veřejný frontend konkrétního WordPressu, ve
+kterém je plugin nainstalovaný. Nejde o nastavení frontendu generovaného
+projektem POPIweb nebo POPIcast; ten se spravuje a nasazuje samostatně.
+
 Aktivace nic nemění. Administrátor může zvolit WordPress frontend, pouze
 `noindex`, informační stránku s WordPress editorem, HTTPS redirect nebo 404
 headless režim. Před první změnou se uloží rollback snapshot včetně původního
 `blog_public`. Admin, REST, cron, login a `/.well-known/` zůstávají dostupné.
 
 `noindex` je doporučení pro vyhledávače, nikoli access control.
+
+## Výkon a timeout
+
+POPIsite čeká na jeden podepsaný požadavek WordPressu nejvýše 10 sekund. Limit
+počítá i s pomalejším sdíleným hostingem, ale zároveň brání tomu, aby jeden
+zaseknutý web blokoval POPI služby. Dlouhé importy, generování a synchronizace
+se proto nemají provádět v jednom HTTP požadavku; POPI je rozděluje do menších
+operací a jeho samostatný frontend má pomalý WordPress od návštěvníků odstínit.
 
 ## Události
 
@@ -92,7 +104,7 @@ git commit -m "Add POPI Connector"
 npm run package:connector
 ```
 
-Release tag `popi-connector-v1.0.1` spustí GitHub Action, která zopakuje test,
+Release tag `popi-connector-v1.0.2` spustí GitHub Action, která zopakuje test,
 vytvoří `popi-connector.zip` a jeho SHA-256. Updater přijímá jen balíčky z
 odpovídajícího GitHub Releases prefixu a checksum ověřuje před instalací.
 

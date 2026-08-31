@@ -5,6 +5,7 @@ defined( 'ABSPATH' ) || exit;
 final class POPI_Connector_Authentication {
 
 	const MAX_BODY_BYTES = 1048576;
+	const MAX_PAYLOAD_B64_BYTES = 1398102;
 	const CLOCK_SKEW_SECONDS = 300;
 
 	public static function authorize( $request, $scope, $module, $rate_bucket = 'read', $rate_limit = 60, $allowed_key_statuses = array( 'active', 'retiring' ) ) {
@@ -32,7 +33,7 @@ final class POPI_Connector_Authentication {
 		if ( ! self::valid_identifier( $envelope['key_id'] )
 			|| ! self::valid_identifier( $envelope['request_id'] )
 			|| ! preg_match( '/^[A-Za-z0-9_-]{22,96}$/', (string) $envelope['nonce'] )
-			|| ! preg_match( '/^[A-Za-z0-9_-]{2,1398102}$/', (string) $envelope['payload_b64'] )
+			|| ! self::valid_payload_b64( $envelope['payload_b64'] )
 			|| ! preg_match( '/^[A-Za-z0-9_-]{40,96}$/', (string) $envelope['signature'] ) ) {
 			return self::error( 'popi_envelope_invalid', 'Podepsaná obálka obsahuje neplatné identifikátory.', 400 );
 		}
@@ -110,6 +111,16 @@ final class POPI_Connector_Authentication {
 
 	private static function valid_identifier( $value ) {
 		return is_string( $value ) && (bool) preg_match( '/^[A-Za-z0-9._:-]{3,191}$/', $value );
+	}
+
+	private static function valid_payload_b64( $value ) {
+		if ( ! is_string( $value ) ) {
+			return false;
+		}
+		$length = strlen( $value );
+		return $length >= 2
+			&& $length <= self::MAX_PAYLOAD_B64_BYTES
+			&& 1 === preg_match( '/^[A-Za-z0-9_-]+$/', $value );
 	}
 
 	private static function audit_failure( $event, $envelope, $binding ) {

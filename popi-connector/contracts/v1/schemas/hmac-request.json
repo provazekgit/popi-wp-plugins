@@ -15,7 +15,7 @@
     "project_id": { "type": "string", "minLength": 3, "maxLength": 191 },
     "module_installation_id": { "type": "string", "minLength": 3, "maxLength": 191 },
     "connection_id": { "type": "string", "minLength": 3, "maxLength": 191 },
-    "payload_b64": { "type": "string", "pattern": "^[A-Za-z0-9_-]{2,1398102}$", "x-content-encoding": "base64url-json" },
+    "payload_b64": { "type": "string", "minLength": 2, "maxLength": 1398102, "pattern": "^[A-Za-z0-9_-]+$", "x-content-encoding": "base64url-json" },
     "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]{40,96}$" }
   }
 }
