@@ -5,7 +5,7 @@
   "popisite_openapi": "popisite-openapi.json",
   "files": {
     "openapi.json": "1274e7cde7cf42db4927cf6705917e184c580776bfa8e3bf9cb6d6aee262ea83",
-    "popisite-openapi.json": "1fcf15b8acf935eaa28d33cb4b71a1f16a978964dd72ccadd525386ad8bbbd03",
+    "popisite-openapi.json": "e0ace8f701a7c0fe34b6fc37d32e6b47ecb3a6b8bacd0548c590b132c13ff2a2",
     "schemas/binding.json": "568f530e87be3987271a0154dd794bde0e3ced397fabe98b501bd1aa62f4c284",
     "schemas/core.json": "5226c2ed4eb4756fd6cc6c8609573f5bda26a542447127ddf0ba6ce2350607ee",
     "schemas/event.json": "63d3bd17b06e9f312f025a9bc44b7a0e542687a300574cff24d26a90ce386656",

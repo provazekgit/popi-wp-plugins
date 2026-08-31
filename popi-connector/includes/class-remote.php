@@ -81,4 +81,43 @@ final class POPI_Connector_Remote {
 		}
 		return POPI_Connector_Crypto::verify_response( $secret, $response, $request_id, POPI_Connector_Crypto::REQUEST_INFO );
 	}
+
+	public static function report_health( $binding ) {
+		if ( ! is_array( $binding ) || 'active' !== $binding['status'] ) {
+			return new WP_Error( 'popi_binding_inactive', 'Připojení není aktivní.' );
+		}
+		if ( ! in_array( 'core.health:read', POPI_Connector_Storage::binding_scopes( $binding ), true ) ) {
+			return new WP_Error( 'popi_scope_denied', 'Připojení nemá oprávnění pro health test.' );
+		}
+		$result = self::signed_post(
+			$binding,
+			'/api/v1/connectors/wordpress/health',
+			POPI_Connector_Contracts::health( array( 'binding' => $binding ) )
+		);
+		if ( ! is_wp_error( $result ) ) {
+			POPI_Connector_Storage::mark_seen( $binding['binding_id'] );
+			POPI_Connector_Audit::record(
+				'health.reported',
+				'success',
+				array(
+					'binding_id' => $binding['binding_id'],
+					'actor_type' => 'service',
+					'actor_id'   => $binding['installation_id'],
+					'metadata'   => array( 'transport' => 'outbound', 'module' => $binding['module'] ),
+				)
+			);
+		} else {
+			POPI_Connector_Audit::record(
+				'health.reported',
+				'failed',
+				array(
+					'binding_id' => $binding['binding_id'],
+					'actor_type' => 'service',
+					'actor_id'   => $binding['installation_id'],
+					'metadata'   => array( 'transport' => 'outbound', 'error_code' => $result->get_error_code() ),
+				)
+			);
+		}
+		return $result;
+	}
 }

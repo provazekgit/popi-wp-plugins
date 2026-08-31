@@ -282,9 +282,13 @@ final class POPI_Connector_Admin {
 
 	public static function handle_diagnostics() {
 		self::guard( 'view_popi_connector_status', 'popi_connector_diagnostics' );
-		$response = wp_safe_remote_get( POPI_Connector_Remote::api_base() . '/health', array( 'timeout' => 10, 'redirection' => 0, 'sslverify' => true ) );
-		if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) { self::redirect_result( 'diagnostics', new WP_Error( 'diagnostic_failed', is_wp_error( $response ) ? $response->get_error_message() : 'POPIsite health endpoint nevrátil HTTP 200.' ) ); }
-		self::redirect_result( 'diagnostics', true, 'Odchozí HTTPS spojení s POPIsite funguje.' );
+		$bindings = POPI_Connector_Storage::list_bindings( 'active' );
+		if ( ! $bindings ) { self::redirect_result( 'diagnostics', new WP_Error( 'diagnostic_binding_missing', 'Nejdříve spárujte alespoň jednu instalaci.' ) ); }
+		foreach ( $bindings as $binding ) {
+			$result = POPI_Connector_Remote::report_health( $binding );
+			if ( is_wp_error( $result ) ) { self::redirect_result( 'diagnostics', $result ); }
+		}
+		self::redirect_result( 'diagnostics', true, 'Podepsané odchozí spojení s POPIsite funguje pro všechna aktivní připojení.' );
 	}
 
 	private static function guard( $capability, $nonce_action ) { if ( ! current_user_can( $capability ) ) { wp_die( 'Nemáte oprávnění.' ); } check_admin_referer( $nonce_action ); }

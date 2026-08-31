@@ -104,7 +104,9 @@ final class POPI_Connector_Outbox {
 
 	public static function run_maintenance() {
 		self::dispatch();
+		foreach ( POPI_Connector_Storage::list_bindings( 'active' ) as $binding ) {
+			POPI_Connector_Remote::report_health( $binding );
+		}
 		POPI_Connector_Storage::cleanup();
 	}
 }
-
