@@ -44,7 +44,31 @@
         "server_time": { "type": "integer" },
         "multisite": { "type": "boolean" },
         "tables": { "type": "object", "additionalProperties": { "type": "boolean" } },
-        "binding_status": { "type": "string" }
+        "binding_status": { "type": "string" },
+        "legacy_connection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["auth_mode", "product", "declared", "purpose", "note", "detection"],
+          "properties": {
+            "auth_mode": { "const": "wp_application_password" },
+            "product": { "enum": ["popiweb", "popicast"] },
+            "declared": { "type": "boolean" },
+            "purpose": { "enum": ["content_sync", "admin_access", "migration", "other"] },
+            "note": { "type": "string", "maxLength": 500 },
+            "detection": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["supported", "configured", "credential_count", "last_used_at", "scan_limited"],
+              "properties": {
+                "supported": { "type": "boolean" },
+                "configured": { "type": "boolean" },
+                "credential_count": { "type": "integer", "minimum": 0 },
+                "last_used_at": { "type": ["string", "null"], "format": "date-time" },
+                "scan_limited": { "type": "boolean" }
+              }
+            }
+          }
+        }
       }
     },
     "manifestResponse": {

@@ -17,6 +17,6 @@ foreach ( array( 'nonces', 'rate_limits', 'outbox', 'audit', 'keys', 'bindings' 
 	$table = $prefix . $suffix;
 	$wpdb->query( "DROP TABLE IF EXISTS `$table`" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- fixed internal prefix, explicit opt-in.
 }
-foreach ( array( 'popi_connector_db_version', 'popi_connector_site_instance_id', 'popi_connector_api_base', 'popi_connector_frontend', 'popi_connector_frontend_snapshot', 'popi_connector_pending_claim' ) as $option ) {
+foreach ( array( 'popi_connector_db_version', 'popi_connector_site_instance_id', 'popi_connector_api_base', 'popi_connector_frontend', 'popi_connector_frontend_snapshot', 'popi_connector_pending_claim', 'popi_connector_legacy_connections' ) as $option ) {
 	delete_option( $option );
 }

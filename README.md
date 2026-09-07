@@ -56,6 +56,12 @@ Release tag má tvar `popi-connector-v*`. Registry updateru používá endpoint
 `https://api.popisite.cz/api/v1/public/plugins/popi-connector` a před instalací
 ověřuje SHA-256 release ZIPu.
 
+Od verze 1.2.0 má Connector záložku **Aplikační hesla**. Zobrazuje pouze
+souhrnnou, omezenou kontrolu existence WordPress Application Passwords a ke
+konkrétnímu tenant/project/installation bindingu dovolí uložit provozní
+poznámku. Hesla, UUID, názvy credentials, uživatelé ani IP adresy se neodesílají;
+POPIsite dostane deklaraci pouze v podepsaném health reportu.
+
 ## Po releasu — update server
 
 Uprav `REGISTRY` v `popi_site/apps/api/src/routes/wp-plugins.ts`:
