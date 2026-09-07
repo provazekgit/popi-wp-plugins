@@ -32,6 +32,7 @@ final class POPI_Connector_Contracts {
 			'multisite'        => is_multisite(),
 			'tables'           => $table_status,
 			'binding_status'   => $context['binding']['status'],
+			'legacy_connection'=> POPI_Connector_Legacy_Connections::health_payload( $context['binding'] ),
 		);
 	}
 

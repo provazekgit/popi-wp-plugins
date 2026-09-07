@@ -13,6 +13,7 @@ final class POPI_Connector_Admin {
 		add_action( 'admin_post_popi_connector_pair_refresh', array( __CLASS__, 'handle_pair_refresh' ) );
 		add_action( 'admin_post_popi_connector_revoke', array( __CLASS__, 'handle_revoke' ) );
 		add_action( 'admin_post_popi_connector_rotate', array( __CLASS__, 'handle_rotate' ) );
+		add_action( 'admin_post_popi_connector_legacy_save', array( __CLASS__, 'handle_legacy_save' ) );
 		add_action( 'admin_post_popi_connector_frontend_save', array( __CLASS__, 'handle_frontend_save' ) );
 		add_action( 'admin_post_popi_connector_frontend_rollback', array( __CLASS__, 'handle_frontend_rollback' ) );
 		add_action( 'admin_post_popi_connector_advanced_save', array( __CLASS__, 'handle_advanced_save' ) );
@@ -38,6 +39,7 @@ final class POPI_Connector_Admin {
 		$tabs = array(
 			'overview'    => 'Přehled',
 			'connection'  => 'Připojení',
+			'legacy'      => 'Aplikační hesla',
 			'modules'     => 'Moduly',
 			'frontend'    => 'Frontend',
 			'security'    => 'Zabezpečení',
@@ -144,6 +146,51 @@ final class POPI_Connector_Admin {
 			echo '</p><p><strong>Povolené typy obsahu:</strong> ' . esc_html( implode( ', ', isset( $config['allowed_post_types'] ) ? (array) $config['allowed_post_types'] : array() ) ) . '</p>';
 			echo '</div>';
 		}
+	}
+
+	private static function render_legacy() {
+		if ( ! current_user_can( 'manage_popi_connector' ) ) {
+			echo '<div class="notice notice-error inline"><p>Nemáte oprávnění spravovat informace o legacy připojení.</p></div>';
+			return;
+		}
+		$summary  = POPI_Connector_Legacy_Connections::detection_summary();
+		$bindings = POPI_Connector_Storage::list_bindings();
+		?>
+		<div class="notice notice-info inline">
+			<p><strong>POPI Connector žádné WordPress Application Password nevytváří, nemění ani neruší.</strong> Tato záložka pouze bezpečně zjistí souhrnný stav a dovolí popsat, který POPI produkt už existující přístup používá. Hodnoty hesel, jejich UUID, názvy, uživatelé ani IP adresy se neukládají a neodesílají.</p>
+		</div>
+		<div class="card" style="max-width:none">
+			<h2>Automatická kontrola WordPressu</h2>
+			<table class="widefat striped"><tbody>
+			<tr><th>Podpora Application Passwords</th><td><?php echo $summary['supported'] ? 'Ano' : 'Ne'; ?></td></tr>
+			<tr><th>Nalezené credentials</th><td><?php echo esc_html( (string) $summary['credential_count'] ); ?><?php echo $summary['scan_limited'] ? ' (kontrola byla omezena na prvních 200 účtů)' : ''; ?></td></tr>
+			<tr><th>Poslední zaznamenané použití</th><td><?php echo esc_html( $summary['last_used_at'] ? $summary['last_used_at'] : 'WordPress dosud nezaznamenal' ); ?></td></tr>
+			</tbody></table>
+			<p class="description">Samotná existence hesla neurčuje, který produkt je používá. Vazbu níže potvrzuje správce. Před smazáním aplikačního hesla nejprve ověřte všechna označená připojení.</p>
+		</div>
+		<?php if ( ! $bindings ) : ?>
+			<div class="notice notice-warning inline"><p>Nejdříve spárujte konkrétní POPI instalaci. Poznámka musí být tenantově i projektově svázaná s bindingem.</p></div>
+		<?php endif; ?>
+		<?php foreach ( $bindings as $binding ) : $legacy = POPI_Connector_Legacy_Connections::get( $binding['binding_id'] ); ?>
+		<div class="card" style="max-width:none">
+			<h2><?php echo esc_html( strtoupper( $binding['module'] ) ); ?></h2>
+			<p><strong>Instalace:</strong> <code><?php echo esc_html( $binding['installation_id'] ); ?></code><br><strong>Binding:</strong> <code><?php echo esc_html( $binding['binding_id'] ); ?></code></p>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+				<input type="hidden" name="action" value="popi_connector_legacy_save">
+				<input type="hidden" name="binding_id" value="<?php echo esc_attr( $binding['binding_id'] ); ?>">
+				<?php wp_nonce_field( 'popi_connector_legacy_save_' . $binding['binding_id'] ); ?>
+				<table class="form-table" role="presentation">
+				<tr><th>Legacy připojení</th><td><label><input type="checkbox" name="declared" value="1" <?php checked( $legacy['declared'] ); ?>> Tento POPI produkt používá existující WordPress Application Password</label></td></tr>
+				<tr><th><label for="popi-legacy-purpose-<?php echo esc_attr( $binding['binding_id'] ); ?>">Účel</label></th><td><select id="popi-legacy-purpose-<?php echo esc_attr( $binding['binding_id'] ); ?>" name="purpose">
+				<?php foreach ( array( 'content_sync' => 'Synchronizace obsahu', 'admin_access' => 'Administrativní přístup', 'migration' => 'Migrace', 'other' => 'Jiný účel' ) as $value => $label ) : ?><option value="<?php echo esc_attr( $value ); ?>" <?php selected( $legacy['purpose'], $value ); ?>><?php echo esc_html( $label ); ?></option><?php endforeach; ?>
+				</select></td></tr>
+				<tr><th><label for="popi-legacy-note-<?php echo esc_attr( $binding['binding_id'] ); ?>">Provozní poznámka</label></th><td><textarea id="popi-legacy-note-<?php echo esc_attr( $binding['binding_id'] ); ?>" name="note" class="large-text" rows="4" maxlength="500"><?php echo esc_textarea( $legacy['note'] ); ?></textarea><p class="description">Max. 500 znaků. Nevkládejte heslo, token ani Authorization hlavičku.</p></td></tr>
+				</table>
+				<?php submit_button( 'Uložit a bezpečně nahlásit do POPIsite' ); ?>
+			</form>
+		</div>
+		<?php endforeach; ?>
+		<?php
 	}
 
 	private static function render_frontend() {
@@ -261,6 +308,31 @@ final class POPI_Connector_Admin {
 	public static function handle_pair_refresh() { self::guard( 'pair_popi_connector', 'popi_connector_pair_refresh' ); self::redirect_result( 'connection', POPI_Connector_Pairing::refresh(), 'Připojení je aktivní.' ); }
 	public static function handle_revoke() { $id = isset( $_POST['binding_id'] ) ? sanitize_text_field( wp_unslash( $_POST['binding_id'] ) ) : ''; self::guard( 'revoke_popi_connector', 'popi_connector_revoke_' . $id ); self::redirect_result( 'connection', POPI_Connector_Pairing::revoke( $id ), 'Připojení bylo odvoláno.' ); }
 	public static function handle_rotate() { $id = isset( $_POST['binding_id'] ) ? sanitize_text_field( wp_unslash( $_POST['binding_id'] ) ) : ''; self::guard( 'rotate_popi_connector_keys', 'popi_connector_rotate_' . $id ); self::redirect_result( 'security', POPI_Connector_Pairing::rotate( $id ), 'Klíč byl bezpečně rotován.' ); }
+
+	public static function handle_legacy_save() {
+		$id = isset( $_POST['binding_id'] ) ? sanitize_text_field( wp_unslash( $_POST['binding_id'] ) ) : '';
+		self::guard( 'manage_popi_connector', 'popi_connector_legacy_save_' . $id );
+		$result = POPI_Connector_Legacy_Connections::save(
+			$id,
+			array(
+				'declared' => ! empty( $_POST['declared'] ),
+				'purpose'  => isset( $_POST['purpose'] ) ? wp_unslash( $_POST['purpose'] ) : '',
+				'note'     => isset( $_POST['note'] ) ? wp_unslash( $_POST['note'] ) : '',
+			),
+			get_current_user_id()
+		);
+		if ( is_wp_error( $result ) ) {
+			self::redirect_result( 'legacy', $result );
+		}
+		$binding = POPI_Connector_Storage::get_binding( $id );
+		$reported = $binding && 'active' === $binding['status'] ? POPI_Connector_Remote::report_health( $binding ) : new WP_Error( 'popi_binding_inactive', 'Binding není aktivní.' );
+		if ( is_wp_error( $reported ) ) {
+			self::set_notice( 'Poznámka je uložená lokálně. POPIsite ji zatím nepřevzal: ' . $reported->get_error_message(), 'error' );
+			wp_safe_redirect( self::page_url( 'legacy' ) );
+			exit;
+		}
+		self::redirect_result( 'legacy', true, 'Informace o legacy připojení byla uložena a podepsaně předána do POPIsite.' );
+	}
 
 	public static function handle_frontend_save() {
 		self::guard( 'manage_popi_connector_frontend', 'popi_connector_frontend_save' );

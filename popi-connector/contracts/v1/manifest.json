@@ -7,7 +7,7 @@
     "openapi.json": "1274e7cde7cf42db4927cf6705917e184c580776bfa8e3bf9cb6d6aee262ea83",
     "popisite-openapi.json": "e0ace8f701a7c0fe34b6fc37d32e6b47ecb3a6b8bacd0548c590b132c13ff2a2",
     "schemas/binding.json": "568f530e87be3987271a0154dd794bde0e3ced397fabe98b501bd1aa62f4c284",
-    "schemas/core.json": "5226c2ed4eb4756fd6cc6c8609573f5bda26a542447127ddf0ba6ce2350607ee",
+    "schemas/core.json": "00e7b1f30dc645a6abd48b2dc560dc8fea1d6b4c556ea52755cd071f5226473d",
     "schemas/event.json": "63d3bd17b06e9f312f025a9bc44b7a0e542687a300574cff24d26a90ce386656",
     "schemas/gateway.json": "b9a5b9d3e5d3668667aa03a71e0997f4593929f827a1fb2d0ba607e843b62905",
     "schemas/hmac-request.json": "36e0a2c74f06990222b6dfe9d9998cac3e29b58d630514bd205afdf58ede3f6c",

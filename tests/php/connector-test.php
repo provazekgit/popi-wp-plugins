@@ -25,6 +25,26 @@ function is_wp_error($value) { return $value instanceof WP_Error; }
 function wp_json_encode($value, $flags = 0) { return json_encode($value, $flags); }
 function sanitize_key($value) { return preg_replace('/[^a-z0-9_.-]/', '', strtolower((string) $value)); }
 function sanitize_text_field($value) { return trim(strip_tags((string) $value)); }
+function get_option($key, $default = false) {
+    if ($key === 'popi_connector_legacy_connections') {
+        return array('binding_1' => array('declared' => true, 'purpose' => 'content_sync', 'note' => 'Legacy POPIcast'));
+    }
+    return $default;
+}
+function get_users($args = array()) { return array(7); }
+function wp_is_application_passwords_supported() { return true; }
+
+final class WP_Application_Passwords {
+    public static function get_user_application_passwords($userId) {
+        return array(array(
+            'name' => 'POPIcast secret name',
+            'uuid' => 'credential-uuid',
+            'password' => 'must-not-leak',
+            'last_ip' => '192.0.2.1',
+            'last_used' => 1_788_188_400,
+        ));
+    }
+}
 
 require_once __DIR__ . '/../../popi-connector/includes/class-crypto.php';
 require_once __DIR__ . '/../../popi-connector/includes/class-contracts.php';
@@ -99,6 +119,7 @@ $contractsSource = file_get_contents($pluginRoot . '/includes/class-contracts.ph
 $remoteSource = file_get_contents($pluginRoot . '/includes/class-remote.php');
 $adminSource = file_get_contents($pluginRoot . '/includes/class-admin.php');
 $outboxSource = file_get_contents($pluginRoot . '/includes/class-outbox.php');
+$legacySource = file_get_contents($pluginRoot . '/includes/class-legacy-connections.php');
 expect_true(strpos($restSource, "'permission_callback' => '__return_true'") === false, 'Connector REST endpoints must never be public');
 expect_true(strpos($restSource, 'DELETE') === false, 'Connector v1 must not expose DELETE operations');
 expect_true(strpos($allSource, 'Authorization:') === false, 'Connector must not depend on the Authorization header');
@@ -112,6 +133,9 @@ expect_true(strpos($remoteSource, "'/api/v1/connectors/wordpress/health'") !== f
 expect_true(strpos($remoteSource, "'core.health:read'") !== false, 'Outbound health must fail closed without the existing health scope');
 expect_true(strpos($adminSource, 'POPI_Connector_Remote::report_health') !== false, 'Diagnostics must verify HMAC health instead of only public HTTPS');
 expect_true(strpos($outboxSource, 'POPI_Connector_Remote::report_health') !== false, 'Scheduled maintenance must report signed health outbound');
+expect_true(strpos($legacySource, "'password'") === false && strpos($legacySource, "'uuid'") === false && strpos($legacySource, "'last_ip'") === false, 'Legacy inventory must not serialize Application Password secrets or identifiers');
+expect_true(strpos($legacySource, 'MAX_USERS_SCANNED') !== false, 'Legacy inventory must keep its user scan bounded');
+expect_true(strpos($adminSource, 'popi_connector_legacy_save_') !== false, 'Legacy declarations must use a binding-specific CSRF nonce');
 
 require_once $pluginRoot . '/includes/class-authentication.php';
 $payloadValidator = new ReflectionMethod('POPI_Connector_Authentication', 'valid_payload_b64');
@@ -131,5 +155,15 @@ $redacted = $auditMethod->invoke(null, array('token' => 'secret', 'nested' => ar
 expect_same('[redacted]', $redacted['token'], 'Audit must redact token fields');
 expect_same('[redacted]', $redacted['nested']['authorization'], 'Audit must redact nested authorization fields');
 expect_same('ok', $redacted['safe'], 'Audit must retain non-sensitive diagnostics');
+
+require_once $pluginRoot . '/includes/class-legacy-connections.php';
+$legacyPayload = POPI_Connector_Legacy_Connections::health_payload(array('binding_id' => 'binding_1', 'module' => 'popicast'));
+expect_same(true, $legacyPayload['detection']['configured'], 'Application Password inventory must detect configured credentials');
+expect_same(1, $legacyPayload['detection']['credential_count'], 'Application Password inventory must report only an aggregate count');
+expect_same(true, $legacyPayload['declared'], 'A binding-specific operator declaration must be included');
+$legacyJson = json_encode($legacyPayload);
+expect_true(strpos($legacyJson, 'must-not-leak') === false, 'Application Password value must never enter health payload');
+expect_true(strpos($legacyJson, 'credential-uuid') === false, 'Application Password UUID must never enter health payload');
+expect_true(strpos($legacyJson, '192.0.2.1') === false, 'Application Password last IP must never enter health payload');
 
 echo "POPI Connector tests passed\n";
