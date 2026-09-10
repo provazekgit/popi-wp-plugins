@@ -69,6 +69,9 @@ pro konkrétní binding, omezená na veřejně dotazovatelné REST typy a audito
 Verze 1.2.2 zahrnuje také vestavěný typ `page`, který je veřejný a dostupný
 přes REST API, i když jej WordPress neoznačuje příznakem `publicly_queryable`.
 
+Verze 1.2.3 normalizuje čas posledního použití Application Password do UTC
+tvaru končícího `Z`, který přijímá sdílený Connector kontrakt.
+
 ## Po releasu — update server
 
 Uprav `REGISTRY` v `popi_site/apps/api/src/routes/wp-plugins.ts`:

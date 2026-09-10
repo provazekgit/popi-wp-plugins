@@ -54,7 +54,7 @@ final class POPI_Connector_Legacy_Connections {
 			}
 		}
 		$summary['configured'] = $summary['credential_count'] > 0;
-		$summary['last_used_at'] = $last_used > 0 ? gmdate( DATE_ATOM, $last_used ) : null;
+		$summary['last_used_at'] = $last_used > 0 ? gmdate( 'Y-m-d\\TH:i:s\\Z', $last_used ) : null;
 		return $summary;
 	}
 
