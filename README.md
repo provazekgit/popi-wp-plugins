@@ -66,6 +66,9 @@ Od verze 1.2.1 lze v záložce **Moduly** bez nového párování povolit dalš�
 REST typy obsahu, například CPT vytvořený přes ACPT nebo ACF. Volba je lokální
 pro konkrétní binding, omezená na veřejně dotazovatelné REST typy a auditovaná.
 
+Verze 1.2.2 zahrnuje také vestavěný typ `page`, který je veřejný a dostupný
+přes REST API, i když jej WordPress neoznačuje příznakem `publicly_queryable`.
+
 ## Po releasu — update server
 
 Uprav `REGISTRY` v `popi_site/apps/api/src/routes/wp-plugins.ts`:

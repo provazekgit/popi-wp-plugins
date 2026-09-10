@@ -33,6 +33,14 @@ function get_option($key, $default = false) {
 }
 function get_users($args = array()) { return array(7); }
 function wp_is_application_passwords_supported() { return true; }
+function get_post_types($args = array(), $output = 'names') {
+    $types = array(
+        'post' => (object) array('name' => 'post', 'public' => true, 'publicly_queryable' => true, 'show_in_rest' => true),
+        'page' => (object) array('name' => 'page', 'public' => true, 'publicly_queryable' => false, 'show_in_rest' => true),
+        'internal_rest' => (object) array('name' => 'internal_rest', 'public' => false, 'publicly_queryable' => false, 'show_in_rest' => true),
+    );
+    return $output === 'objects' ? $types : array_keys($types);
+}
 
 final class WP_Application_Passwords {
     public static function get_user_application_passwords($userId) {
@@ -137,10 +145,17 @@ expect_true(strpos($legacySource, "'password'") === false && strpos($legacySourc
 expect_true(strpos($legacySource, 'MAX_USERS_SCANNED') !== false, 'Legacy inventory must keep its user scan bounded');
 expect_true(strpos($adminSource, 'popi_connector_legacy_save_') !== false, 'Legacy declarations must use a binding-specific CSRF nonce');
 expect_true(strpos($adminSource, 'popi_connector_module_config_save_') !== false, 'Content type changes must use a binding-specific CSRF nonce');
-expect_true(strpos($adminSource, "'show_in_rest' => true, 'publicly_queryable' => true") !== false, 'Content type selection must be limited to public REST types');
+expect_true(strpos($adminSource, "get_post_types( array( 'show_in_rest' => true ), 'objects' )") !== false, 'Content type selection must require an active REST API');
+expect_true(strpos($adminSource, '$post_type->public') !== false && strpos($adminSource, '$post_type->publicly_queryable') !== false, 'Content type selection must include public REST types such as the built-in page type');
+expect_true(strpos($adminSource, 'self::selectable_post_types( \'objects\' )') !== false && strpos($adminSource, 'self::selectable_post_types( \'names\' )') !== false, 'Rendered and submitted content type choices must use the same allowlist');
 expect_true(strpos($adminSource, 'binding.config_updated') !== false, 'Content type changes must be audited');
 expect_true(strpos($storageSource, 'update_binding_config') !== false, 'Binding config must support a non-destructive update without re-pairing');
 expect_true(strpos($contractsSource, "health['legacy_connection']") !== false, 'Legacy health extension must stay optional on clean WordPress installations');
+
+require_once $pluginRoot . '/includes/class-admin.php';
+$selectablePostTypes = new ReflectionMethod('POPI_Connector_Admin', 'selectable_post_types');
+$selectablePostTypes->setAccessible(true);
+expect_same(array('post', 'page'), $selectablePostTypes->invoke(null, 'names'), 'Public REST selection must include core pages and exclude internal REST types');
 
 require_once $pluginRoot . '/includes/class-authentication.php';
 $payloadValidator = new ReflectionMethod('POPI_Connector_Authentication', 'valid_payload_b64');

@@ -139,7 +139,7 @@ final class POPI_Connector_Admin {
 		foreach ( $bindings as $binding ) {
 			$config = POPI_Connector_Storage::binding_config( $binding );
 			$allowed = isset( $config['allowed_post_types'] ) ? (array) $config['allowed_post_types'] : array();
-			$post_types = get_post_types( array( 'show_in_rest' => true, 'publicly_queryable' => true ), 'objects' );
+			$post_types = self::selectable_post_types( 'objects' );
 			echo '<div class="card" style="max-width:none"><h2>' . esc_html( strtoupper( $binding['module'] ) ) . '</h2>';
 			echo '<p><strong>Installation:</strong> <code>' . esc_html( $binding['installation_id'] ) . '</code></p>';
 			echo '<p><strong>Scopes:</strong> ';
@@ -337,7 +337,7 @@ final class POPI_Connector_Admin {
 		if ( ! $binding || 'active' !== $binding['status'] ) {
 			self::redirect_result( 'modules', new WP_Error( 'popi_binding_inactive', 'Připojení není aktivní.' ) );
 		}
-		$available = get_post_types( array( 'show_in_rest' => true, 'publicly_queryable' => true ), 'names' );
+		$available = self::selectable_post_types( 'names' );
 		$requested = isset( $_POST['allowed_post_types'] ) && is_array( $_POST['allowed_post_types'] ) ? wp_unslash( $_POST['allowed_post_types'] ) : array();
 		$selected = array_values( array_unique( array_intersect( $available, array_map( 'sanitize_key', $requested ) ) ) );
 		if ( ! $selected ) {
@@ -355,6 +355,15 @@ final class POPI_Connector_Admin {
 			) );
 		}
 		self::redirect_result( 'modules', $result, 'Povolené typy obsahu byly uloženy.' );
+	}
+
+	private static function selectable_post_types( $output = 'objects' ) {
+		$post_types = get_post_types( array( 'show_in_rest' => true ), 'objects' );
+		$post_types = array_filter( $post_types, function ( $post_type ) {
+			return ! empty( $post_type->public ) || ! empty( $post_type->publicly_queryable );
+		} );
+
+		return 'names' === $output ? array_keys( $post_types ) : $post_types;
 	}
 
 	public static function handle_legacy_save() {
