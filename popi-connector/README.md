@@ -68,9 +68,12 @@ vlastní SHA-256 se posílá při párování a vrací v health/manifest odpově
 - POPIweb: schema read, entries search/get/patch.
 - POPIcast: show get, episodes search/get.
 
-Povolené post types, meta keys, statusy, write fields a ověřené frontend hosty
-přicházejí v binding configu z POPIsite. Neznámý scope nebo security status je
-vždy odmítnut.
+Počáteční post types, meta keys, statusy, write fields a ověřené frontend hosty
+přicházejí v binding configu z POPIsite. Správce WordPressu může v záložce
+**Moduly** následně změnit pouze seznam typů obsahu. Connector nabídne jen
+veřejně dotazovatelné typy s aktivním REST API, změnu sváže s konkrétním
+bindingem a zapíše ji do auditu. Ostatní části bezpečnostní konfigurace zůstanou
+beze změny. Neznámý scope nebo security status je vždy odmítnut.
 
 ## Frontend
 
@@ -109,7 +112,7 @@ git commit -m "Add POPI Connector"
 npm run package:connector
 ```
 
-Release tag `popi-connector-v1.1.0` spustí GitHub Action, která zopakuje test,
+Release tag `popi-connector-v1.2.1` spustí GitHub Action, která zopakuje test,
 vytvoří `popi-connector.zip` a jeho SHA-256. Updater přijímá jen balíčky z
 odpovídajícího GitHub Releases prefixu a checksum ověřuje před instalací.
 

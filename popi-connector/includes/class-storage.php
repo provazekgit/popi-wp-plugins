@@ -221,6 +221,26 @@ final class POPI_Connector_Storage {
 		return is_array( $config ) ? $config : array();
 	}
 
+	public static function update_binding_config( $binding_id, $config ) {
+		global $wpdb;
+		$binding = self::get_binding( $binding_id );
+		if ( ! $binding || 'active' !== $binding['status'] ) {
+			return new WP_Error( 'popi_binding_inactive', 'Připojení není aktivní.' );
+		}
+		if ( ! is_array( $config ) ) {
+			return new WP_Error( 'popi_binding_config_invalid', 'Konfigurace připojení není platná.' );
+		}
+		$updated = $wpdb->update(
+			self::tables()['bindings'],
+			array(
+				'config'     => wp_json_encode( $config ),
+				'updated_at' => self::utc_now(),
+			),
+			array( 'binding_id' => $binding_id )
+		);
+		return false === $updated ? new WP_Error( 'popi_binding_config_store_failed', 'Nastavení typů obsahu se nepodařilo uložit.' ) : true;
+	}
+
 	public static function consume_nonce( $key_id, $nonce, $request_id ) {
 		global $wpdb;
 		$table = self::tables()['nonces'];

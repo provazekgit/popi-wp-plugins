@@ -20,7 +20,7 @@ final class POPI_Connector_Contracts {
 		foreach ( $tables as $name => $table ) {
 			$table_status[ $name ] = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) === $table;
 		}
-		return array(
+		$health = array(
 			'ok'               => ! in_array( false, $table_status, true ),
 			'plugin'           => 'popi-connector',
 			'plugin_version'   => POPI_CONNECTOR_VERSION,
@@ -32,8 +32,12 @@ final class POPI_Connector_Contracts {
 			'multisite'        => is_multisite(),
 			'tables'           => $table_status,
 			'binding_status'   => $context['binding']['status'],
-			'legacy_connection'=> POPI_Connector_Legacy_Connections::health_payload( $context['binding'] ),
 		);
+		$legacy = POPI_Connector_Legacy_Connections::health_payload( $context['binding'] );
+		if ( ! empty( $legacy['declared'] ) || ! empty( $legacy['detection']['configured'] ) ) {
+			$health['legacy_connection'] = $legacy;
+		}
+		return $health;
 	}
 
 	public static function manifest() {
