@@ -180,6 +180,7 @@ require_once $pluginRoot . '/includes/class-legacy-connections.php';
 $legacyPayload = POPI_Connector_Legacy_Connections::health_payload(array('binding_id' => 'binding_1', 'module' => 'popicast'));
 expect_same(true, $legacyPayload['detection']['configured'], 'Application Password inventory must detect configured credentials');
 expect_same(1, $legacyPayload['detection']['credential_count'], 'Application Password inventory must report only an aggregate count');
+expect_true((bool) preg_match('/Z$/', $legacyPayload['detection']['last_used_at']), 'Application Password last-used time must use contract-compatible UTC Z notation');
 expect_same(true, $legacyPayload['declared'], 'A binding-specific operator declaration must be included');
 $legacyJson = json_encode($legacyPayload);
 expect_true(strpos($legacyJson, 'must-not-leak') === false, 'Application Password value must never enter health payload');
