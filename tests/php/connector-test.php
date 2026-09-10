@@ -136,6 +136,11 @@ expect_true(strpos($outboxSource, 'POPI_Connector_Remote::report_health') !== fa
 expect_true(strpos($legacySource, "'password'") === false && strpos($legacySource, "'uuid'") === false && strpos($legacySource, "'last_ip'") === false, 'Legacy inventory must not serialize Application Password secrets or identifiers');
 expect_true(strpos($legacySource, 'MAX_USERS_SCANNED') !== false, 'Legacy inventory must keep its user scan bounded');
 expect_true(strpos($adminSource, 'popi_connector_legacy_save_') !== false, 'Legacy declarations must use a binding-specific CSRF nonce');
+expect_true(strpos($adminSource, 'popi_connector_module_config_save_') !== false, 'Content type changes must use a binding-specific CSRF nonce');
+expect_true(strpos($adminSource, "'show_in_rest' => true, 'publicly_queryable' => true") !== false, 'Content type selection must be limited to public REST types');
+expect_true(strpos($adminSource, 'binding.config_updated') !== false, 'Content type changes must be audited');
+expect_true(strpos($storageSource, 'update_binding_config') !== false, 'Binding config must support a non-destructive update without re-pairing');
+expect_true(strpos($contractsSource, "health['legacy_connection']") !== false, 'Legacy health extension must stay optional on clean WordPress installations');
 
 require_once $pluginRoot . '/includes/class-authentication.php';
 $payloadValidator = new ReflectionMethod('POPI_Connector_Authentication', 'valid_payload_b64');

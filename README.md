@@ -62,6 +62,10 @@ konkrétnímu tenant/project/installation bindingu dovolí uložit provozní
 poznámku. Hesla, UUID, názvy credentials, uživatelé ani IP adresy se neodesílají;
 POPIsite dostane deklaraci pouze v podepsaném health reportu.
 
+Od verze 1.2.1 lze v záložce **Moduly** bez nového párování povolit další
+REST typy obsahu, například CPT vytvořený přes ACPT nebo ACF. Volba je lokální
+pro konkrétní binding, omezená na veřejně dotazovatelné REST typy a auditovaná.
+
 ## Po releasu — update server
 
 Uprav `REGISTRY` v `popi_site/apps/api/src/routes/wp-plugins.ts`:

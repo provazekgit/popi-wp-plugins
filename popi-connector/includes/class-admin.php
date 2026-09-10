@@ -14,6 +14,7 @@ final class POPI_Connector_Admin {
 		add_action( 'admin_post_popi_connector_revoke', array( __CLASS__, 'handle_revoke' ) );
 		add_action( 'admin_post_popi_connector_rotate', array( __CLASS__, 'handle_rotate' ) );
 		add_action( 'admin_post_popi_connector_legacy_save', array( __CLASS__, 'handle_legacy_save' ) );
+		add_action( 'admin_post_popi_connector_module_config_save', array( __CLASS__, 'handle_module_config_save' ) );
 		add_action( 'admin_post_popi_connector_frontend_save', array( __CLASS__, 'handle_frontend_save' ) );
 		add_action( 'admin_post_popi_connector_frontend_rollback', array( __CLASS__, 'handle_frontend_rollback' ) );
 		add_action( 'admin_post_popi_connector_advanced_save', array( __CLASS__, 'handle_advanced_save' ) );
@@ -137,13 +138,33 @@ final class POPI_Connector_Admin {
 		}
 		foreach ( $bindings as $binding ) {
 			$config = POPI_Connector_Storage::binding_config( $binding );
+			$allowed = isset( $config['allowed_post_types'] ) ? (array) $config['allowed_post_types'] : array();
+			$post_types = get_post_types( array( 'show_in_rest' => true, 'publicly_queryable' => true ), 'objects' );
 			echo '<div class="card" style="max-width:none"><h2>' . esc_html( strtoupper( $binding['module'] ) ) . '</h2>';
 			echo '<p><strong>Installation:</strong> <code>' . esc_html( $binding['installation_id'] ) . '</code></p>';
 			echo '<p><strong>Scopes:</strong> ';
 			foreach ( POPI_Connector_Storage::binding_scopes( $binding ) as $scope ) {
 				echo '<code style="margin-right:6px">' . esc_html( $scope ) . '</code>';
 			}
-			echo '</p><p><strong>Povolené typy obsahu:</strong> ' . esc_html( implode( ', ', isset( $config['allowed_post_types'] ) ? (array) $config['allowed_post_types'] : array() ) ) . '</p>';
+			echo '</p>';
+			if ( 'active' === $binding['status'] && current_user_can( 'manage_popi_connector' ) ) {
+				?>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="popi_connector_module_config_save">
+					<input type="hidden" name="binding_id" value="<?php echo esc_attr( $binding['binding_id'] ); ?>">
+					<?php wp_nonce_field( 'popi_connector_module_config_save_' . $binding['binding_id'] ); ?>
+					<fieldset><legend><strong>Typy obsahu zpřístupněné tomuto modulu</strong></legend>
+					<p class="description">Nabízí se pouze veřejně dotazovatelné typy s aktivním WordPress REST API. Změna nezasahuje do obsahu ani do jiných připojení.</p>
+					<?php foreach ( $post_types as $post_type ) : ?>
+						<label style="display:block;margin:8px 0"><input type="checkbox" name="allowed_post_types[]" value="<?php echo esc_attr( $post_type->name ); ?>" <?php checked( in_array( $post_type->name, $allowed, true ) ); ?>> <?php echo esc_html( $post_type->labels->singular_name ); ?> <code><?php echo esc_html( $post_type->name ); ?></code></label>
+					<?php endforeach; ?>
+					</fieldset>
+					<?php submit_button( 'Uložit typy obsahu', 'secondary', 'submit', false ); ?>
+				</form>
+				<?php
+			} else {
+				echo '<p><strong>Povolené typy obsahu:</strong> ' . esc_html( implode( ', ', $allowed ) ) . '</p>';
+			}
 			echo '</div>';
 		}
 	}
@@ -308,6 +329,33 @@ final class POPI_Connector_Admin {
 	public static function handle_pair_refresh() { self::guard( 'pair_popi_connector', 'popi_connector_pair_refresh' ); self::redirect_result( 'connection', POPI_Connector_Pairing::refresh(), 'Připojení je aktivní.' ); }
 	public static function handle_revoke() { $id = isset( $_POST['binding_id'] ) ? sanitize_text_field( wp_unslash( $_POST['binding_id'] ) ) : ''; self::guard( 'revoke_popi_connector', 'popi_connector_revoke_' . $id ); self::redirect_result( 'connection', POPI_Connector_Pairing::revoke( $id ), 'Připojení bylo odvoláno.' ); }
 	public static function handle_rotate() { $id = isset( $_POST['binding_id'] ) ? sanitize_text_field( wp_unslash( $_POST['binding_id'] ) ) : ''; self::guard( 'rotate_popi_connector_keys', 'popi_connector_rotate_' . $id ); self::redirect_result( 'security', POPI_Connector_Pairing::rotate( $id ), 'Klíč byl bezpečně rotován.' ); }
+
+	public static function handle_module_config_save() {
+		$id = isset( $_POST['binding_id'] ) ? sanitize_text_field( wp_unslash( $_POST['binding_id'] ) ) : '';
+		self::guard( 'manage_popi_connector', 'popi_connector_module_config_save_' . $id );
+		$binding = POPI_Connector_Storage::get_binding( $id );
+		if ( ! $binding || 'active' !== $binding['status'] ) {
+			self::redirect_result( 'modules', new WP_Error( 'popi_binding_inactive', 'Připojení není aktivní.' ) );
+		}
+		$available = get_post_types( array( 'show_in_rest' => true, 'publicly_queryable' => true ), 'names' );
+		$requested = isset( $_POST['allowed_post_types'] ) && is_array( $_POST['allowed_post_types'] ) ? wp_unslash( $_POST['allowed_post_types'] ) : array();
+		$selected = array_values( array_unique( array_intersect( $available, array_map( 'sanitize_key', $requested ) ) ) );
+		if ( ! $selected ) {
+			self::redirect_result( 'modules', new WP_Error( 'popi_post_types_empty', 'Vyberte alespoň jeden typ obsahu.' ) );
+		}
+		$config = POPI_Connector_Storage::binding_config( $binding );
+		$config['allowed_post_types'] = $selected;
+		$result = POPI_Connector_Storage::update_binding_config( $id, $config );
+		if ( ! is_wp_error( $result ) ) {
+			POPI_Connector_Audit::record( 'binding.config_updated', 'success', array(
+				'binding_id' => $id,
+				'actor_type' => 'user',
+				'actor_id'   => get_current_user_id(),
+				'metadata'   => array( 'allowed_post_types' => $selected ),
+			) );
+		}
+		self::redirect_result( 'modules', $result, 'Povolené typy obsahu byly uloženy.' );
+	}
 
 	public static function handle_legacy_save() {
 		$id = isset( $_POST['binding_id'] ) ? sanitize_text_field( wp_unslash( $_POST['binding_id'] ) ) : '';
