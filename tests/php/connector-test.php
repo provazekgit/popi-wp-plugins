@@ -7,7 +7,7 @@ define('AUTH_KEY', 'connector-auth-test-key');
 define('SECURE_AUTH_KEY', 'connector-secure-auth-test-key');
 define('LOGGED_IN_KEY', 'connector-logged-in-test-key');
 define('NONCE_KEY', 'connector-nonce-test-key');
-define('POPI_CONNECTOR_CONTRACT_VERSION', '1.0.0');
+define('POPI_CONNECTOR_CONTRACT_VERSION', '1.1.0');
 define('POPI_CONNECTOR_DIR', __DIR__ . '/../../popi-connector/');
 define('POPI_CONNECTOR_URL', 'https://example.test/wp-content/plugins/popi-connector/');
 
@@ -25,6 +25,34 @@ function is_wp_error($value) { return $value instanceof WP_Error; }
 function wp_json_encode($value, $flags = 0) { return json_encode($value, $flags); }
 function sanitize_key($value) { return preg_replace('/[^a-z0-9_.-]/', '', strtolower((string) $value)); }
 function sanitize_text_field($value) { return trim(strip_tags((string) $value)); }
+function sanitize_title($value) { return preg_replace('/[^a-z0-9-]/', '', strtolower((string) $value)); }
+function esc_url_raw($value) { return filter_var((string) $value, FILTER_VALIDATE_URL) ? (string) $value : ''; }
+function get_post_meta($postId, $key, $single = false) {
+    $values = array(
+        '34:popi_gallery' => array(25, 24),
+        '34:popi_width_mm' => 120,
+        '24:_wp_attachment_image_alt' => 'Dětská souprava',
+        '25:_wp_attachment_image_alt' => 'Detail výšivky',
+    );
+    return $values[$postId . ':' . $key] ?? '';
+}
+function get_post_thumbnail_id($postId) { return $postId === 34 ? 24 : 0; }
+function get_permalink($postId) { return 'https://example.test/realizace/' . $postId; }
+function wp_attachment_is_image($postId) { return in_array($postId, array(24, 25), true); }
+function wp_get_attachment_url($postId) { return 'https://example.test/uploads/' . $postId . '.jpg'; }
+function wp_get_attachment_metadata($postId) { return array('width' => $postId === 24 ? 450 : 600, 'height' => 600); }
+function get_post_mime_type($postId) { return 'image/jpeg'; }
+function get_object_taxonomies($postType, $output = 'names') {
+    $taxonomies = array(
+        'popi_textile' => (object) array('name' => 'popi_textile', 'public' => true, 'show_in_rest' => true),
+        'internal_notes' => (object) array('name' => 'internal_notes', 'public' => false, 'show_in_rest' => true),
+    );
+    return $output === 'objects' ? $taxonomies : array_keys($taxonomies);
+}
+function wp_get_object_terms($postId, $taxonomy) {
+    if ($postId !== 34 || $taxonomy !== 'popi_textile') return array();
+    return array((object) array('term_id' => 3, 'slug' => 'detsky-textil', 'name' => 'Dětský textil'));
+}
 function get_option($key, $default = false) {
     if ($key === 'popi_connector_legacy_connections') {
         return array('binding_1' => array('declared' => true, 'purpose' => 'content_sync', 'note' => 'Legacy POPIcast'));
@@ -54,6 +82,10 @@ final class WP_Application_Passwords {
     }
 }
 
+final class POPI_Connector_Storage {
+    public static function binding_config($binding) { return $binding['config'] ?? array(); }
+}
+
 require_once __DIR__ . '/../../popi-connector/includes/class-crypto.php';
 require_once __DIR__ . '/../../popi-connector/includes/class-contracts.php';
 
@@ -80,7 +112,7 @@ expect_true(is_wp_error(POPI_Connector_Crypto::decrypt_secret(json_encode($tampe
 
 $fixture = json_decode(file_get_contents(__DIR__ . '/../fixtures/wordpress-connector-v1.json'), true);
 expect_true(is_array($fixture), 'Executable connector compatibility fixture must be valid JSON');
-expect_same('1.0.0', $fixture['contract'], 'Connector contract version changed unexpectedly');
+expect_same('1.1.0', $fixture['contract'], 'Connector contract version changed unexpectedly');
 expect_same(false, $fixture['defaultEnabled'], 'Connector adapters must stay disabled by default');
 $envelope = $fixture['hmacVector']['envelope'];
 unset($envelope['protocol']);
@@ -136,7 +168,7 @@ expect_true(strpos($authSource, 'binding_mismatch') !== false && strpos($authSou
 expect_true(strpos($pairingSource, 'CLAIM_PATH') !== false && strpos($pairingSource, 'claim_token') !== false, 'Pairing must use a one-time claim token');
 expect_true(strpos($pairingSource, 'rotations/prepare') !== false && strpos($pairingSource, 'rotations/commit') !== false, 'Rotation must use prepare and commit phases');
 expect_true(strpos($storageSource, "status = 'retiring'") !== false && strpos($storageSource, "status = 'revoked'") !== false, 'Rotation grace and revocation states must be persisted');
-expect_same('1.0.0', POPI_CONNECTOR_CONTRACT_VERSION, 'Plugin must expose the stable contract version');
+expect_same('1.1.0', POPI_CONNECTOR_CONTRACT_VERSION, 'Plugin must expose the compatible minor contract version');
 expect_true(strpos($remoteSource, "'/api/v1/connectors/wordpress/health'") !== false, 'Signed outbound health must target the typed POPIsite endpoint');
 expect_true(strpos($remoteSource, "'core.health:read'") !== false, 'Outbound health must fail closed without the existing health scope');
 expect_true(strpos($adminSource, 'POPI_Connector_Remote::report_health') !== false, 'Diagnostics must verify HMAC health instead of only public HTTPS');
@@ -151,6 +183,25 @@ expect_true(strpos($adminSource, 'self::selectable_post_types( \'objects\' )') !
 expect_true(strpos($adminSource, 'binding.config_updated') !== false, 'Content type changes must be audited');
 expect_true(strpos($storageSource, 'update_binding_config') !== false, 'Binding config must support a non-destructive update without re-pairing');
 expect_true(strpos($contractsSource, "health['legacy_connection']") !== false, 'Legacy health extension must stay optional on clean WordPress installations');
+
+$serializePost = new ReflectionMethod('POPI_Connector_Contracts', 'serialize_post');
+$serializePost->setAccessible(true);
+$serializedPost = $serializePost->invoke(null, (object) array(
+    'ID' => 34,
+    'post_type' => 'popi_realization',
+    'post_name' => 'detska-souprava',
+    'post_status' => 'publish',
+    'post_title' => 'Dětská souprava',
+    'post_excerpt' => 'Ukázka realizace',
+    'post_content' => 'Obsah realizace',
+    'post_modified_gmt' => '2026-09-11 08:00:00',
+), array('config' => array('allowed_meta_keys' => array('popi_gallery', 'popi_width_mm'))));
+expect_same(24, $serializedPost['featured_media_id'], 'Legacy featured media ID must stay available');
+expect_same('https://example.test/uploads/24.jpg', $serializedPost['featured_media_url'], 'Featured media URL must be serialized');
+expect_same(25, $serializedPost['gallery'][0]['id'], 'Gallery must contain allowed image attachments without duplicating the featured image');
+expect_same(array(25, 24), $serializedPost['meta']['popi_gallery'], 'Scalar meta arrays must remain available for tolerant consumers');
+expect_same('detsky-textil', $serializedPost['taxonomies']['popi_textile'][0]['slug'], 'Public REST taxonomy terms must be serialized');
+expect_true(!isset($serializedPost['taxonomies']['internal_notes']), 'Private taxonomies must not be serialized');
 
 require_once $pluginRoot . '/includes/class-admin.php';
 $selectablePostTypes = new ReflectionMethod('POPI_Connector_Admin', 'selectable_post_types');

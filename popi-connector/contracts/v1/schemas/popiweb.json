@@ -3,6 +3,29 @@
   "$id": "https://popisite.cz/contracts/popi-connector/v1/schemas/popiweb.json",
   "title": "POPIweb content payloads",
   "$defs": {
+    "media": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "url", "alt", "width", "height", "mime_type"],
+      "properties": {
+        "id": { "type": "integer", "minimum": 1 },
+        "url": { "type": "string", "format": "uri" },
+        "alt": { "type": "string" },
+        "width": { "type": "integer", "minimum": 0 },
+        "height": { "type": "integer", "minimum": 0 },
+        "mime_type": { "type": "string" }
+      }
+    },
+    "taxonomyTerm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "slug", "name"],
+      "properties": {
+        "id": { "type": "integer", "minimum": 1 },
+        "slug": { "type": "string" },
+        "name": { "type": "string" }
+      }
+    },
     "entry": {
       "type": "object",
       "required": ["id", "post_type", "slug", "status", "title", "excerpt", "content", "modified_gmt", "featured_media_id", "link", "meta"],
@@ -16,6 +39,17 @@
         "content": { "type": "string" },
         "modified_gmt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$" },
         "featured_media_id": { "type": "integer", "minimum": 0 },
+        "featured_media_url": { "type": ["string", "null"], "format": "uri" },
+        "featured_media": { "oneOf": [{ "$ref": "#/$defs/media" }, { "type": "null" }] },
+        "gallery": { "type": "array", "maxItems": 100, "items": { "$ref": "#/$defs/media" } },
+        "taxonomies": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "maxItems": 100,
+            "items": { "$ref": "#/$defs/taxonomyTerm" }
+          }
+        },
         "link": { "type": "string", "format": "uri" },
         "meta": { "type": "object" }
       }

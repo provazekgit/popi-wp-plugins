@@ -214,10 +214,13 @@ final class POPI_Connector_Contracts {
 		$meta = array();
 		foreach ( self::allowed_meta_keys( $binding ) as $key ) {
 			$value = get_post_meta( $post->ID, $key, true );
-			if ( is_scalar( $value ) || null === $value ) {
-				$meta[ $key ] = $value;
+			$serialized = self::serialize_meta_value( $value );
+			if ( null !== $serialized || null === $value ) {
+				$meta[ $key ] = $serialized;
 			}
 		}
+		$featured_media_id = (int) get_post_thumbnail_id( $post->ID );
+		$featured_media    = self::serialize_media( $featured_media_id );
 		return array(
 			'id'                => (int) $post->ID,
 			'post_type'         => $post->post_type,
@@ -227,10 +230,103 @@ final class POPI_Connector_Contracts {
 			'excerpt'           => $post->post_excerpt,
 			'content'           => $post->post_content,
 			'modified_gmt'      => $post->post_modified_gmt,
-			'featured_media_id' => (int) get_post_thumbnail_id( $post->ID ),
+			'featured_media_id' => $featured_media_id,
+			'featured_media_url'=> $featured_media ? $featured_media['url'] : null,
+			'featured_media'    => $featured_media,
+			'gallery'           => self::serialize_gallery( $post->ID, $binding, $featured_media_id ),
+			'taxonomies'        => self::serialize_taxonomies( $post ),
 			'link'              => get_permalink( $post->ID ),
 			'meta'              => $meta,
 		);
+	}
+
+	private static function serialize_meta_value( $value ) {
+		if ( is_scalar( $value ) || null === $value ) {
+			return $value;
+		}
+		if ( ! is_array( $value ) ) {
+			return null;
+		}
+		$output = array();
+		foreach ( array_slice( array_values( $value ), 0, 100 ) as $item ) {
+			if ( is_scalar( $item ) || null === $item ) {
+				$output[] = $item;
+			}
+		}
+		return $output;
+	}
+
+	private static function serialize_media( $attachment_id ) {
+		$attachment_id = (int) $attachment_id;
+		if ( $attachment_id < 1 || ! wp_attachment_is_image( $attachment_id ) ) {
+			return null;
+		}
+		$url = esc_url_raw( wp_get_attachment_url( $attachment_id ) );
+		if ( ! $url ) {
+			return null;
+		}
+		$metadata = wp_get_attachment_metadata( $attachment_id );
+		return array(
+			'id'        => $attachment_id,
+			'url'       => $url,
+			'alt'       => sanitize_text_field( (string) get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ),
+			'width'     => is_array( $metadata ) && isset( $metadata['width'] ) ? max( 0, (int) $metadata['width'] ) : 0,
+			'height'    => is_array( $metadata ) && isset( $metadata['height'] ) ? max( 0, (int) $metadata['height'] ) : 0,
+			'mime_type' => sanitize_text_field( (string) get_post_mime_type( $attachment_id ) ),
+		);
+	}
+
+	private static function serialize_gallery( $post_id, $binding, $featured_media_id ) {
+		$ids = array();
+		foreach ( self::allowed_meta_keys( $binding ) as $key ) {
+			if ( false === strpos( $key, 'gallery' ) ) {
+				continue;
+			}
+			$value = get_post_meta( $post_id, $key, true );
+			foreach ( is_array( $value ) ? $value : array( $value ) as $candidate ) {
+				if ( is_numeric( $candidate ) ) {
+					$ids[] = (int) $candidate;
+				} elseif ( is_string( $candidate ) && function_exists( 'attachment_url_to_postid' ) ) {
+					$ids[] = (int) attachment_url_to_postid( $candidate );
+				}
+			}
+		}
+		$output = array();
+		foreach ( array_slice( array_values( array_unique( array_filter( $ids ) ) ), 0, 100 ) as $attachment_id ) {
+			if ( $attachment_id === (int) $featured_media_id ) {
+				continue;
+			}
+			$media = self::serialize_media( $attachment_id );
+			if ( $media ) {
+				$output[] = $media;
+			}
+		}
+		return $output;
+	}
+
+	private static function serialize_taxonomies( $post ) {
+		$output     = array();
+		$taxonomies = get_object_taxonomies( $post->post_type, 'objects' );
+		foreach ( $taxonomies as $taxonomy ) {
+			if ( empty( $taxonomy->public ) || empty( $taxonomy->show_in_rest ) ) {
+				continue;
+			}
+			$terms = wp_get_object_terms( $post->ID, $taxonomy->name );
+			if ( is_wp_error( $terms ) || ! is_array( $terms ) ) {
+				continue;
+			}
+			$output[ sanitize_key( $taxonomy->name ) ] = array_map(
+				function ( $term ) {
+					return array(
+						'id'   => (int) $term->term_id,
+						'slug' => sanitize_title( $term->slug ),
+						'name' => sanitize_text_field( $term->name ),
+					);
+				},
+				array_slice( $terms, 0, 100 )
+			);
+		}
+		return $output;
 	}
 
 	private static function allowed_post_types( $binding ) {
