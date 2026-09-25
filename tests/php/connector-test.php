@@ -36,7 +36,19 @@ function get_post_meta($postId, $key, $single = false) {
     );
     return $values[$postId . ':' . $key] ?? '';
 }
-function get_post_thumbnail_id($postId) { return $postId === 34 ? 24 : 0; }
+function metadata_exists($type, $postId, $key) {
+    return in_array($postId . ':' . $key, array('34:popi_gallery', '34:popi_width_mm', '24:_wp_attachment_image_alt', '25:_wp_attachment_image_alt'), true);
+}
+final class ACPT_Test_Attachment {
+    private $id;
+    public function __construct($id) { $this->id = $id; }
+    public function getId() { return $this->id; }
+}
+function get_acpt_fields($args) {
+    if (($args['post_id'] ?? 0) !== 35) return array();
+    return array('parametry-realizace_popi_gallery' => array(new ACPT_Test_Attachment(25)));
+}
+function get_post_thumbnail_id($postId) { return in_array($postId, array(34, 35), true) ? 24 : 0; }
 function get_permalink($postId) { return 'https://example.test/realizace/' . $postId; }
 function wp_attachment_is_image($postId) { return in_array($postId, array(24, 25), true); }
 function wp_get_attachment_url($postId) { return 'https://example.test/uploads/' . $postId . '.jpg'; }
@@ -202,6 +214,19 @@ expect_same(25, $serializedPost['gallery'][0]['id'], 'Gallery must contain allow
 expect_same(array(25, 24), $serializedPost['meta']['popi_gallery'], 'Scalar meta arrays must remain available for tolerant consumers');
 expect_same('detsky-textil', $serializedPost['taxonomies']['popi_textile'][0]['slug'], 'Public REST taxonomy terms must be serialized');
 expect_true(!isset($serializedPost['taxonomies']['internal_notes']), 'Private taxonomies must not be serialized');
+
+$serializedAcptPost = $serializePost->invoke(null, (object) array(
+    'ID' => 35,
+    'post_type' => 'popi_realization',
+    'post_name' => 'acpt-gallery',
+    'post_status' => 'draft',
+    'post_title' => 'ACPT gallery',
+    'post_excerpt' => '',
+    'post_content' => '',
+    'post_modified_gmt' => '2026-09-25 10:00:00',
+), array('config' => array('allowed_meta_keys' => array('popi_gallery'))));
+expect_same(array(25), $serializedAcptPost['meta']['popi_gallery'], 'Allowed ACPT fields must be exposed without duplicating them into post meta');
+expect_same(25, $serializedAcptPost['gallery'][0]['id'], 'ACPT gallery attachment objects must serialize as connector media');
 
 require_once $pluginRoot . '/includes/class-admin.php';
 $selectablePostTypes = new ReflectionMethod('POPI_Connector_Admin', 'selectable_post_types');

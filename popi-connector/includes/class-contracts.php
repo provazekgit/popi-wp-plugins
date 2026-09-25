@@ -211,9 +211,9 @@ final class POPI_Connector_Contracts {
 	}
 
 	private static function serialize_post( $post, $binding ) {
-		$meta = array();
-		foreach ( self::allowed_meta_keys( $binding ) as $key ) {
-			$value = get_post_meta( $post->ID, $key, true );
+		$field_values = self::allowed_field_values( $post->ID, $binding );
+		$meta         = array();
+		foreach ( $field_values as $key => $value ) {
 			$serialized = self::serialize_meta_value( $value );
 			if ( null !== $serialized || null === $value ) {
 				$meta[ $key ] = $serialized;
@@ -233,7 +233,7 @@ final class POPI_Connector_Contracts {
 			'featured_media_id' => $featured_media_id,
 			'featured_media_url'=> $featured_media ? $featured_media['url'] : null,
 			'featured_media'    => $featured_media,
-			'gallery'           => self::serialize_gallery( $post->ID, $binding, $featured_media_id ),
+			'gallery'           => self::serialize_gallery( $post->ID, $binding, $featured_media_id, $field_values ),
 			'taxonomies'        => self::serialize_taxonomies( $post ),
 			'link'              => get_permalink( $post->ID ),
 			'meta'              => $meta,
@@ -244,6 +244,10 @@ final class POPI_Connector_Contracts {
 		if ( is_scalar( $value ) || null === $value ) {
 			return $value;
 		}
+		if ( is_object( $value ) ) {
+			$attachment_id = self::attachment_id_from_value( $value );
+			return $attachment_id > 0 ? $attachment_id : null;
+		}
 		if ( ! is_array( $value ) ) {
 			return null;
 		}
@@ -251,6 +255,11 @@ final class POPI_Connector_Contracts {
 		foreach ( array_slice( array_values( $value ), 0, 100 ) as $item ) {
 			if ( is_scalar( $item ) || null === $item ) {
 				$output[] = $item;
+			} elseif ( is_object( $item ) ) {
+				$attachment_id = self::attachment_id_from_value( $item );
+				if ( $attachment_id > 0 ) {
+					$output[] = $attachment_id;
+				}
 			}
 		}
 		return $output;
@@ -276,18 +285,20 @@ final class POPI_Connector_Contracts {
 		);
 	}
 
-	private static function serialize_gallery( $post_id, $binding, $featured_media_id ) {
+	private static function serialize_gallery( $post_id, $binding, $featured_media_id, $field_values = null ) {
+		if ( ! is_array( $field_values ) ) {
+			$field_values = self::allowed_field_values( $post_id, $binding );
+		}
 		$ids = array();
 		foreach ( self::allowed_meta_keys( $binding ) as $key ) {
 			if ( false === strpos( $key, 'gallery' ) ) {
 				continue;
 			}
-			$value = get_post_meta( $post_id, $key, true );
+			$value = array_key_exists( $key, $field_values ) ? $field_values[ $key ] : null;
 			foreach ( is_array( $value ) ? $value : array( $value ) as $candidate ) {
-				if ( is_numeric( $candidate ) ) {
-					$ids[] = (int) $candidate;
-				} elseif ( is_string( $candidate ) && function_exists( 'attachment_url_to_postid' ) ) {
-					$ids[] = (int) attachment_url_to_postid( $candidate );
+				$attachment_id = self::attachment_id_from_value( $candidate );
+				if ( $attachment_id > 0 ) {
+					$ids[] = $attachment_id;
 				}
 			}
 		}
@@ -302,6 +313,104 @@ final class POPI_Connector_Contracts {
 			}
 		}
 		return $output;
+	}
+
+	private static function allowed_field_values( $post_id, $binding ) {
+		$values      = array();
+		$acpt_fields = null;
+		foreach ( self::allowed_meta_keys( $binding ) as $key ) {
+			if ( metadata_exists( 'post', $post_id, $key ) ) {
+				$values[ $key ] = get_post_meta( $post_id, $key, true );
+				continue;
+			}
+			if ( null === $acpt_fields ) {
+				$acpt_fields = self::acpt_field_values( $post_id );
+			}
+			$values[ $key ] = self::acpt_field_value( $acpt_fields, $key );
+		}
+		return $values;
+	}
+
+	private static function acpt_field_values( $post_id ) {
+		if ( ! function_exists( 'get_acpt_fields' ) ) {
+			return array();
+		}
+		try {
+			$values = get_acpt_fields(
+				array(
+					'post_id' => (int) $post_id,
+					'assoc'   => true,
+					'format'  => 'only_value',
+				)
+			);
+			return is_array( $values ) ? $values : array();
+		} catch ( Throwable $error ) {
+			return array();
+		}
+	}
+
+	private static function acpt_field_value( $fields, $key ) {
+		if ( array_key_exists( $key, $fields ) ) {
+			return $fields[ $key ];
+		}
+		$suffix  = '_' . $key;
+		$matches = array();
+		foreach ( $fields as $field_key => $value ) {
+			$field_key = (string) $field_key;
+			if ( strlen( $field_key ) >= strlen( $suffix ) && substr( $field_key, -strlen( $suffix ) ) === $suffix ) {
+				$matches[] = $value;
+			}
+		}
+		return 1 === count( $matches ) ? $matches[0] : null;
+	}
+
+	private static function attachment_id_from_value( $value ) {
+		if ( is_numeric( $value ) ) {
+			return (int) $value;
+		}
+		if ( is_object( $value ) ) {
+			if ( method_exists( $value, 'getId' ) ) {
+				try {
+					return (int) $value->getId();
+				} catch ( Throwable $error ) {
+					return 0;
+				}
+			}
+			if ( isset( $value->ID ) ) {
+				return (int) $value->ID;
+			}
+			if ( isset( $value->id ) ) {
+				return (int) $value->id;
+			}
+			return 0;
+		}
+		if ( is_array( $value ) ) {
+			foreach ( array( 'id', 'ID', 'attachment_id' ) as $key ) {
+				if ( isset( $value[ $key ] ) && is_numeric( $value[ $key ] ) ) {
+					return (int) $value[ $key ];
+				}
+			}
+			foreach ( array( 'url', 'src' ) as $key ) {
+				if ( isset( $value[ $key ] ) && is_string( $value[ $key ] ) ) {
+					return self::attachment_id_from_value( $value[ $key ] );
+				}
+			}
+			return 0;
+		}
+		if ( ! is_string( $value ) || ! function_exists( 'attachment_url_to_postid' ) ) {
+			return 0;
+		}
+		$attachment_id = (int) attachment_url_to_postid( $value );
+		if ( $attachment_id > 0 || ! function_exists( 'set_url_scheme' ) ) {
+			return $attachment_id;
+		}
+		foreach ( array( 'https', 'http' ) as $scheme ) {
+			$attachment_id = (int) attachment_url_to_postid( set_url_scheme( $value, $scheme ) );
+			if ( $attachment_id > 0 ) {
+				return $attachment_id;
+			}
+		}
+		return 0;
 	}
 
 	private static function serialize_taxonomies( $post ) {
