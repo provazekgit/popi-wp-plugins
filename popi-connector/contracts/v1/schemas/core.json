@@ -37,7 +37,7 @@
         "ok": { "type": "boolean" },
         "plugin": { "const": "popi-connector" },
         "plugin_version": { "type": "string" },
-        "contract_version": { "const": "1.0.0" },
+        "contract_version": { "const": "1.1.0" },
         "contract_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
         "wordpress_version": { "type": "string" },
         "php_version": { "type": "string" },

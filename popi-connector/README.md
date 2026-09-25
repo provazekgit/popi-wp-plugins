@@ -51,7 +51,7 @@ web znovu spárujte.
 
 ## REST contracts v1
 
-Aktuální maturity je preview `1.0.0-rc.1`. Produkční adaptéry zůstávají bez
+Aktuální obsahový kontrakt je zpětně kompatibilní verze `1.1.0`. Produkční adaptéry zůstávají bez
 samostatného schválení vypnuté; plugin sám nic nepřepíná ani nepřebírá provoz.
 
 Všechny routes používají `POST` a podepsanou JSON obálku pod namespace
@@ -67,6 +67,12 @@ vlastní SHA-256 se posílá při párování a vrací v health/manifest odpově
 - Core: health, manifest, site, frontend get/set, rotation, revoke.
 - POPIweb: schema read, entries search/get/patch.
 - POPIcast: show get, episodes search/get.
+
+POPIweb entry kontrakt 1.1 přidává volitelnou URL a metadata hlavního obrázku,
+galerii povolených obrazových příloh a veřejné REST taxonomie. Povolená pole
+čte z nativního WordPress post meta a, pokud příslušný meta řádek neexistuje,
+také z veřejného PHP API ACPT bez závislosti na názvu konkrétního meta boxu. Původní
+`featured_media_id` i meta hodnoty zůstávají zachované pro starší konzumenty.
 
 Počáteční post types, meta keys, statusy, write fields a ověřené frontend hosty
 přicházejí v binding configu z POPIsite. Správce WordPressu může v záložce
@@ -112,7 +118,7 @@ git commit -m "Add POPI Connector"
 npm run package:connector
 ```
 
-Release tag `popi-connector-v1.2.3` spustí GitHub Action, která zopakuje test,
+Release tag `popi-connector-v1.3.1` spustí GitHub Action, která zopakuje test,
 vytvoří `popi-connector.zip` a jeho SHA-256. Updater přijímá jen balíčky z
 odpovídajícího GitHub Releases prefixu a checksum ověřuje před instalací.
 

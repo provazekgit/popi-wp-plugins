@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "POPI Connector WordPress API",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Typed, capability-scoped WordPress operations. Every operation uses a signed popi-hmac-v1 JSON envelope; Authorization headers are not required."
   },
   "servers": [{ "url": "https://wordpress.example" }],

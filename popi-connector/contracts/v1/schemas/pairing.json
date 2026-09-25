@@ -16,7 +16,7 @@
         "wordpress_version": { "type": "string", "minLength": 1, "maxLength": 50 },
         "php_version": { "type": "string", "minLength": 1, "maxLength": 50 },
         "multisite": { "const": false },
-        "contract_version": { "const": "1.0.0" },
+        "contract_version": { "const": "1.1.0" },
         "contract_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
       }
     },
